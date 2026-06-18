@@ -34,6 +34,7 @@ TinySPAN frozen checkpoint
  -> TinySPAN bitstream on xczu19eg
  -> real board output
  -> board output == TinySPAN software fixed-point reference
+ -> training/PyTorch SR output vs board SR output image validation
  -> 1280x720 >= 30fps
 ```
 
@@ -113,6 +114,13 @@ artifacts/20260618_x4_tinyspan_c32b4_tile32_h21_f50_origboard/
 - `utilization.rpt`
 - `board.log`
 - `throughput.json`
+- `training_sr.png`
+- `software_fixed_point_sr.png`
+- `board_sr.png`
+- `diff_heatmap.png`
+- `comparison_preview.png`
+- `image_validation.json`
+- `image_validation.md`
 
 Vivado 临时目录、`.Xil`、中间构建目录和过大的原始日志不建议直接上传到 Git；
 需要时在 `run_summary.md` 中摘要说明，并保留可复现实验结论所需的关键证据。
@@ -244,7 +252,39 @@ Resource gate=XC7Z045 / ZC706 limits
 如果 JTAG target 数量为 `0`，应停止跑板流程，先检查板卡供电、USB-JTAG、JTAG 模式、
 驱动、Vivado 硬件管理器占用情况，再重新运行。
 
-### Gate G - TinySPAN 最终 720p30 验收
+### Gate G - TinySPAN 图像一致性可视化验证
+
+输入：
+
+- 冻结 TinySPAN checkpoint
+- 同一张完整输入帧
+- TinySPAN 训练/浮点模型超分输出
+- TinySPAN 软件定点参考输出
+- TinySPAN 板上输出
+
+输出：
+
+- `training_sr.png`：冻结 TinySPAN checkpoint 在训练/浮点推理路径下的超分结果
+- `software_fixed_point_sr.png`：同一 checkpoint 和同一量化方案生成的软件定点参考图
+- `board_sr.png`：板卡回读的 TinySPAN 超分图
+- `diff_heatmap.png`：硬件输出与训练/浮点输出的差异热力图
+- `comparison_preview.png`：输入图、训练/浮点输出、软件定点输出、硬件输出、差异图的并排预览
+- `image_validation.json`：机器可读指标
+- `image_validation.md`：中文可读验证摘要
+
+通过条件：
+
+- `training_sr.png`、`software_fixed_point_sr.png`、`board_sr.png` 的尺寸一致，且目标输出为 `1280x720`
+- `board_sr.png` 与 `software_fixed_point_sr.png` 对应的原始 RGB 数据逐字节一致
+- `board_sr.png` 与 `training_sr.png` 的 PSNR、SSIM、MAE、最大通道差值已记录
+- 默认视觉一致性门限：PSNR `>= 45 dB`、SSIM `>= 0.99`、MAE `<= 1.0` RGB level、最大通道差值 `<= 4`
+- `comparison_preview.png` 和 `diff_heatmap.png` 已生成，可直接打开查看
+- 如果视觉指标未达门限，必须在 `image_validation.md` 中说明原因，且不得宣告最终验收完成
+
+说明：最终硬件正确性的硬门限仍然是“板上输出与 TinySPAN 软件定点参考逐字节一致”；
+训练/浮点超分结果用于可视化和量化质量一致性检查，帮助人工确认硬件输出没有肉眼可见的异常。
+
+### Gate H - TinySPAN 最终 720p30 验收
 
 输入：
 
@@ -258,6 +298,7 @@ Resource gate=XC7Z045 / ZC706 limits
 
 - 输出帧尺寸为 `1280x720`
 - 板上输出 SHA256 等于 TinySPAN 软件定点参考 SHA256
+- 图像一致性可视化验证通过，且 `comparison_preview.png` 可查看
 - 实测吞吐不低于 `30fps`
 - 资源报告通过 XC7Z045 / ZC706 门限
 - 所有证据已复制到 `Tinyspan/artifacts/...`
@@ -281,7 +322,7 @@ Resource gate=XC7Z045 / ZC706 limits
 1. 以 `c32b4_30fps_frozen_20260613` 作为 TinySPAN 上板安全基线，整理 checkpoint、quant plan、软件定点参考的哈希证据。
 2. 或者先修复 `c32b4_final_20260615` 的 fused/export 边界漂移，再把它提升为上板候选。
 3. 生成 TinySPAN RTL/export，确保 manifest、定点参考、RTL 仿真来自同一个 TinySPAN checkpoint 和同一个 quant plan。
-4. 再进入 TinySPAN bitstream、板卡 smoke 和最终 720p30 验收。
+4. 再进入 TinySPAN bitstream、板卡 smoke、图像一致性可视化验证和最终 720p30 验收。
 
 ## 9. 完成定义
 
@@ -293,6 +334,8 @@ Resource gate=XC7Z045 / ZC706 limits
 同一完整输入帧
 同一个 TinySPAN bitstream
 TinySPAN 软件定点输出 == TinySPAN 板上输出，逐字节一致
+训练/浮点超分图与板上超分图完成可视化一致性验证
+comparison_preview.png 和 diff_heatmap.png 可查看
 输出分辨率 == 1280x720
 实测吞吐 >= 30fps
 资源门限 == PASS

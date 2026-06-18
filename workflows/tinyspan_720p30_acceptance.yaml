@@ -1,6 +1,6 @@
 name: tinyspan_720p30_acceptance
 name_zh: TinySPAN 720p30 X2/X4 上板验收
-version: 2
+version: 3
 updated: 2026-06-18
 
 route_lock:
@@ -69,6 +69,35 @@ required_artifacts:
   - timing.rpt
   - board.log
   - throughput.json
+  - training_sr.png
+  - software_fixed_point_sr.png
+  - board_sr.png
+  - diff_heatmap.png
+  - comparison_preview.png
+  - image_validation.json
+  - image_validation.md
+
+image_validation:
+  description_zh: 对比 TinySPAN 训练/浮点超分输出、软件定点参考输出和真实板上输出，生成可查看图片与量化指标。
+  required_images:
+    training_sr: training_sr.png
+    software_fixed_point_sr: software_fixed_point_sr.png
+    board_sr: board_sr.png
+    diff_heatmap: diff_heatmap.png
+    comparison_preview: comparison_preview.png
+  required_reports:
+    json: image_validation.json
+    markdown: image_validation.md
+  hard_gate_zh:
+    - board_sr 对应的原始 RGB 数据必须与 software_fixed_point_sr 逐字节一致。
+    - comparison_preview.png 必须可直接打开查看。
+    - diff_heatmap.png 必须可直接打开查看。
+  visual_metric_defaults:
+    compare_pair: board_sr_vs_training_sr
+    psnr_db_min: 45.0
+    ssim_min: 0.99
+    mae_rgb_level_max: 1.0
+    max_channel_diff_max: 4
 
 workflow:
   - id: freeze_tinyspan_model
@@ -164,6 +193,29 @@ workflow:
     stop_when_zh:
       - JTAG target 数量为 0 时停止跑板流程，先检查板卡连接、驱动、模式和工具占用。
 
+  - id: tinyspan_image_consistency
+    name_zh: TinySPAN 图像一致性可视化验证
+    inputs_zh:
+      - 冻结 TinySPAN checkpoint
+      - 同一完整输入帧
+      - TinySPAN 训练或浮点推理超分输出
+      - TinySPAN 软件定点参考输出
+      - TinySPAN 板上输出
+    outputs_zh:
+      - training_sr.png
+      - software_fixed_point_sr.png
+      - board_sr.png
+      - diff_heatmap.png
+      - comparison_preview.png
+      - image_validation.json
+      - image_validation.md
+    pass_when_zh:
+      - board_sr 与 software_fixed_point_sr 对应的原始 RGB 数据逐字节一致
+      - board_sr 与 training_sr 的 PSNR、SSIM、MAE、最大通道差值已记录
+      - 默认视觉一致性门限通过，或 image_validation.md 明确解释差异且最终验收不宣告完成
+      - comparison_preview.png 可查看
+      - diff_heatmap.png 可查看
+
   - id: tinyspan_final_acceptance
     name_zh: TinySPAN 最终 720p30 验收
     inputs_zh:
@@ -175,6 +227,7 @@ workflow:
     pass_when_zh:
       - 板上输出分辨率为 1280x720
       - 板上输出 SHA256 等于 TinySPAN 软件定点参考 SHA256
+      - TinySPAN 图像一致性可视化验证通过
       - 实测吞吐大于等于 30fps
       - 资源门限通过
       - 证据包已上传到 Tinyspan/artifacts
