@@ -117,7 +117,9 @@ if {$use_w8a12_full_streamed} {
   set rtl_sources [list \
       [file join $origin_dir rtl board sr_sd_axi_lite_accel.v] \
       [file join $origin_dir rtl board sr_jtag_rgb_transfer_endpoint.v] \
+      [file join $origin_dir rtl span span_tinyspan_w8a8_bicubic_base_x4_streamed.v] \
       [file join $origin_dir rtl span span_tinyspan_w8a8_bicubic_base_x4_streamed_serial.v] \
+      [file join $origin_dir rtl span span_tinyspan_w8a8_scale_q31_symmetric.v] \
       [file join $origin_dir rtl span span_tinyspan_w8a8_base_add_equiv.v] \
       [file join $origin_dir rtl span span_tinyspan_w8a8_full_streamed_rgb_base_equiv.v] \
       [file join $origin_dir rtl span span_tinyspan_w8a8_qrgb_to_rgb888.v] \

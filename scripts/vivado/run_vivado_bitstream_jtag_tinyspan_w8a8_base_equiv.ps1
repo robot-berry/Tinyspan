@@ -21,7 +21,11 @@ if ($ImgH -le 0) {
 }
 Push-Location $root
 try {
-  $cleanLogDirAbs = Join-Path $root $CleanLogDir
+  $cleanLogDirAbs = if ([System.IO.Path]::IsPathRooted($CleanLogDir)) {
+    $CleanLogDir
+  } else {
+    Join-Path $root $CleanLogDir
+  }
   New-Item -ItemType Directory -Force -Path $cleanLogDirAbs | Out-Null
   $vivadoIdleLog = Join-Path $cleanLogDirAbs "vivado_idle_precheck.log"
   $vivadoCleanupLog = Join-Path $cleanLogDirAbs "vivado_cleanup.log"
