@@ -34,6 +34,14 @@ def load_json(path: Path) -> dict[str, Any] | None:
     return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
+def load_latest_json(root: Path, pattern: str) -> tuple[dict[str, Any] | None, Path | None]:
+    candidates = [path for path in root.glob(pattern) if path.is_file()]
+    if not candidates:
+        return None, None
+    latest = max(candidates, key=lambda path: path.stat().st_mtime)
+    return load_json(latest), latest
+
+
 def failed_checks(summary: dict[str, Any] | None) -> list[str]:
     if not summary:
         return ["summary_missing"]
@@ -52,6 +60,7 @@ def status_from_inputs(
     input_preflight: dict[str, Any] | None,
     gate_c: dict[str, Any] | None,
     gate_d: dict[str, Any] | None,
+    gate_d_current: bool,
 ) -> list[dict[str, str]]:
     baseline_locked = bool(baseline and baseline.get("status") == "baseline_locked_not_board_accepted")
     readiness_failed = failed_checks(readiness)
@@ -86,9 +95,18 @@ def status_from_inputs(
                 for name in pass_checks(readiness)
                 if "rtl" in name or "frontend" in name or "script" in name
             ]
-            status = "HISTORICAL_PASS" if gate_d_pass else ("PARTIAL" if sim_related else "未开始")
-            evidence = "已归档 2026-06-13 RTL gate PASS；当前未重跑" if gate_d_pass else ("readiness 中 RTL manifest、引用、脚本检查已通过" if sim_related else "尚无 RTL 仿真汇总")
-            next_action = "运行/归档 TinySPAN RTL gate summary，补齐逐字节仿真报告"
+            if gate_d_pass and gate_d_current:
+                status = "PASS"
+                evidence = "当前 artifacts 中 Gate D RTL gate rerun PASS"
+                next_action = "进入 Gate E bitstream 生成前检查"
+            elif gate_d_pass:
+                status = "HISTORICAL_PASS"
+                evidence = "已归档历史 RTL gate PASS；当前未重跑"
+                next_action = "运行/归档 TinySPAN RTL gate summary，补齐逐字节仿真报告"
+            else:
+                status = "PARTIAL" if sim_related else "未开始"
+                evidence = "readiness 中 RTL manifest、引用、脚本检查已通过" if sim_related else "尚无 RTL 仿真汇总"
+                next_action = "运行/归档 TinySPAN RTL gate summary，补齐逐字节仿真报告"
         elif gate_id == "E":
             status = "BLOCKED" if "tinyspan_trained_bitstream_exists" in readiness_failed else "未开始"
             evidence = "bitstream 缺失" if "tinyspan_trained_bitstream_exists" in readiness_failed else "尚无"
@@ -186,9 +204,12 @@ def main() -> int:
     readiness = load_json(preflight_dir / "tinyspan_720p30_board_acceptance_readiness.json")
     input_preflight = load_json(preflight_dir / "tinyspan_720p30_acceptance_input_preflight.json")
     gate_c = load_json(artifact_dir / "gate_c_rtl_export" / "tinyspan_c32b4_30fps_frozen_w8a8_reexport" / "tinyspan_w8a8_rtl_manifest.json")
-    gate_d = load_json(artifact_dir / "gate_d_rtl_gate_existing" / "tinyspan_w8a8_rtl_gate_summary.json")
+    gate_d, gate_d_path = load_latest_json(artifact_dir, "gate_d_rtl_gate_rerun_*/tinyspan_w8a8_rtl_gate_summary.json")
+    gate_d_current = gate_d is not None
+    if gate_d is None:
+        gate_d = load_json(artifact_dir / "gate_d_rtl_gate_existing" / "tinyspan_w8a8_rtl_gate_summary.json")
 
-    rows = status_from_inputs(baseline, readiness, input_preflight, gate_c, gate_d)
+    rows = status_from_inputs(baseline, readiness, input_preflight, gate_c, gate_d, gate_d_current)
     write_markdown(args.docs_out, rows, baseline)
 
     json_out = args.json_out or artifact_dir / "contest_completion_status.json"
@@ -198,6 +219,7 @@ def main() -> int:
             {
                 "generated_at": datetime.now().isoformat(timespec="seconds"),
                 "artifact_dir": str(artifact_dir),
+                "gate_d_summary": str(gate_d_path) if gate_d_path else "",
                 "gates": rows,
             },
             ensure_ascii=False,

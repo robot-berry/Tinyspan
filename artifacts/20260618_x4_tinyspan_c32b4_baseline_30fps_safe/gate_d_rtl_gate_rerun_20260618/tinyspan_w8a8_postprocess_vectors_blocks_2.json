@@ -1,0 +1,304 @@
+{
+  "quant_plan": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+  "block": "blocks.2",
+  "testbench": "build\\generated_tinyspan_w8a8_c32b4_frozen_postprocess_tb_20260618\\tb_tinyspan_w8a8_postprocess_blocks_2.sv",
+  "luts": {
+    "blocks.2.act1": "G:/UESTC/feitengspan1/build/generated_tinyspan_w8a8_c32b4_frozen_postprocess_tb_20260618/blocks_2_act1_lut_i8.mem",
+    "blocks.2.act2": "G:/UESTC/feitengspan1/build/generated_tinyspan_w8a8_c32b4_frozen_postprocess_tb_20260618/blocks_2_act2_lut_i8.mem",
+    "blocks.2.sim_att": "G:/UESTC/feitengspan1/build/generated_tinyspan_w8a8_c32b4_frozen_postprocess_tb_20260618/blocks_2_sim_att_lut_i8.mem"
+  },
+  "constants": {
+    "sum_a": {
+      "real_multiplier": 0.9962062601922934,
+      "multiplier_q31": 2139336654,
+      "shift": 31
+    },
+    "sum_b": {
+      "real_multiplier": 0.4036708923381664,
+      "multiplier_q31": 866876640,
+      "shift": 31
+    },
+    "mul": {
+      "real_multiplier": 0.007874015567173797,
+      "multiplier_q31": 16909320,
+      "shift": 31
+    }
+  },
+  "vectors": {
+    "act1": [
+      {
+        "x": -128,
+        "expected": -99
+      },
+      {
+        "x": -96,
+        "expected": -77
+      },
+      {
+        "x": -64,
+        "expected": -53
+      },
+      {
+        "x": -17,
+        "expected": -15
+      },
+      {
+        "x": -1,
+        "expected": -1
+      },
+      {
+        "x": 0,
+        "expected": 0
+      },
+      {
+        "x": 1,
+        "expected": 1
+      },
+      {
+        "x": 13,
+        "expected": 12
+      },
+      {
+        "x": 37,
+        "expected": 34
+      },
+      {
+        "x": 64,
+        "expected": 60
+      },
+      {
+        "x": 96,
+        "expected": 93
+      },
+      {
+        "x": 127,
+        "expected": 127
+      }
+    ],
+    "act2": [
+      {
+        "x": -128,
+        "expected": -128
+      },
+      {
+        "x": -96,
+        "expected": -101
+      },
+      {
+        "x": -64,
+        "expected": -71
+      },
+      {
+        "x": -17,
+        "expected": -20
+      },
+      {
+        "x": -1,
+        "expected": -1
+      },
+      {
+        "x": 0,
+        "expected": 0
+      },
+      {
+        "x": 1,
+        "expected": 1
+      },
+      {
+        "x": 13,
+        "expected": 16
+      },
+      {
+        "x": 37,
+        "expected": 47
+      },
+      {
+        "x": 64,
+        "expected": 85
+      },
+      {
+        "x": 96,
+        "expected": 127
+      },
+      {
+        "x": 127,
+        "expected": 127
+      }
+    ],
+    "sim_att": [
+      {
+        "x": -128,
+        "expected": -128
+      },
+      {
+        "x": -96,
+        "expected": -96
+      },
+      {
+        "x": -64,
+        "expected": -65
+      },
+      {
+        "x": -17,
+        "expected": -17
+      },
+      {
+        "x": -1,
+        "expected": -1
+      },
+      {
+        "x": 0,
+        "expected": 0
+      },
+      {
+        "x": 1,
+        "expected": 1
+      },
+      {
+        "x": 13,
+        "expected": 13
+      },
+      {
+        "x": 37,
+        "expected": 37
+      },
+      {
+        "x": 64,
+        "expected": 65
+      },
+      {
+        "x": 96,
+        "expected": 96
+      },
+      {
+        "x": 127,
+        "expected": 127
+      }
+    ],
+    "residual_sum": [
+      {
+        "a": -128,
+        "b": 127,
+        "expected": -77
+      },
+      {
+        "a": -96,
+        "b": 96,
+        "expected": -58
+      },
+      {
+        "a": -64,
+        "b": 64,
+        "expected": -39
+      },
+      {
+        "a": -17,
+        "b": 37,
+        "expected": -3
+      },
+      {
+        "a": -1,
+        "b": 13,
+        "expected": 4
+      },
+      {
+        "a": 0,
+        "b": 1,
+        "expected": 0
+      },
+      {
+        "a": 1,
+        "b": 0,
+        "expected": 1
+      },
+      {
+        "a": 13,
+        "b": -1,
+        "expected": 13
+      },
+      {
+        "a": 37,
+        "b": -17,
+        "expected": 30
+      },
+      {
+        "a": 64,
+        "b": -64,
+        "expected": 38
+      },
+      {
+        "a": 96,
+        "b": -96,
+        "expected": 57
+      },
+      {
+        "a": 127,
+        "b": -128,
+        "expected": 75
+      }
+    ],
+    "attention_mul": [
+      {
+        "a": -128,
+        "b": 127,
+        "expected": -128
+      },
+      {
+        "a": -96,
+        "b": 96,
+        "expected": -74
+      },
+      {
+        "a": -64,
+        "b": 64,
+        "expected": -33
+      },
+      {
+        "a": -17,
+        "b": 37,
+        "expected": -6
+      },
+      {
+        "a": -1,
+        "b": 13,
+        "expected": -1
+      },
+      {
+        "a": 0,
+        "b": 1,
+        "expected": 0
+      },
+      {
+        "a": 1,
+        "b": 0,
+        "expected": 0
+      },
+      {
+        "a": 13,
+        "b": -1,
+        "expected": -1
+      },
+      {
+        "a": 37,
+        "b": -17,
+        "expected": -6
+      },
+      {
+        "a": 64,
+        "b": -64,
+        "expected": -33
+      },
+      {
+        "a": 96,
+        "b": -96,
+        "expected": -74
+      },
+      {
+        "a": 127,
+        "b": -128,
+        "expected": -128
+      }
+    ]
+  },
+  "preview": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\postprocess_previews\\tinyspan_w8a8_blocks_2_postprocess_preview.png"
+}

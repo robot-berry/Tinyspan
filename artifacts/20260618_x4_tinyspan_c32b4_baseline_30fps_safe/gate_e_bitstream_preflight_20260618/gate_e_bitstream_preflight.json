@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-06-18T13:27:37+08:00",
+  "gate": "E",
+  "gate_name_zh": "TinySPAN 实现与资源约束",
+  "status": "BLOCKED",
+  "baseline": {
+    "id": "c32b4_30fps_frozen_20260613",
+    "checkpoint_sha256": "6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938",
+    "scale": "x4",
+    "input_resolution": [320, 180],
+    "output_resolution": [1280, 720],
+    "minimum_fps": 30
+  },
+  "checked_without_vivado_or_jtag": true,
+  "result_zh": "当前工程尚未找到可作为最终验收的真实 TinySPAN-trained bitstream。",
+  "available_but_not_final_zh": [
+    "W8A12 DDR/tile-writer bitstream 属于参考路线，不能替代 TinySPAN 验收。",
+    "W8A10 candidate/full-span smoke bitstream 属于参考路线，不能替代 TinySPAN 验收。",
+    "run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1 是 32x32 JTAG/base-equivalent smoke 路线，不能替代 720p30 full-frame TinySPAN bitstream。"
+  ],
+  "required_to_pass_zh": [
+    "生成同一 frozen checkpoint 与同一 W8A8 quant plan 的真实 TinySPAN bitstream。",
+    "bitstream 支持硬件侧从 SD/DDR 读取完整降采样帧并切块处理，不能依赖 PC 端预切块作为最终证据。",
+    "归档 timing.rpt、utilization.rpt、power.rpt 或等价报告。",
+    "生成 resource_gate.json，并证明资源不超过 ZC706/XC7Z045 等效门限。",
+    "记录 bitstream 路径、SHA256、Vivado 版本、top module、约束、频率和实现日志摘要。"
+  ],
+  "next_action_zh": "进入 TinySPAN full-frame/tile-scheduler bitstream 生成；bitstream 与资源报告通过后再进入 Gate F 板卡冒烟测试。"
+}

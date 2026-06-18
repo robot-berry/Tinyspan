@@ -1,0 +1,35 @@
+﻿{
+    "status":  "PASS",
+    "generated_at":  "2026-06-18T13:21:29",
+    "quant_plan":  "G:\\UESTC\\feitengspan1\\runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+    "conv_runtime":  "2ms",
+    "conv_layers":  [
+                        "head",
+                        "blocks.0.c1",
+                        "reconstruct"
+                    ],
+    "conv_vectors":  "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_conv_vectors.json",
+    "conv_previews":  [
+                          "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\conv_vector_previews\\tinyspan_w8a8_head_conv_vector_preview.png",
+                          "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\conv_vector_previews\\tinyspan_w8a8_blocks_0_c1_conv_vector_preview.png",
+                          "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\conv_vector_previews\\tinyspan_w8a8_reconstruct_conv_vector_preview.png"
+                      ],
+    "postprocess_blocks":  [
+                               "blocks.0",
+                               "blocks.1",
+                               "blocks.2",
+                               "blocks.3"
+                           ],
+    "postprocess_vectors":  [
+                                "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_postprocess_vectors_blocks_0.json",
+                                "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_postprocess_vectors_blocks_1.json",
+                                "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_postprocess_vectors_blocks_2.json",
+                                "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_postprocess_vectors_blocks_3.json"
+                            ],
+    "postprocess_previews":  [
+                                 "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\postprocess_previews\\tinyspan_w8a8_blocks_0_postprocess_preview.png",
+                                 "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\postprocess_previews\\tinyspan_w8a8_blocks_1_postprocess_preview.png",
+                                 "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\postprocess_previews\\tinyspan_w8a8_blocks_2_postprocess_preview.png",
+                                 "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\postprocess_previews\\tinyspan_w8a8_blocks_3_postprocess_preview.png"
+                             ]
+}

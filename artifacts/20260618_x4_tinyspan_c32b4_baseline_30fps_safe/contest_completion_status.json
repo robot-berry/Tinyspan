@@ -1,6 +1,7 @@
 {
-  "generated_at": "2026-06-18T13:05:33",
+  "generated_at": "2026-06-18T13:22:42",
   "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
+  "gate_d_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_rtl_gate_summary.json",
   "gates": [
     {
       "gate": "A0",
@@ -33,9 +34,9 @@
     {
       "gate": "D",
       "name": "TinySPAN RTL 仿真",
-      "status": "HISTORICAL_PASS",
-      "evidence": "已归档 2026-06-13 RTL gate PASS；当前未重跑",
-      "next_action": "运行/归档 TinySPAN RTL gate summary，补齐逐字节仿真报告"
+      "status": "PASS",
+      "evidence": "当前 artifacts 中 Gate D RTL gate rerun PASS",
+      "next_action": "进入 Gate E bitstream 生成前检查"
     },
     {
       "gate": "E",
