@@ -1,0 +1,30 @@
+# Vivado and simulator scratch
+.Xil/
+xsim.dir/
+*.jou
+*.pb
+*.wdb
+*.str
+*.xpr
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.gen/
+
+# Large crash and temporary files
+hs_err_pid*.log
+hs_err_pid*.dmp
+.hdi.isWriteableTest*.tmp
+*.tmp
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Keep final evidence, but avoid oversized raw dumps by default
+artifacts/**/raw/
+artifacts/**/*.dcp
+artifacts/**/*.wdb
+artifacts/**/*.zip

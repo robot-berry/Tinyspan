@@ -1,0 +1,100 @@
+name: tinyspan_720p30_acceptance
+version: 1
+updated: 2026-06-18
+
+target:
+  board_actual: xczu19eg-ffvc1760-2-i
+  resource_gate: xc7z045_zc706
+  output_resolution: [1280, 720]
+  minimum_fps: 30
+  accepted_scales: [2, 4]
+
+frame_contracts:
+  x2:
+    input_resolution: [640, 360]
+    output_resolution: [1280, 720]
+  x4:
+    input_resolution: [320, 180]
+    output_resolution: [1280, 720]
+
+resource_limits:
+  dsp: 900
+  bram_tile: 545
+  uram: 0
+  io: 362
+  slice_lut: 218600
+  slice_register: 437200
+
+artifact_root: 'G:\UESTC\feitengspan1\Tinyspan\artifacts'
+
+run_directory_pattern: "{date}_{scale}_{model}_{tile}_{freq}_{tag}"
+
+required_artifacts:
+  - manifest.json
+  - run_summary.md
+  - checkpoint.sha256
+  - quant_plan.sha256
+  - input.sha256
+  - software_reference.sha256
+  - board_output.sha256
+  - resource_gate.json
+  - utilization.rpt
+  - timing.rpt
+  - board.log
+  - throughput.json
+
+workflow:
+  - id: freeze_model
+    pass_when:
+      - checkpoint_is_final
+      - checkpoint_hash_recorded
+      - metrics_final_row_recorded
+      - training_process_not_modifying_checkpoint
+
+  - id: quantize_and_reference
+    pass_when:
+      - quant_plan_generated_from_frozen_checkpoint
+      - software_fixed_reference_generated
+      - reference_hash_recorded
+
+  - id: rtl_export
+    pass_when:
+      - rtl_manifest_exists
+      - rtl_manifest_records_checkpoint_hash
+      - rtl_manifest_records_quant_plan_hash
+
+  - id: rtl_simulation
+    pass_when:
+      - layer_or_tile_vectors_match_software_reference
+      - no_unresolved_x_or_z_in_valid_output
+
+  - id: implementation
+    preferred_parameters:
+      tile_w: 20
+      tile_h: 20
+      halo: 21
+      pl_clock_mhz: 50
+      out_lanes: 1
+      tap_lanes: 4
+      scale_lanes: 1
+    pass_when:
+      - bitstream_generated_for_actual_board
+      - timing_met
+      - xc7z045_resource_gate_pass
+      - vivado_exited_cleanly
+
+  - id: board_smoke
+    pass_when:
+      - jtag_target_count_greater_than_zero
+      - bitstream_programmed
+      - ps_ddr_buffers_initialized
+      - hardware_tile_processing_completed
+      - board_output_readback_exists
+
+  - id: final_acceptance
+    pass_when:
+      - board_output_resolution_is_1280x720
+      - board_output_sha256_equals_software_reference_sha256
+      - measured_fps_greater_or_equal_30
+      - resource_gate_pass
+      - evidence_bundle_uploaded
