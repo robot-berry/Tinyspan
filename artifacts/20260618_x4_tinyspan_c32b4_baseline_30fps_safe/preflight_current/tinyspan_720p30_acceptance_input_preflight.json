@@ -1,0 +1,104 @@
+﻿{
+    "ready":  false,
+    "checkpoint":  "runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt",
+    "checkpoint_full_path":  "G:\\UESTC\\feitengspan1\\runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt",
+    "checkpoint_sha256":  "6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938",
+    "quant_plan":  "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+    "quant_plan_full_path":  "G:\\UESTC\\feitengspan1\\runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+    "quant_plan_sha256":  "EB6EEDDDE9360F61E6FC30141B2A1E6539E519CB226AC18B8C219B9E40092C9D",
+    "quant_plan_source_checkpoint":  "G:\\UESTC\\feitengspan1\\runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt",
+    "bitstream":  "vivado\\bitstreams\\tinyspan_c32b4_30fps_frozen_20260613.bit",
+    "bitstream_full_path":  "",
+    "bitstream_sha256":  "",
+    "board_raw":  "",
+    "board_raw_full_path":  "",
+    "board_raw_sha256":  "",
+    "board_png":  "",
+    "board_png_full_path":  "",
+    "board_png_sha256":  "",
+    "board_log":  "",
+    "board_log_full_path":  "",
+    "board_log_sha256":  "",
+    "measured_fps":  36.079767314187542,
+    "input_width":  320,
+    "input_height":  180,
+    "output_width":  1280,
+    "output_height":  720,
+    "tile_width":  32,
+    "tile_height":  32,
+    "missing_resource_fields":  [
+
+                                ],
+    "checks":  [
+                   {
+                       "name":  "lr_input_contract",
+                       "pass":  true,
+                       "detail":  "320x180, expected 320x180"
+                   },
+                   {
+                       "name":  "sr_output_contract",
+                       "pass":  true,
+                       "detail":  "1280x720, expected 1280x720"
+                   },
+                   {
+                       "name":  "tile_contract",
+                       "pass":  true,
+                       "detail":  "32x32, expected 32x32"
+                   },
+                   {
+                       "name":  "measured_fps_ge_30",
+                       "pass":  true,
+                       "detail":  "measured_fps=36.0797673141875"
+                   },
+                   {
+                       "name":  "checkpoint_exists",
+                       "pass":  true,
+                       "detail":  "runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt"
+                   },
+                   {
+                       "name":  "quant_plan_exists",
+                       "pass":  true,
+                       "detail":  "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json"
+                   },
+                   {
+                       "name":  "bitstream_exists",
+                       "pass":  false,
+                       "detail":  "vivado\\bitstreams\\tinyspan_c32b4_30fps_frozen_20260613.bit"
+                   },
+                   {
+                       "name":  "board_log_exists",
+                       "pass":  false,
+                       "detail":  ""
+                   },
+                   {
+                       "name":  "bitstream_extension_is_bit",
+                       "pass":  true,
+                       "detail":  "vivado\\bitstreams\\tinyspan_c32b4_30fps_frozen_20260613.bit"
+                   },
+                   {
+                       "name":  "real_board_output_exists",
+                       "pass":  false,
+                       "detail":  "BoardRaw=; BoardPng="
+                   },
+                   {
+                       "name":  "quant_plan_source_checkpoint_matches",
+                       "pass":  true,
+                       "detail":  "quant=G:\\UESTC\\feitengspan1\\runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt; checkpoint=runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt"
+                   },
+                   {
+                       "name":  "board_resource_fields_complete",
+                       "pass":  false,
+                       "detail":  "BoardLog missing"
+                   },
+                   {
+                       "name":  "board_log_bitstream_matches",
+                       "pass":  false,
+                       "detail":  "BoardLog missing"
+                   },
+                   {
+                       "name":  "board_log_measured_fps_matches",
+                       "pass":  false,
+                       "detail":  "BoardLog missing"
+                   }
+               ]
+}

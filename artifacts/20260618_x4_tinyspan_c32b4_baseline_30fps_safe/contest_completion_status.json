@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-06-18T13:05:33",
+  "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
+  "gates": [
+    {
+      "gate": "A0",
+      "name": "TinySPAN 硬件安全基线预检",
+      "status": "PASS",
+      "evidence": "baseline_manifest.json / baseline_decision.md",
+      "next_action": "继续沿 c32b4_30fps_frozen_20260613 推进"
+    },
+    {
+      "gate": "A",
+      "name": "冻结 TinySPAN 模型",
+      "status": "PASS",
+      "evidence": "frozen checkpoint SHA256 已固定",
+      "next_action": "禁止使用仍在变化的 checkpoint"
+    },
+    {
+      "gate": "B",
+      "name": "TinySPAN 量化与软件定点参考",
+      "status": "PASS",
+      "evidence": "W8A8 quant plan + integer reference summary",
+      "next_action": "后续 board 输出必须对齐同一软件定点参考"
+    },
+    {
+      "gate": "C",
+      "name": "TinySPAN RTL 导出",
+      "status": "PASS",
+      "evidence": "Gate C re-export + TinySPAN W8A8 RTL manifest",
+      "next_action": "进入 RTL 仿真与实现前检查"
+    },
+    {
+      "gate": "D",
+      "name": "TinySPAN RTL 仿真",
+      "status": "HISTORICAL_PASS",
+      "evidence": "已归档 2026-06-13 RTL gate PASS；当前未重跑",
+      "next_action": "运行/归档 TinySPAN RTL gate summary，补齐逐字节仿真报告"
+    },
+    {
+      "gate": "E",
+      "name": "TinySPAN 实现与资源约束",
+      "status": "BLOCKED",
+      "evidence": "bitstream 缺失",
+      "next_action": "生成真实 TinySPAN bitstream 并归档 timing/utilization/power"
+    },
+    {
+      "gate": "F",
+      "name": "TinySPAN 板卡冒烟测试",
+      "status": "BLOCKED",
+      "evidence": "真实板上输出缺失",
+      "next_action": "bitstream 通过后运行真实板卡 smoke，回读 board output"
+    },
+    {
+      "gate": "G",
+      "name": "TinySPAN 图像一致性可视化验证",
+      "status": "BLOCKED",
+      "evidence": "缺 board_sr.png / comparison_preview.png / diff_heatmap.png",
+      "next_action": "拿到真实 board output 后运行图像一致性验证"
+    },
+    {
+      "gate": "H",
+      "name": "TinySPAN 最终 720p30 验收",
+      "status": "BLOCKED",
+      "evidence": "缺 byte-exact board compare、board 720p30、resource gate",
+      "next_action": "等 E/F/G 通过后执行最终验收"
+    },
+    {
+      "gate": "X2",
+      "name": "X2 独立证据包",
+      "status": "BLOCKED",
+      "evidence": "当前主证据为 X4，X2 需独立证据包",
+      "next_action": "完成 X4 闭环后补齐 X2 量化/RTL/board 证据"
+    }
+  ]
+}

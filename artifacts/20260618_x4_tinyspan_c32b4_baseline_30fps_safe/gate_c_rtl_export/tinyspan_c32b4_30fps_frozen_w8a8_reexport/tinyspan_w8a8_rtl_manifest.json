@@ -1,0 +1,310 @@
+{
+  "source_quant_plan": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+  "source_checkpoint": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt",
+  "scale": 4,
+  "channels": 32,
+  "num_blocks": 4,
+  "activation_bits": 8,
+  "out_lanes": 8,
+  "tap_lanes": 16,
+  "header": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\tinyspan_w8a8_layers.vh",
+  "layers": [
+    {
+      "index": 0,
+      "name": "head",
+      "in_channels": 3,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 27,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\head_w_i8_group_ol8_tl16.mem",
+      "group_count": 8,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\head_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\head_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\head_requant_shift_u8.mem"
+    },
+    {
+      "index": 1,
+      "name": "blocks.0.c1",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_0_c1_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_0_c1_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_0_c1_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_0_c1_requant_shift_u8.mem"
+    },
+    {
+      "index": 2,
+      "name": "blocks.0.c2",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_0_c2_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_0_c2_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_0_c2_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_0_c2_requant_shift_u8.mem"
+    },
+    {
+      "index": 3,
+      "name": "blocks.0.c3",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_0_c3_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_0_c3_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_0_c3_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_0_c3_requant_shift_u8.mem"
+    },
+    {
+      "index": 4,
+      "name": "blocks.1.c1",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_1_c1_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_1_c1_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_1_c1_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_1_c1_requant_shift_u8.mem"
+    },
+    {
+      "index": 5,
+      "name": "blocks.1.c2",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_1_c2_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_1_c2_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_1_c2_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_1_c2_requant_shift_u8.mem"
+    },
+    {
+      "index": 6,
+      "name": "blocks.1.c3",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_1_c3_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_1_c3_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_1_c3_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_1_c3_requant_shift_u8.mem"
+    },
+    {
+      "index": 7,
+      "name": "blocks.2.c1",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_2_c1_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_2_c1_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_2_c1_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_2_c1_requant_shift_u8.mem"
+    },
+    {
+      "index": 8,
+      "name": "blocks.2.c2",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_2_c2_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_2_c2_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_2_c2_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_2_c2_requant_shift_u8.mem"
+    },
+    {
+      "index": 9,
+      "name": "blocks.2.c3",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_2_c3_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_2_c3_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_2_c3_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_2_c3_requant_shift_u8.mem"
+    },
+    {
+      "index": 10,
+      "name": "blocks.3.c1",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_3_c1_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_3_c1_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_3_c1_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_3_c1_requant_shift_u8.mem"
+    },
+    {
+      "index": 11,
+      "name": "blocks.3.c2",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_3_c2_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_3_c2_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_3_c2_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_3_c2_requant_shift_u8.mem"
+    },
+    {
+      "index": 12,
+      "name": "blocks.3.c3",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\blocks_3_c3_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_3_c3_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_3_c3_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\blocks_3_c3_requant_shift_u8.mem"
+    },
+    {
+      "index": 13,
+      "name": "fuse_tail",
+      "in_channels": 32,
+      "out_channels": 32,
+      "kernel_taps": 9,
+      "tap_count": 288,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\fuse_tail_w_i8_group_ol8_tl16.mem",
+      "group_count": 72,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\fuse_tail_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\fuse_tail_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\fuse_tail_requant_shift_u8.mem"
+    },
+    {
+      "index": 14,
+      "name": "reconstruct",
+      "in_channels": 128,
+      "out_channels": 48,
+      "kernel_taps": 9,
+      "tap_count": 1152,
+      "group_weight_mem": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\mem\\reconstruct_w_i8_group_ol8_tl16.mem",
+      "group_count": 432,
+      "bias_i64_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\reconstruct_bias_i64.mem",
+      "requant_q31_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\reconstruct_requant_q31.mem",
+      "requant_shift_mem": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\weights\\reconstruct_requant_shift_u8.mem"
+    }
+  ],
+  "postprocess": [
+    {
+      "block": "blocks.0",
+      "luts": {
+        "act1": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_0_act1_lut_i8.mem",
+        "act2": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_0_act2_lut_i8.mem",
+        "sim_att": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_0_sim_att_lut_i8.mem"
+      },
+      "constants": {
+        "sum_a": {
+          "real_multiplier": 0.21604872681434087,
+          "multiplier_q31": 463961108,
+          "shift": 31
+        },
+        "sum_b": {
+          "real_multiplier": 0.17225780341597216,
+          "multiplier_q31": 369920816,
+          "shift": 31
+        },
+        "mul": {
+          "real_multiplier": 0.009603750641501421,
+          "multiplier_q31": 20623897,
+          "shift": 31
+        }
+      }
+    },
+    {
+      "block": "blocks.1",
+      "luts": {
+        "act1": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_1_act1_lut_i8.mem",
+        "act2": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_1_act2_lut_i8.mem",
+        "sim_att": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_1_sim_att_lut_i8.mem"
+      },
+      "constants": {
+        "sum_a": {
+          "real_multiplier": 1.0206842057113277,
+          "multiplier_q31": 2191902642,
+          "shift": 31
+        },
+        "sum_b": {
+          "real_multiplier": 0.5003805822448133,
+          "multiplier_q31": 1074559118,
+          "shift": 31
+        },
+        "mul": {
+          "real_multiplier": 0.008066628028432445,
+          "multiplier_q31": 17322952,
+          "shift": 31
+        }
+      }
+    },
+    {
+      "block": "blocks.2",
+      "luts": {
+        "act1": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_2_act1_lut_i8.mem",
+        "act2": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_2_act2_lut_i8.mem",
+        "sim_att": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_2_sim_att_lut_i8.mem"
+      },
+      "constants": {
+        "sum_a": {
+          "real_multiplier": 0.9962062601922934,
+          "multiplier_q31": 2139336654,
+          "shift": 31
+        },
+        "sum_b": {
+          "real_multiplier": 0.4036708923381664,
+          "multiplier_q31": 866876640,
+          "shift": 31
+        },
+        "mul": {
+          "real_multiplier": 0.007874015567173797,
+          "multiplier_q31": 16909320,
+          "shift": 31
+        }
+      }
+    },
+    {
+      "block": "blocks.3",
+      "luts": {
+        "act1": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_3_act1_lut_i8.mem",
+        "act2": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_3_act2_lut_i8.mem",
+        "sim_att": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_c_rtl_export\\tinyspan_c32b4_30fps_frozen_w8a8_reexport\\postprocess\\blocks_3_sim_att_lut_i8.mem"
+      },
+      "constants": {
+        "sum_a": {
+          "real_multiplier": 0.9295260639622344,
+          "multiplier_q31": 1996142023,
+          "shift": 31
+        },
+        "sum_b": {
+          "real_multiplier": 0.6287629570020138,
+          "multiplier_q31": 1350258169,
+          "shift": 31
+        },
+        "mul": {
+          "real_multiplier": 0.00799999951124637,
+          "multiplier_q31": 17179868,
+          "shift": 31
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+﻿{
+    "ready":  false,
+    "handoff_summary":  "runs\\tinyspan_realtime_handoff\\c32b4_c32b4_30fps_frozen_20260613_summary.json",
+    "rtl_manifest":  "rtl\\generated\\tinyspan_c32b4_30fps_frozen_w8a8\\tinyspan_w8a8_rtl_manifest.json",
+    "head_frontend_dcp":  "build\\vivado_tinyspan_w8a8_head_frontend_synth\\tinyspan_w8a8_head_frontend_synth.dcp",
+    "final_rgb888_top":  "rtl\\span\\span_tinyspan_w8a8_full_streamed_rgb888_base_equiv.v",
+    "base_equiv_compare_script":  "scripts\\compare_tinyspan_base_equiv_reference.ps1",
+    "jtag_build_script":  "scripts\\run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1",
+    "jtag_smoke_script":  "scripts\\run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1",
+    "board_720p_acceptance_script":  "scripts\\run_tinyspan_720p30_board_acceptance.ps1",
+    "board_720p_preflight_script":  "scripts\\check_tinyspan_720p30_acceptance_inputs.ps1",
+    "acceptance_summary_writer":  "tools\\write_tinyspan_board_acceptance_summary.py",
+    "board_resource_log_writer":  "tools\\write_board_resource_log.py",
+    "vivado_idle_script":  "scripts\\check_vivado_idle.ps1",
+    "vivado_cleanup_script":  "scripts\\cleanup_vivado_processes.ps1",
+    "bitstream":  "vivado\\bitstreams\\tinyspan_c32b4_30fps_frozen_20260613.bit",
+    "board_output":  "",
+    "checks":  [
+                   {
+                       "name":  "handoff_summary_exists",
+                       "pass":  true,
+                       "detail":  "runs\\tinyspan_realtime_handoff\\c32b4_c32b4_30fps_frozen_20260613_summary.json"
+                   },
+                   {
+                       "name":  "handoff_passed",
+                       "pass":  true,
+                       "detail":  "passed=True"
+                   },
+                   {
+                       "name":  "checkpoint",
+                       "pass":  true,
+                       "detail":  "runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt"
+                   },
+                   {
+                       "name":  "manifest",
+                       "pass":  true,
+                       "detail":  "rtl\\generated\\tinyspan_x4_c32_b4_c32b4_30fps_frozen_20260613_fused\\tinyspan_manifest.json"
+                   },
+                   {
+                       "name":  "quant_plan",
+                       "pass":  true,
+                       "detail":  "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json"
+                   },
+                   {
+                       "name":  "integer_reference_summary",
+                       "pass":  true,
+                       "detail":  "runs\\tinyspan_integer_reference\\c32b4_30fps_frozen_20260613_x4_c32_b4_32x32_w8a8\\tinyspan_w8a8_integer_reference_summary.md"
+                   },
+                   {
+                       "name":  "integer_reference_preview",
+                       "pass":  true,
+                       "detail":  "runs\\tinyspan_integer_reference\\c32b4_30fps_frozen_20260613_x4_c32_b4_32x32_w8a8\\tinyspan_w8a8_integer_reference_preview.png"
+                   },
+                   {
+                       "name":  "tinyspan_w8a8_rtl_manifest_exists",
+                       "pass":  true,
+                       "detail":  "rtl\\generated\\tinyspan_c32b4_30fps_frozen_w8a8\\tinyspan_w8a8_rtl_manifest.json"
+                   },
+                   {
+                       "name":  "tinyspan_w8a8_rtl_layer_count",
+                       "pass":  true,
+                       "detail":  "layers=15, expected=15"
+                   },
+                   {
+                       "name":  "tinyspan_w8a8_rtl_postprocess_blocks",
+                       "pass":  true,
+                       "detail":  "blocks=4, expected=4"
+                   },
+                   {
+                       "name":  "tinyspan_w8a8_rtl_channels",
+                       "pass":  true,
+                       "detail":  "channels=32, expected=32"
+                   },
+                   {
+                       "name":  "tinyspan_w8a8_rtl_header",
+                       "pass":  true,
+                       "detail":  "rtl\\generated\\tinyspan_c32b4_30fps_frozen_w8a8\\tinyspan_w8a8_layers.vh"
+                   },
+                   {
+                       "name":  "tinyspan_w8a8_rtl_references_exist",
+                       "pass":  true,
+                       "detail":  "missing_refs=0"
+                   },
+                   {
+                       "name":  "tinyspan_w8a8_head_frontend_synth_dcp",
+                       "pass":  true,
+                       "detail":  "build\\vivado_tinyspan_w8a8_head_frontend_synth\\tinyspan_w8a8_head_frontend_synth.dcp"
+                   },
+                   {
+                       "name":  "tinyspan_w8a8_final_rgb888_top",
+                       "pass":  true,
+                       "detail":  "rtl\\span\\span_tinyspan_w8a8_full_streamed_rgb888_base_equiv.v"
+                   },
+                   {
+                       "name":  "tinyspan_base_equiv_compare_script",
+                       "pass":  true,
+                       "detail":  "scripts\\compare_tinyspan_base_equiv_reference.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_jtag_build_script",
+                       "pass":  true,
+                       "detail":  "scripts\\run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_jtag_smoke_script",
+                       "pass":  true,
+                       "detail":  "scripts\\run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_720p30_acceptance_script",
+                       "pass":  true,
+                       "detail":  "scripts\\run_tinyspan_720p30_board_acceptance.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_720p30_preflight_script",
+                       "pass":  true,
+                       "detail":  "scripts\\check_tinyspan_720p30_acceptance_inputs.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_board_resource_log_writer",
+                       "pass":  true,
+                       "detail":  "tools\\write_board_resource_log.py"
+                   },
+                   {
+                       "name":  "vivado_idle_script",
+                       "pass":  true,
+                       "detail":  "scripts\\check_vivado_idle.ps1"
+                   },
+                   {
+                       "name":  "vivado_cleanup_script",
+                       "pass":  true,
+                       "detail":  "scripts\\cleanup_vivado_processes.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_acceptance_summary_resource_embed",
+                       "pass":  true,
+                       "detail":  "tools\\write_tinyspan_board_acceptance_summary.py"
+                   },
+                   {
+                       "name":  "tinyspan_acceptance_summary_requires_resources",
+                       "pass":  true,
+                       "detail":  "tools\\write_tinyspan_board_acceptance_summary.py"
+                   },
+                   {
+                       "name":  "tinyspan_720p30_acceptance_locks_720p",
+                       "pass":  true,
+                       "detail":  "scripts\\run_tinyspan_720p30_board_acceptance.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_720p30_acceptance_locks_tile32",
+                       "pass":  true,
+                       "detail":  "scripts\\run_tinyspan_720p30_board_acceptance.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_720p30_acceptance_requires_resource_json",
+                       "pass":  true,
+                       "detail":  "scripts\\run_tinyspan_720p30_board_acceptance.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_jtag_build_vivado_idle_precheck",
+                       "pass":  true,
+                       "detail":  "scripts\\run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_jtag_build_vivado_cleanup",
+                       "pass":  true,
+                       "detail":  "scripts\\run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_jtag_smoke_vivado_idle_precheck",
+                       "pass":  true,
+                       "detail":  "scripts\\run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_jtag_smoke_vivado_cleanup",
+                       "pass":  true,
+                       "detail":  "scripts\\run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1"
+                   },
+                   {
+                       "name":  "tinyspan_trained_bitstream_exists",
+                       "pass":  false,
+                       "detail":  "vivado\\bitstreams\\tinyspan_c32b4_30fps_frozen_20260613.bit"
+                   },
+                   {
+                       "name":  "real_board_output_provided",
+                       "pass":  false,
+                       "detail":  "BoardOutput is empty"
+                   }
+               ]
+}

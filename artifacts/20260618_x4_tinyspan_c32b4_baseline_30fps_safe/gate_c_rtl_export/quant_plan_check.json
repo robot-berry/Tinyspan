@@ -1,0 +1,7 @@
+{
+  "quant_plan": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+  "layers": 15,
+  "postprocess": 22,
+  "activation_scales": 53,
+  "status": "PASS"
+}
