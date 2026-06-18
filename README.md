@@ -13,6 +13,15 @@ Target:
 - Accept only when board output is byte-exact against the software fixed-point
   reference from the same frozen checkpoint and quantization plan.
 
+Current hardware-safe baseline:
+
+- `c32b4_30fps_frozen_20260613`
+- Checkpoint SHA256:
+  `6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`
+- This baseline can drive RTL/bitstream/board work, but final acceptance still
+  requires a real TinySPAN-trained bitstream, real board output, byte-exact
+  board-vs-software comparison, and measured 720p30 throughput.
+
 Main documents:
 
 - [WORKFLOW.md](WORKFLOW.md): human-readable project workflow and acceptance

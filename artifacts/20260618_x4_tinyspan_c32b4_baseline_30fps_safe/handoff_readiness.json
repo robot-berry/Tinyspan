@@ -1,0 +1,32 @@
+{
+  "ready": false,
+  "baseline": "c32b4_30fps_frozen_20260613",
+  "source_readiness_json": "G:\\UESTC\\feitengspan1\\board_runs\\tinyspan_board_acceptance\\readiness_c32b4_30fps_frozen_20260613\\tinyspan_30fps_board_acceptance_readiness.json",
+  "source_readiness_sha256": "59D33053229BC1C9076771CFACFD054031FC35B5BA68E8788F3315C3B3F899C1",
+  "passed_checks": [
+    "handoff_summary_exists",
+    "handoff_passed",
+    "checkpoint",
+    "manifest",
+    "quant_plan",
+    "integer_reference_summary",
+    "integer_reference_preview",
+    "tinyspan_w8a8_rtl_manifest_exists",
+    "tinyspan_w8a8_rtl_layer_count",
+    "tinyspan_w8a8_rtl_postprocess_blocks",
+    "tinyspan_w8a8_rtl_channels",
+    "tinyspan_w8a8_rtl_header",
+    "tinyspan_w8a8_rtl_references_exist",
+    "tinyspan_w8a8_head_frontend_synth_dcp"
+  ],
+  "failed_checks": [
+    "tinyspan_trained_bitstream_exists",
+    "real_board_output_provided"
+  ],
+  "next_required_actions": [
+    "Generate the real TinySPAN bitstream from the same checkpoint and quant plan.",
+    "Run a real board smoke test and capture board output.",
+    "Compare board output against the software fixed-point reference byte-for-byte.",
+    "Measure full 1280x720 throughput and prove >= 30fps."
+  ]
+}

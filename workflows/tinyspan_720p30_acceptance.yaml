@@ -1,6 +1,6 @@
 name: tinyspan_720p30_acceptance
 name_zh: TinySPAN 720p30 X2/X4 上板验收
-version: 5
+version: 6
 updated: 2026-06-18
 
 project_paths:
@@ -126,6 +126,52 @@ route_lock:
     - PC-side pre-cut tile inference
   route_rule_zh: 参考路线的结果不能替代 TinySPAN checkpoint、TinySPAN 量化方案、TinySPAN bitstream 和 TinySPAN 板上输出。
 
+active_hardware_baseline:
+  id: c32b4_30fps_frozen_20260613
+  status_zh: 从 2026-06-18 起，本工作流以该 checkpoint 作为 TinySPAN 硬件安全基线推进。
+  reason_zh:
+    - 该 checkpoint 已冻结，SHA256 与冻结前 source 一致。
+    - 已有 TinySPAN X4 320x180 到 1280x720 软件实时验收记录，端到端 36.079767 fps，高于 30fps。
+    - 已有 W8A8 量化计划、整数参考、RTL manifest 和 readiness 检查记录。
+    - 与 c32b4_final_20260615 相比，该基线没有当前已知的 fused/export 边界漂移阻塞。
+  model:
+    family: TinySPAN
+    channels: 32
+    blocks: 4
+    first_scale: x4
+    quantization: W8A8
+  checkpoint:
+    path: 'G:\UESTC\feitengspan1\runs\tinyspan_frozen_candidates\c32b4_30fps_frozen_20260613\student_30fps_candidate.pt'
+    sha256: 6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938
+    freeze_manifest: 'G:\UESTC\feitengspan1\runs\tinyspan_frozen_candidates\c32b4_30fps_frozen_20260613\freeze_manifest.json'
+    frozen_at: '2026-06-13T17:59:31'
+  software_realtime_evidence:
+    summary: 'G:\UESTC\feitengspan1\runs\tinyspan_acceptance\c32b4_x4_320x180_30f_rerun_20260613\summary.json'
+    scale: x4
+    input_resolution: [320, 180]
+    output_resolution: [1280, 720]
+    measured_fps: 36.07976731418754
+    pass_30fps: true
+  quant_and_reference_evidence:
+    quant_plan: 'G:\UESTC\feitengspan1\runs\tinyspan_quant_plan\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\tinyspan_w8a8_quant_plan.json'
+    gatecheck_quant_plan: 'G:\UESTC\feitengspan1\runs\tinyspan_quant_plan\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4_w8a8\tinyspan_w8a8_quant_plan.json'
+    integer_reference_summary: 'G:\UESTC\feitengspan1\runs\tinyspan_integer_reference\c32b4_30fps_frozen_20260613_x4_c32_b4_32x32_w8a8\tinyspan_w8a8_integer_reference_summary.md'
+    rtl_manifest: 'G:\UESTC\feitengspan1\rtl\generated\tinyspan_c32b4_30fps_frozen_w8a8\tinyspan_w8a8_rtl_manifest.json'
+  readiness_boundary:
+    readiness_json: 'G:\UESTC\feitengspan1\board_runs\tinyspan_board_acceptance\readiness_c32b4_30fps_frozen_20260613\tinyspan_30fps_board_acceptance_readiness.json'
+    readiness_status: false
+    existing_pass_zh:
+      - checkpoint、manifest、quant plan、integer reference、RTL manifest、layer/channel/postprocess 检查已通过。
+      - head frontend synth DCP 已存在，可作为实现前端参考。
+    missing_for_board_acceptance_zh:
+      - 真实 TinySPAN-trained bitstream 尚未存在。
+      - 真实板上输出尚未提供。
+      - readiness 中的 selftest 不能替代真实 bitstream 和真实板上输出。
+  baseline_rule_zh:
+    - 后续 TinySPAN RTL、bitstream、板上输出和图像一致性验证默认使用该基线。
+    - 不得把 c32b4_final_20260615 用于上板验收，除非先修复 fused/export 漂移并重新通过本基线同等级别的预检。
+    - 更换 checkpoint 必须新增 baseline_upgrade_report.md，记录新旧 checkpoint 哈希、量化计划、定点参考、RTL manifest 和图像验证差异。
+
 target:
   description_zh: 实际运行在 xczu19eg 原板卡上，资源按 ZC706 / XC7Z045 规模约束。
   board_actual: xczu19eg-ffvc1760-2-i
@@ -162,9 +208,11 @@ run_directory_pattern_zh: 每次运行使用一个独立目录，例如 20260618
 current_status_zh:
   date: 2026-06-18
   training: TinySPAN 训练已完成。
+  active_baseline: c32b4_30fps_frozen_20260613 已提升为当前 TinySPAN 硬件安全基线。
   software_best: c32b4_final_20260615 软件质量更好，已通过 320x180 到 1280x720 的 30fps 软件验收。
-  board_safe_candidate: c32b4_30fps_frozen_20260613 目前是已证明 fused manifest 与软件输出逐字节一致的 TinySPAN 硬件安全候选。
+  board_safe_candidate: c32b4_30fps_frozen_20260613 目前是已证明 frozen/source 哈希一致且具备量化、整数参考和 RTL manifest 证据的 TinySPAN 硬件安全基线。
   blocker: c32b4_final_20260615 fused/export 存在边界漂移，修复前不能直接上板验收。
+  board_acceptance_boundary: 当前基线仍缺真实 TinySPAN bitstream 和真实板上输出，不能宣告板上验收完成。
   stopped_route: W8A12 wf18d/wf18e Vivado 已停止；其结果不作为 TinySPAN 验收证据。
 
 required_artifacts:
@@ -194,6 +242,11 @@ required_artifacts:
   - vivado_simulation.md
   - ppa_summary.json
   - ppa_summary.md
+  - baseline_decision.md
+  - baseline_manifest.json
+  - baseline_upgrade_report.md
+  - handoff_readiness.json
+  - handoff_readiness.md
 
 image_validation:
   description_zh: 对比 TinySPAN 训练/浮点超分输出、软件定点参考输出和真实板上输出，生成可查看图片与量化指标。
@@ -218,6 +271,27 @@ image_validation:
     max_channel_diff_max: 4
 
 workflow:
+  - id: baseline_preflight
+    name_zh: TinySPAN 硬件安全基线预检
+    inputs_zh:
+      - c32b4_30fps_frozen_20260613 frozen checkpoint
+      - freeze_manifest.json
+      - X4 30fps 软件实时验收 summary.json
+      - TinySPAN W8A8 量化计划
+      - TinySPAN 整数参考摘要
+      - TinySPAN RTL manifest
+    outputs_zh:
+      - baseline_decision.md
+      - baseline_manifest.json
+      - handoff_readiness.json
+      - handoff_readiness.md
+    pass_when_zh:
+      - checkpoint SHA256 固定为 6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938
+      - quant plan 的 source_checkpoint 指向同一 frozen checkpoint
+      - 软件 X4 320x180 到 1280x720 30fps 验收通过
+      - 整数参考和 RTL manifest 均来自同一 checkpoint 与同一量化计划
+      - readiness 明确列出尚未完成的 bitstream 与真实板上输出，避免误宣告完成
+
   - id: freeze_tinyspan_model
     name_zh: 冻结 TinySPAN 模型
     inputs_zh:

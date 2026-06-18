@@ -1,0 +1,69 @@
+{
+  "artifact_id": "20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
+  "created_at": "2026-06-18",
+  "status": "baseline_locked_not_board_accepted",
+  "route": "TinySPAN",
+  "baseline": {
+    "id": "c32b4_30fps_frozen_20260613",
+    "model_family": "TinySPAN",
+    "channels": 32,
+    "blocks": 4,
+    "first_scale": "x4",
+    "quantization": "W8A8",
+    "checkpoint": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt",
+    "checkpoint_sha256": "6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938"
+  },
+  "software_realtime_evidence": {
+    "summary": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_acceptance\\c32b4_x4_320x180_30f_rerun_20260613\\summary.json",
+    "summary_sha256": "A7FC25C43F32E8E22C6E2D99EA1EF11595A5EB9B471AF8E16757EF9874ED41DA",
+    "input_resolution": [320, 180],
+    "output_resolution": [1280, 720],
+    "measured_fps": 36.07976731418754,
+    "pass_30fps": true
+  },
+  "frozen_evidence": {
+    "freeze_manifest": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\freeze_manifest.json",
+    "freeze_manifest_sha256": "0BC8248E2AC5CD8248D293DD07DC4CCDDC773276D7439C86AC9D689B961F0984",
+    "source_sha256": "6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938",
+    "frozen_sha256": "6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938"
+  },
+  "quant_reference_evidence": {
+    "quant_plan": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+    "quant_plan_sha256": "EB6EEDDDE9360F61E6FC30141B2A1E6539E519CB226AC18B8C219B9E40092C9D",
+    "gatecheck_quant_plan": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+    "gatecheck_quant_plan_sha256": "855368727AAA4A166AE5A6348840E2270137B7AE3495E6736854BE127635E9F6",
+    "integer_reference_summary": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_integer_reference\\c32b4_30fps_frozen_20260613_x4_c32_b4_32x32_w8a8\\tinyspan_w8a8_integer_reference_summary.md",
+    "integer_reference_summary_sha256": "33A4B104178024F7131A26F7E7BF3317FB82EB5E53BFF346472DE4D3AE329848"
+  },
+  "rtl_evidence": {
+    "rtl_manifest": "G:\\UESTC\\feitengspan1\\rtl\\generated\\tinyspan_c32b4_30fps_frozen_w8a8\\tinyspan_w8a8_rtl_manifest.json",
+    "rtl_manifest_sha256": "31D29091B867C1EA7ADA7946B36DCF5AA3A6CAC56E93E9402C384CADDB2C6B66"
+  },
+  "readiness": {
+    "ready": false,
+    "source": "G:\\UESTC\\feitengspan1\\board_runs\\tinyspan_board_acceptance\\readiness_c32b4_30fps_frozen_20260613\\tinyspan_30fps_board_acceptance_readiness.json",
+    "source_sha256": "59D33053229BC1C9076771CFACFD054031FC35B5BA68E8788F3315C3B3F899C1",
+    "passed": [
+      "checkpoint",
+      "manifest",
+      "quant_plan",
+      "integer_reference_summary",
+      "integer_reference_preview",
+      "tinyspan_w8a8_rtl_manifest_exists",
+      "tinyspan_w8a8_rtl_layer_count",
+      "tinyspan_w8a8_rtl_postprocess_blocks",
+      "tinyspan_w8a8_rtl_channels",
+      "tinyspan_w8a8_rtl_references_exist",
+      "tinyspan_w8a8_head_frontend_synth_dcp"
+    ],
+    "missing": [
+      "tinyspan_trained_bitstream_exists",
+      "real_board_output_provided"
+    ]
+  },
+  "acceptance_boundary": [
+    "This artifact locks a hardware-safe baseline only.",
+    "It is not a final board acceptance result.",
+    "Final acceptance still requires a real TinySPAN-trained bitstream, real board output, byte-exact board-vs-software fixed-point comparison, and measured 720p30 throughput."
+  ]
+}
