@@ -1,6 +1,6 @@
 name: tinyspan_720p30_acceptance
 name_zh: TinySPAN 720p30 X2/X4 上板验收
-version: 4
+version: 5
 updated: 2026-06-18
 
 project_paths:
@@ -9,6 +9,60 @@ project_paths:
   tinyspan_repo: 'G:\UESTC\feitengspan1\Tinyspan'
   artifact_root: 'G:\UESTC\feitengspan1\Tinyspan\artifacts'
   rule_zh: 后续 TinySPAN 上板验收相关 workflow、记录、哈希、图片验证和可上传证据优先放入 tinyspan_repo 及 artifact_root。
+
+contest_requirements:
+  title_zh: 端侧 AI 超分硬件加速器赛题要求
+  goal_zh: 面向端侧视频会议场景，设计专用 AI 超分硬件加速器，在清晰度、实时性、功耗/面积之间取得平衡。
+  model_constraints_zh:
+    - AI 模型、量化、稀疏化方法不做限制。
+    - 图像输入格式不限，可使用 RGB 或 YUV。
+    - AI 模型可参考 CVPR NTIRE 相关论文。
+  scenario_zh:
+    - 适配视频会议核心画面特征，包括人像、文档、屏幕共享等。
+    - 实现实时、高保真的超分辨率输出。
+    - 在实际视频会议场景下验证画质与性能表现。
+  platform_zh:
+    board_target: Xilinx ZC706 或资源相当 FPGA
+    current_board: xczu19eg-ffvc1760-2-i
+    resource_gate: XC7Z045 / ZC706 等效资源门限
+  dataset:
+    name: REDS
+    url: https://seungjunnah.github.io/Datasets/reds.html
+    paper: 'S. Nah et al., "NTIRE 2019 Challenge on Video Deblurring and Super-Resolution: Dataset and Study"'
+  required_scales:
+    - x2
+    - x4
+  deliverables_zh:
+    - AI 模型结构说明文档及源代码。
+    - 训练说明文档及源代码。
+    - 量化说明文档及源代码。
+    - 稀疏化方法如有使用，需提供说明与可复现实验记录。
+    - 模型到硬件加速器指令、权重、参数或 RTL memory 的转换工具。
+    - 硬件加速器详细设计文档。
+    - 硬件加速器源代码。
+    - Vivado 仿真验证脚本、测试向量和结果。
+    - Vivado 综合/实现脚本，以及用于资源开销评估的报告。
+  review_points:
+    - item_zh: 功能实现精准无误，与题目要求高度契合
+      score: 10
+      evidence_zh: X2/X4 正确性、TinySPAN 软件定点参考与硬件输出一致、视频会议样例验证。
+    - item_zh: 设计方案文档表述清晰，模块功能划分科学合理
+      score: 10
+      evidence_zh: 模型文档、硬件模块设计文档、数据流和接口说明。
+    - item_zh: 文档明确阐释模块内部量化指标及相应性能分析
+      score: 20
+      evidence_zh: 量化方案、PSNR/SSIM/MAE、吞吐、延迟、资源、功耗/面积分析。
+    - item_zh: 具备完善的验证方案与验证用例
+      score: 20
+      evidence_zh: REDS 验证集、会议场景样例、RTL 仿真、板上输出、图像一致性预览。
+    - item_zh: 同等性能约束下面积越小、功耗越低越好
+      score: 40
+      evidence_zh: Vivado utilization、timing、power、资源门限、bitstream 与 PPA 汇总。
+  hard_rules_zh:
+    - 如果未通过正确性仿真验证以及未生成 bitstream，PPA 项不得作为有效得分证据。
+    - 每个 TinySPAN 验收 run 必须记录数据集/输入来源、降采样方式、哈希和验证指标。
+    - X2 和 X4 必须分别保留证据包。
+    - 图像一致性验证必须产出 comparison_preview.png 和 diff_heatmap.png。
 
 route_lock:
   main_route: TinySPAN
@@ -83,6 +137,13 @@ required_artifacts:
   - comparison_preview.png
   - image_validation.json
   - image_validation.md
+  - model_design.md
+  - training_quantization.md
+  - hardware_design.md
+  - model_to_hardware_tool.md
+  - vivado_simulation.md
+  - ppa_summary.json
+  - ppa_summary.md
 
 image_validation:
   description_zh: 对比 TinySPAN 训练/浮点超分输出、软件定点参考输出和真实板上输出，生成可查看图片与量化指标。
@@ -121,6 +182,7 @@ workflow:
       - checkpoint 已固定用于本次 TinySPAN 验收
       - checkpoint 哈希已记录
       - 最终指标已记录
+      - 模型结构、训练配置、数据集来源和训练指标已写入交付文档
       - 没有训练进程继续修改 checkpoint
 
   - id: quantize_and_reference
@@ -138,6 +200,7 @@ workflow:
       - 软件定点参考已生成
       - 参考输出哈希已记录
       - fused/export 不存在边界漂移或其它交接不一致
+      - 量化方法、量化指标和性能影响已写入交付文档
 
   - id: tinyspan_rtl_export
     name_zh: TinySPAN RTL 导出
@@ -154,6 +217,7 @@ workflow:
       - RTL manifest 记录量化方案哈希
       - 没有使用旧缓存或仍在变化的 checkpoint
       - 导出结果与 TinySPAN 软件定点参考一致
+      - 模型到硬件转换工具的输入、输出和复现命令已记录
 
   - id: tinyspan_rtl_simulation
     name_zh: TinySPAN RTL 仿真
@@ -168,6 +232,7 @@ workflow:
     pass_when_zh:
       - TinySPAN RTL tile 输出与 TinySPAN 软件定点参考逐字节一致
       - 有效输出中没有未解析的 X 或 Z
+      - Vivado 仿真脚本、测试向量和仿真结果已归档
 
   - id: tinyspan_implementation
     name_zh: TinySPAN 实现与资源约束
@@ -184,6 +249,7 @@ workflow:
       - XC7Z045 / ZC706 资源门限通过
       - Vivado 正常退出
       - 没有残留 Vivado helper 进程
+      - utilization、timing、power 和 PPA 汇总已归档
 
   - id: tinyspan_board_smoke
     name_zh: TinySPAN 板卡冒烟测试

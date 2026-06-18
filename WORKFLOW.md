@@ -13,7 +13,67 @@ TinySPAN 验收产物目录：G:\UESTC\feitengspan1\Tinyspan\artifacts
 所有后续 TinySPAN 上板验收相关的 workflow、记录、哈希、图片验证结果和可上传证据，
 都优先放在 `G:\UESTC\feitengspan1\Tinyspan` 及其 `artifacts` 子目录下。
 
-## 2. 主线目标
+## 2. 赛题要求对齐
+
+本工作流必须服务于赛题目标：面向端侧视频会议场景，设计专用 AI 超分硬件加速器，
+在“清晰度、实时性、功耗/面积”之间取得平衡，并在 ZC706 或资源相当 FPGA 上完成
+X2、X4 超分验证。
+
+### 2.1 赛题目标
+
+- 面向端侧场景实现专用 AI 超分硬件加速器。
+- AI 模型、量化、稀疏化方法不做限制。
+- 图像输入格式不限，可使用 RGB 或 YUV。
+- AI 模型可参考 CVPR NTIRE 相关论文。
+- 适配视频会议核心画面特征，重点关注人像、文档、屏幕共享等内容。
+- 在实时性和高保真画质之间取得平衡。
+- 基于 Xilinx ZC706 FPGA 或资源相当 FPGA，在 REDS 数据集上实现 X2、X4 超分。
+- 在实际视频会议场景下验证画质与性能表现。
+
+### 2.2 数据集与参考论文
+
+- 参赛数据集：REDS。
+- 数据集链接：`https://seungjunnah.github.io/Datasets/reds.html`
+- 论文引用：S. Nah et al., "NTIRE 2019 Challenge on Video Deblurring and Super-Resolution: Dataset and Study"。
+- 工作流中的训练、校准、量化和图像验证材料必须记录使用的数据子集、输入帧、降采样方式和哈希。
+
+### 2.3 交付内容
+
+最终交付材料必须覆盖以下内容：
+
+- AI 模型结构说明。
+- 训练说明文档及源代码。
+- 量化说明文档及源代码。
+- 如使用稀疏化，也必须提供稀疏化说明与可复现实验记录。
+- 模型到硬件加速器指令、权重、参数或 RTL memory 的转换工具。
+- 硬件加速器详细设计文档。
+- 硬件加速器源代码。
+- 可在 Xilinx Vivado 中进行仿真验证的工程、脚本和测试向量。
+- 可在 Xilinx Vivado 中综合/实现并用于资源开销评估的脚本和报告。
+
+### 2.4 评审要点
+
+工作流中的证据包必须能支撑以下评分点：
+
+| 评审项 | 分值 | 工作流证据 |
+| --- | ---: | --- |
+| 功能实现精准无误，与题目要求高度契合 | 10 | X2/X4 正确性、TinySPAN 软件定点参考与硬件输出一致、视频会议样例验证 |
+| 设计方案文档表述清晰，模块功能划分科学合理 | 10 | 模型文档、硬件模块设计文档、数据流和接口说明 |
+| 文档明确阐释模块内部量化指标及性能分析 | 20 | 量化方案、PSNR/SSIM/MAE、吞吐、延迟、资源、功耗/面积分析 |
+| 具备完善的验证方案与验证用例 | 20 | REDS 验证集、会议场景样例、RTL 仿真、板上输出、图像一致性预览 |
+| 同等性能约束下面积越小、功耗越低越好 | 40 | Vivado utilization、timing、power、资源门限、bitstream 与 PPA 汇总 |
+
+注意：如果未通过正确性仿真验证以及未生成 bitstream，PPA 项按赛题规则不能作为有效得分证据。
+
+### 2.5 对本工作流的硬约束
+
+- 每个 TinySPAN 验收 run 都必须能追溯到 REDS 或视频会议验证输入。
+- X2 和 X4 都必须保留独立证据包。
+- 正确性优先级高于 PPA；没有正确性仿真和 bitstream，就不能宣告 PPA 有效。
+- 资源评估必须按 ZC706 / XC7Z045 或资源相当 FPGA 的门限进行归一化说明。
+- 图像一致性验证必须包含可查看的 `comparison_preview.png` 和 `diff_heatmap.png`。
+
+## 3. 主线目标
 
 本工作流的验收路线锁定为 **TinySPAN**，不是 W8A12。
 
@@ -34,7 +94,7 @@ TinySPAN X2/X4 实时超分，并输出完整 `1280x720` 画面，吞吐达到 `
 - 最终验收不接受 PC 端提前切好的小块作为板卡输入
 - 板上输出必须与同一 TinySPAN 冻结 checkpoint、同一 TinySPAN 量化方案生成的软件定点参考逐字节一致
 
-## 3. 路线锁定
+## 4. 路线锁定
 
 当前路线：
 
@@ -60,7 +120,7 @@ TinySPAN frozen checkpoint
 
 这些结果可以作为历史参考、资源估算或硬件接口经验，但不能替代 TinySPAN 的最终验收证据。
 
-## 4. 资源约束门限
+## 5. 资源约束门限
 
 工程实际运行在当前原板卡上，但最终实现报告必须不超过 XC7Z045 / ZC706 的资源规模：
 
@@ -75,7 +135,7 @@ TinySPAN frozen checkpoint
 
 判定规则：`实际值 <= 上限` 为通过；只要任一资源 `实际值 > 上限`，资源门限即失败。
 
-## 5. 必须支持的数据流
+## 6. 必须支持的数据流
 
 ```text
 SD 卡或 DDR 中的完整输入帧
@@ -93,7 +153,7 @@ SD 卡或 DDR 中的完整输入帧
 硬件必须负责切块、halo 读取、边界处理和最终输出位置写回。软件可以准备原始完整输入帧，
 也可以验证最终输出，但最终验收跑板时不能由 PC 端预先把图像切成推理小块。
 
-## 6. 工程产物放置规则
+## 7. 工程产物放置规则
 
 后续这个工作流产生的 TinySPAN 验收材料统一放到：
 
@@ -134,11 +194,18 @@ artifacts/20260618_x4_tinyspan_c32b4_tile32_h21_f50_origboard/
 - `comparison_preview.png`
 - `image_validation.json`
 - `image_validation.md`
+- `model_design.md`
+- `training_quantization.md`
+- `hardware_design.md`
+- `model_to_hardware_tool.md`
+- `vivado_simulation.md`
+- `ppa_summary.json`
+- `ppa_summary.md`
 
 Vivado 临时目录、`.Xil`、中间构建目录和过大的原始日志不建议直接上传到 Git；
 需要时在 `run_summary.md` 中摘要说明，并保留可复现实验结论所需的关键证据。
 
-## 7. 分阶段工作流
+## 8. 分阶段工作流
 
 ### Gate A - 冻结 TinySPAN 模型
 
@@ -316,7 +383,7 @@ Resource gate=XC7Z045 / ZC706 limits
 - 资源报告通过 XC7Z045 / ZC706 门限
 - 所有证据已复制到 `Tinyspan/artifacts/...`
 
-## 8. 当前已知状态
+## 9. 当前已知状态
 
 截至 2026-06-18：
 
@@ -328,7 +395,7 @@ Resource gate=XC7Z045 / ZC706 limits
 - 2026-06-18 曾启动的 W8A12 `wf18d/wf18e` Vivado 已按路线修正停止，不能作为 TinySPAN 验收结果。
 - 最终验收尚未完成；只有当同一 TinySPAN 冻结 checkpoint 与同一 TinySPAN 量化方案对应的真实板上输出与软件定点参考一致，并达到 720p30，才可以宣告完成。
 
-## 9. 下一步
+## 10. 下一步
 
 优先顺序：
 
@@ -337,7 +404,7 @@ Resource gate=XC7Z045 / ZC706 limits
 3. 生成 TinySPAN RTL/export，确保 manifest、定点参考、RTL 仿真来自同一个 TinySPAN checkpoint 和同一个 quant plan。
 4. 再进入 TinySPAN bitstream、板卡 smoke、图像一致性可视化验证和最终 720p30 验收。
 
-## 10. 完成定义
+## 11. 完成定义
 
 只有当 X2 和 X4 所需模式都具备完整 TinySPAN 证据包，并满足以下条件时，任务才算完成：
 
@@ -349,6 +416,8 @@ Resource gate=XC7Z045 / ZC706 limits
 TinySPAN 软件定点输出 == TinySPAN 板上输出，逐字节一致
 训练/浮点超分图与板上超分图完成可视化一致性验证
 comparison_preview.png 和 diff_heatmap.png 可查看
+AI 模型、训练、量化、模型到硬件转换工具和硬件设计文档齐备
+Vivado 仿真、综合/实现、bitstream 和 PPA 证据齐备
 输出分辨率 == 1280x720
 实测吞吐 >= 30fps
 资源门限 == PASS
