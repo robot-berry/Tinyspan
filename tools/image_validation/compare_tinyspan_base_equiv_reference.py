@@ -24,10 +24,6 @@ COEFF_Q14 = np.array(
 )
 
 
-def round_half_even(x: np.ndarray) -> np.ndarray:
-    return np.rint(x).astype(np.int64)
-
-
 def q31_round(values: np.ndarray, mult: int, shift: int = 31) -> np.ndarray:
     prod = values.astype(np.int64) * np.int64(mult)
     abs_prod = np.abs(prod)
@@ -73,6 +69,36 @@ def load_rgb(path: Path, width: int | None, height: int | None) -> Image.Image:
     return img
 
 
+def collect_mismatch_records(
+    ref_rgb: np.ndarray,
+    rtl_rgb: np.ndarray,
+    q_base_ref: np.ndarray,
+    q_base_rtl: np.ndarray,
+    q_out_ref: np.ndarray,
+    q_out_rtl: np.ndarray,
+    limit: int = 64,
+) -> list[dict[str, int]]:
+    diff = ref_rgb.astype(np.int16) - rtl_rgb.astype(np.int16)
+    ys, xs, cs = np.nonzero(diff)
+    records: list[dict[str, int]] = []
+    for y, x, c in zip(ys[:limit], xs[:limit], cs[:limit]):
+        records.append(
+            {
+                "y": int(y),
+                "x": int(x),
+                "channel": int(c),
+                "pytorch_rgb": int(ref_rgb[y, x, c]),
+                "rtl_fixed_rgb": int(rtl_rgb[y, x, c]),
+                "rgb_diff": int(diff[y, x, c]),
+                "pytorch_q_base": int(q_base_ref[y, x, c]),
+                "rtl_fixed_q_base": int(q_base_rtl[y, x, c]),
+                "pytorch_q_out": int(q_out_ref[y, x, c]),
+                "rtl_fixed_q_out": int(q_out_rtl[y, x, c]),
+            }
+        )
+    return records
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, required=True)
@@ -112,13 +138,31 @@ def main() -> int:
     diff.save(args.out_dir / "diff.png")
 
     diff_arr = np.asarray(diff, dtype=np.uint8)
+    mismatch_bytes = int(np.count_nonzero(diff_arr))
     summary = {
-        "pass": bool(np.count_nonzero(diff_arr) == 0),
-        "mismatch_bytes": int(np.count_nonzero(diff_arr)),
+        "pass": bool(mismatch_bytes == 0),
+        "pytorch_vs_rtl_fixed_pass": bool(mismatch_bytes == 0),
+        "mismatch_bytes": mismatch_bytes,
         "total_bytes": int(diff_arr.size),
         "max_channel_diff": int(diff_arr.max()) if diff_arr.size else 0,
         "mean_channel_diff": list(ImageStat.Stat(diff).mean),
         "base_q31": base_q31,
+        "reference_policy": {
+            "byte_exact_board_gate": "compare board output against the RTL-isomorphic fixed-point software reference",
+            "pytorch_bicubic_output": "visual quality reference only; do not use it as the byte-exact board gate",
+        },
+        "pytorch_quantized_output": str(args.out_dir / "pytorch_base_equiv.png"),
+        "rtl_fixed_output": str(args.out_dir / "rtl_base_equiv.png"),
+        "diff_output": str(args.out_dir / "diff.png"),
+        "mismatch_record_limit": 64,
+        "mismatch_records": collect_mismatch_records(
+            ref_rgb,
+            rtl_rgb,
+            q_base_ref,
+            q_base_rtl,
+            q_out_ref,
+            q_out_rtl,
+        ),
     }
     (args.out_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))

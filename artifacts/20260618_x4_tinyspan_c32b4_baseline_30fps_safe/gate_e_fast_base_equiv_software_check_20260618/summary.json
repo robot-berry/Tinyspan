@@ -1,0 +1,95 @@
+{
+  "pass": false,
+  "pytorch_vs_rtl_fixed_pass": false,
+  "mismatch_bytes": 6,
+  "total_bytes": 2764800,
+  "max_channel_diff": 2,
+  "mean_channel_diff": [
+    6.510416666666667e-06,
+    4.340277777777778e-06,
+    2.170138888888889e-06
+  ],
+  "base_q31": 2007717611,
+  "reference_policy": {
+    "byte_exact_board_gate": "compare board output against the RTL-isomorphic fixed-point software reference",
+    "pytorch_bicubic_output": "visual quality reference only; do not use it as the byte-exact board gate"
+  },
+  "pytorch_quantized_output": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_e_fast_base_equiv_software_check_20260618\\pytorch_base_equiv.png",
+  "rtl_fixed_output": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_e_fast_base_equiv_software_check_20260618\\rtl_base_equiv.png",
+  "diff_output": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_e_fast_base_equiv_software_check_20260618\\diff.png",
+  "mismatch_record_limit": 64,
+  "mismatch_records": [
+    {
+      "y": 247,
+      "x": 687,
+      "channel": 0,
+      "pytorch_rgb": 236,
+      "rtl_fixed_rgb": 238,
+      "rgb_diff": -2,
+      "pytorch_q_base": 118,
+      "rtl_fixed_q_base": 119,
+      "pytorch_q_out": 110,
+      "rtl_fixed_q_out": 111
+    },
+    {
+      "y": 257,
+      "x": 905,
+      "channel": 0,
+      "pytorch_rgb": 88,
+      "rtl_fixed_rgb": 90,
+      "rgb_diff": -2,
+      "pytorch_q_base": 44,
+      "rtl_fixed_q_base": 45,
+      "pytorch_q_out": 41,
+      "rtl_fixed_q_out": 42
+    },
+    {
+      "y": 462,
+      "x": 27,
+      "channel": 1,
+      "pytorch_rgb": 148,
+      "rtl_fixed_rgb": 146,
+      "rgb_diff": 2,
+      "pytorch_q_base": 74,
+      "rtl_fixed_q_base": 73,
+      "pytorch_q_out": 69,
+      "rtl_fixed_q_out": 68
+    },
+    {
+      "y": 465,
+      "x": 638,
+      "channel": 0,
+      "pytorch_rgb": 230,
+      "rtl_fixed_rgb": 228,
+      "rgb_diff": 2,
+      "pytorch_q_base": 114,
+      "rtl_fixed_q_base": 113,
+      "pytorch_q_out": 107,
+      "rtl_fixed_q_out": 106
+    },
+    {
+      "y": 480,
+      "x": 1065,
+      "channel": 1,
+      "pytorch_rgb": 88,
+      "rtl_fixed_rgb": 86,
+      "rgb_diff": 2,
+      "pytorch_q_base": 44,
+      "rtl_fixed_q_base": 43,
+      "pytorch_q_out": 41,
+      "rtl_fixed_q_out": 40
+    },
+    {
+      "y": 598,
+      "x": 1071,
+      "channel": 2,
+      "pytorch_rgb": 118,
+      "rtl_fixed_rgb": 120,
+      "rgb_diff": -2,
+      "pytorch_q_base": 59,
+      "rtl_fixed_q_base": 60,
+      "pytorch_q_out": 55,
+      "rtl_fixed_q_out": 56
+    }
+  ]
+}
