@@ -1,7 +1,14 @@
 name: tinyspan_720p30_acceptance
 name_zh: TinySPAN 720p30 X2/X4 上板验收
-version: 3
+version: 4
 updated: 2026-06-18
+
+project_paths:
+  description_zh: 当前工程与 TinySPAN 工作流文件的固定存放位置。
+  workspace_root: 'G:\UESTC\feitengspan1'
+  tinyspan_repo: 'G:\UESTC\feitengspan1\Tinyspan'
+  artifact_root: 'G:\UESTC\feitengspan1\Tinyspan\artifacts'
+  rule_zh: 后续 TinySPAN 上板验收相关 workflow、记录、哈希、图片验证和可上传证据优先放入 tinyspan_repo 及 artifact_root。
 
 route_lock:
   main_route: TinySPAN

@@ -1,6 +1,19 @@
 # TinySPAN 720p30 X2/X4 上板验收工作流
 
-## 1. 主线目标
+## 1. 工程路径
+
+当前工程存放路径：
+
+```text
+主工程根目录：G:\UESTC\feitengspan1
+TinySPAN 工作流仓库：G:\UESTC\feitengspan1\Tinyspan
+TinySPAN 验收产物目录：G:\UESTC\feitengspan1\Tinyspan\artifacts
+```
+
+所有后续 TinySPAN 上板验收相关的 workflow、记录、哈希、图片验证结果和可上传证据，
+都优先放在 `G:\UESTC\feitengspan1\Tinyspan` 及其 `artifacts` 子目录下。
+
+## 2. 主线目标
 
 本工作流的验收路线锁定为 **TinySPAN**，不是 W8A12。
 
@@ -21,7 +34,7 @@ TinySPAN X2/X4 实时超分，并输出完整 `1280x720` 画面，吞吐达到 `
 - 最终验收不接受 PC 端提前切好的小块作为板卡输入
 - 板上输出必须与同一 TinySPAN 冻结 checkpoint、同一 TinySPAN 量化方案生成的软件定点参考逐字节一致
 
-## 2. 路线锁定
+## 3. 路线锁定
 
 当前路线：
 
@@ -47,7 +60,7 @@ TinySPAN frozen checkpoint
 
 这些结果可以作为历史参考、资源估算或硬件接口经验，但不能替代 TinySPAN 的最终验收证据。
 
-## 3. 资源约束门限
+## 4. 资源约束门限
 
 工程实际运行在当前原板卡上，但最终实现报告必须不超过 XC7Z045 / ZC706 的资源规模：
 
@@ -62,7 +75,7 @@ TinySPAN frozen checkpoint
 
 判定规则：`实际值 <= 上限` 为通过；只要任一资源 `实际值 > 上限`，资源门限即失败。
 
-## 4. 必须支持的数据流
+## 5. 必须支持的数据流
 
 ```text
 SD 卡或 DDR 中的完整输入帧
@@ -80,7 +93,7 @@ SD 卡或 DDR 中的完整输入帧
 硬件必须负责切块、halo 读取、边界处理和最终输出位置写回。软件可以准备原始完整输入帧，
 也可以验证最终输出，但最终验收跑板时不能由 PC 端预先把图像切成推理小块。
 
-## 5. 工程产物放置规则
+## 6. 工程产物放置规则
 
 后续这个工作流产生的 TinySPAN 验收材料统一放到：
 
@@ -125,7 +138,7 @@ artifacts/20260618_x4_tinyspan_c32b4_tile32_h21_f50_origboard/
 Vivado 临时目录、`.Xil`、中间构建目录和过大的原始日志不建议直接上传到 Git；
 需要时在 `run_summary.md` 中摘要说明，并保留可复现实验结论所需的关键证据。
 
-## 6. 分阶段工作流
+## 7. 分阶段工作流
 
 ### Gate A - 冻结 TinySPAN 模型
 
@@ -303,7 +316,7 @@ Resource gate=XC7Z045 / ZC706 limits
 - 资源报告通过 XC7Z045 / ZC706 门限
 - 所有证据已复制到 `Tinyspan/artifacts/...`
 
-## 7. 当前已知状态
+## 8. 当前已知状态
 
 截至 2026-06-18：
 
@@ -315,7 +328,7 @@ Resource gate=XC7Z045 / ZC706 limits
 - 2026-06-18 曾启动的 W8A12 `wf18d/wf18e` Vivado 已按路线修正停止，不能作为 TinySPAN 验收结果。
 - 最终验收尚未完成；只有当同一 TinySPAN 冻结 checkpoint 与同一 TinySPAN 量化方案对应的真实板上输出与软件定点参考一致，并达到 720p30，才可以宣告完成。
 
-## 8. 下一步
+## 9. 下一步
 
 优先顺序：
 
@@ -324,7 +337,7 @@ Resource gate=XC7Z045 / ZC706 limits
 3. 生成 TinySPAN RTL/export，确保 manifest、定点参考、RTL 仿真来自同一个 TinySPAN checkpoint 和同一个 quant plan。
 4. 再进入 TinySPAN bitstream、板卡 smoke、图像一致性可视化验证和最终 720p30 验收。
 
-## 9. 完成定义
+## 10. 完成定义
 
 只有当 X2 和 X4 所需模式都具备完整 TinySPAN 证据包，并满足以下条件时，任务才算完成：
 
