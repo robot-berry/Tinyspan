@@ -8,10 +8,71 @@
 主工程根目录：G:\UESTC\feitengspan1
 TinySPAN 工作流仓库：G:\UESTC\feitengspan1\Tinyspan
 TinySPAN 验收产物目录：G:\UESTC\feitengspan1\Tinyspan\artifacts
+GitHub 仓库：https://github.com/robot-berry/Tinyspan.git
+GitHub 分支：main
 ```
 
 所有后续 TinySPAN 上板验收相关的 workflow、记录、哈希、图片验证结果和可上传证据，
 都优先放在 `G:\UESTC\feitengspan1\Tinyspan` 及其 `artifacts` 子目录下。
+
+### 1.1 GitHub 工程文件布局
+
+`robot-berry/Tinyspan` 仓库既是工作流记录仓库，也是后续 TinySPAN 工程交付文件的归档仓库。
+后续生成或整理出来的工程文件按下面结构放置：
+
+```text
+Tinyspan/
+├── README.md
+├── WORKFLOW.md
+├── workflows/
+│   └── tinyspan_720p30_acceptance.yaml
+├── docs/
+│   ├── model_design.md
+│   ├── training_quantization.md
+│   ├── hardware_design.md
+│   ├── verification_plan.md
+│   └── ppa_analysis.md
+├── model/
+│   ├── configs/
+│   ├── checkpoints/
+│   └── export_manifest/
+├── train/
+│   ├── scripts/
+│   └── logs/
+├── quant/
+│   ├── calibration/
+│   ├── quant_plan/
+│   └── fixed_point_reference/
+├── tools/
+│   ├── model_to_hardware/
+│   └── image_validation/
+├── rtl/
+│   ├── tinyspan_core/
+│   ├── board_wrapper/
+│   └── generated_mem/
+├── sim/
+│   ├── testbench/
+│   ├── vectors/
+│   └── reports/
+├── scripts/
+│   ├── vivado/
+│   ├── board/
+│   └── acceptance/
+└── artifacts/
+    └── YYYYMMDD_scale_tinyspan_model_tile_freq_shorttag/
+```
+
+当前仓库里已经存在的文件：
+
+- `README.md`
+- `WORKFLOW.md`
+- `workflows/tinyspan_720p30_acceptance.yaml`
+- `artifacts/README.md`
+- `artifacts/.gitkeep`
+
+后续从主工程 `G:\UESTC\feitengspan1` 迁移或生成的 TinySPAN 工程文件，应先放入上述对应目录，
+再提交并推送到 `robot-berry/Tinyspan`。大型临时文件、Vivado 缓存、`.Xil`、DCP 森林和过大的原始日志
+不直接进入 Git；只保留可复现实验所需的摘要、哈希、脚本、报告和关键图片。
 
 ## 2. 赛题要求对齐
 

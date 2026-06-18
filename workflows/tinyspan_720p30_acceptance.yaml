@@ -8,7 +8,57 @@ project_paths:
   workspace_root: 'G:\UESTC\feitengspan1'
   tinyspan_repo: 'G:\UESTC\feitengspan1\Tinyspan'
   artifact_root: 'G:\UESTC\feitengspan1\Tinyspan\artifacts'
+  github_repo: https://github.com/robot-berry/Tinyspan.git
+  github_branch: main
   rule_zh: 后续 TinySPAN 上板验收相关 workflow、记录、哈希、图片验证和可上传证据优先放入 tinyspan_repo 及 artifact_root。
+
+github_project_files:
+  description_zh: robot-berry/Tinyspan 仓库中的工程交付文件布局。
+  existing_files:
+    - README.md
+    - WORKFLOW.md
+    - workflows/tinyspan_720p30_acceptance.yaml
+    - artifacts/README.md
+    - artifacts/.gitkeep
+  planned_layout:
+    docs:
+      - model_design.md
+      - training_quantization.md
+      - hardware_design.md
+      - verification_plan.md
+      - ppa_analysis.md
+    model:
+      - configs/
+      - checkpoints/
+      - export_manifest/
+    train:
+      - scripts/
+      - logs/
+    quant:
+      - calibration/
+      - quant_plan/
+      - fixed_point_reference/
+    tools:
+      - model_to_hardware/
+      - image_validation/
+    rtl:
+      - tinyspan_core/
+      - board_wrapper/
+      - generated_mem/
+    sim:
+      - testbench/
+      - vectors/
+      - reports/
+    scripts:
+      - vivado/
+      - board/
+      - acceptance/
+    artifacts:
+      - YYYYMMDD_scale_tinyspan_model_tile_freq_shorttag/
+  storage_rule_zh:
+    - 后续从主工程迁移或生成的 TinySPAN 工程文件必须放入上述对应目录。
+    - 大型临时文件、Vivado 缓存、.Xil、DCP 森林和过大的原始日志不直接进入 Git。
+    - Git 中保留可复现实验所需的源代码、脚本、配置、摘要、哈希、报告和关键图片。
 
 contest_requirements:
   title_zh: 端侧 AI 超分硬件加速器赛题要求
