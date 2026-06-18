@@ -1,8 +1,10 @@
 name: tinyspan_720p30_acceptance
+name_zh: TinySPAN 720p30 X2/X4 上板验收
 version: 1
 updated: 2026-06-18
 
 target:
+  description_zh: 实际运行在 xczu19eg 板卡上，但资源按 ZC706 / XC7Z045 规模约束。
   board_actual: xczu19eg-ffvc1760-2-i
   resource_gate: xc7z045_zc706
   output_resolution: [1280, 720]
@@ -11,13 +13,16 @@ target:
 
 frame_contracts:
   x2:
+    description_zh: X2 模式由 640x360 输入超分到 1280x720 输出。
     input_resolution: [640, 360]
     output_resolution: [1280, 720]
   x4:
+    description_zh: X4 模式由 320x180 输入超分到 1280x720 输出。
     input_resolution: [320, 180]
     output_resolution: [1280, 720]
 
 resource_limits:
+  description_zh: 任一资源实际值超过对应上限即判定资源门限失败。
   dsp: 900
   bram_tile: 545
   uram: 0
@@ -26,8 +31,10 @@ resource_limits:
   slice_register: 437200
 
 artifact_root: 'G:\UESTC\feitengspan1\Tinyspan\artifacts'
+artifact_root_zh: 后续工程生成的验收材料统一放到上述 artifacts 目录。
 
 run_directory_pattern: "{date}_{scale}_{model}_{tile}_{freq}_{tag}"
+run_directory_pattern_zh: 每次运行使用一个独立目录，例如 20260618_x4_w8a12_tile20_h21_f50_origboard。
 
 required_artifacts:
   - manifest.json
@@ -45,30 +52,67 @@ required_artifacts:
 
 workflow:
   - id: freeze_model
-    pass_when:
-      - checkpoint_is_final
-      - checkpoint_hash_recorded
-      - metrics_final_row_recorded
-      - training_process_not_modifying_checkpoint
+    name_zh: 冻结模型
+    inputs_zh:
+      - 最终训练 checkpoint
+      - 最终 metrics.csv
+      - 模型配置文件
+    outputs_zh:
+      - 冻结后的 checkpoint 副本
+      - SHA256 哈希
+      - 最后一行训练指标
+    pass_when_zh:
+      - checkpoint 已固定用于本次验收
+      - checkpoint 哈希已记录
+      - 最终指标已记录
+      - 没有训练进程继续修改 checkpoint
 
   - id: quantize_and_reference
-    pass_when:
-      - quant_plan_generated_from_frozen_checkpoint
-      - software_fixed_reference_generated
-      - reference_hash_recorded
+    name_zh: 量化与软件定点参考
+    inputs_zh:
+      - 冻结 checkpoint
+      - 校准集
+      - 目标倍率 X2 或 X4
+    outputs_zh:
+      - 量化方案
+      - 整数或定点软件参考
+      - 参考输出图片或帧
+    pass_when_zh:
+      - 量化方案来自同一个冻结 checkpoint
+      - 软件定点参考已生成
+      - 参考输出哈希已记录
 
   - id: rtl_export
-    pass_when:
-      - rtl_manifest_exists
-      - rtl_manifest_records_checkpoint_hash
-      - rtl_manifest_records_quant_plan_hash
+    name_zh: RTL 导出
+    inputs_zh:
+      - 冻结 checkpoint
+      - 量化方案
+    outputs_zh:
+      - RTL 权重和参数内存文件
+      - RTL manifest
+      - 导出摘要
+    pass_when_zh:
+      - RTL manifest 存在
+      - RTL manifest 记录 checkpoint 哈希
+      - RTL manifest 记录量化方案哈希
+      - 没有使用旧缓存或仍在变化的 checkpoint
 
   - id: rtl_simulation
-    pass_when:
-      - layer_or_tile_vectors_match_software_reference
-      - no_unresolved_x_or_z_in_valid_output
+    name_zh: RTL 仿真
+    inputs_zh:
+      - RTL 导出结果
+      - 软件定点向量
+      - tile 参数
+    outputs_zh:
+      - 层级仿真日志
+      - tile 级仿真日志
+      - 输出对比报告
+    pass_when_zh:
+      - RTL tile 输出与软件定点参考逐字节一致
+      - 有效输出中没有未解析的 X 或 Z
 
   - id: implementation
+    name_zh: 实现与资源约束
     preferred_parameters:
       tile_w: 20
       tile_h: 20
@@ -77,24 +121,39 @@ workflow:
       out_lanes: 1
       tap_lanes: 4
       scale_lanes: 1
-    pass_when:
-      - bitstream_generated_for_actual_board
-      - timing_met
-      - xc7z045_resource_gate_pass
-      - vivado_exited_cleanly
+    pass_when_zh:
+      - 已为实际板卡生成 bitstream
+      - 时序通过
+      - XC7Z045 / ZC706 资源门限通过
+      - Vivado 正常退出
+      - 没有残留 Vivado helper 进程
 
   - id: board_smoke
-    pass_when:
-      - jtag_target_count_greater_than_zero
-      - bitstream_programmed
-      - ps_ddr_buffers_initialized
-      - hardware_tile_processing_completed
-      - board_output_readback_exists
+    name_zh: 板卡冒烟测试
+    inputs_zh:
+      - 已通过实现阶段的 bitstream
+      - SD 或 DDR 格式的完整输入帧
+      - PS/PL 运行脚本
+    pass_when_zh:
+      - JTAG target 数量大于 0
+      - bitstream 下载成功
+      - PS 完成 DDR buffer 初始化
+      - PL 完成硬件切块推理
+      - 板上输出可回读
+    stop_when_zh:
+      - JTAG target 数量为 0 时停止跑板流程，先检查板卡连接、驱动、模式和工具占用。
 
   - id: final_acceptance
-    pass_when:
-      - board_output_resolution_is_1280x720
-      - board_output_sha256_equals_software_reference_sha256
-      - measured_fps_greater_or_equal_30
-      - resource_gate_pass
-      - evidence_bundle_uploaded
+    name_zh: 最终 720p30 验收
+    inputs_zh:
+      - 冻结 checkpoint
+      - 量化方案
+      - 同一完整输入帧
+      - 同一个 bitstream
+      - 板上输出
+    pass_when_zh:
+      - 板上输出分辨率为 1280x720
+      - 板上输出 SHA256 等于软件定点参考 SHA256
+      - 实测吞吐大于等于 30fps
+      - 资源门限通过
+      - 证据包已上传到 Tinyspan/artifacts

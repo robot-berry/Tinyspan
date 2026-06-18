@@ -1,28 +1,26 @@
-# TinySPAN 720p30 X2/X4 Board Workflow
+# TinySPAN 720p30 X2/X4 上板验收工作流
 
-## 1. Goal
+## 1. 目标
 
-Implement realtime X2/X4 super-resolution for a downsampled image or video
-frame, running on the existing `xczu19eg-ffvc1760-2-i` board, while enforcing
-the ZC706 / XC7Z045 resource limit. The final accepted output must be a full
-720p frame at 30fps or higher.
+实现对降采样后的图片或视频帧进行实时 X2/X4 超分，最终在现有
+`xczu19eg-ffvc1760-2-i` 板卡上运行，同时以 ZC706 / XC7Z045 的资源规模作为
+约束门限。最终验收输出必须是完整 `1280x720` 画面，并且吞吐达到 `30fps` 或更高。
 
-This workflow assumes:
+本工作流默认以下约束成立：
 
-- Actual board target: `xczu19eg-ffvc1760-2-i`
-- Resource gate: XC7Z045 / ZC706 limits
-- X2 frame contract: `640x360 -> 1280x720`
-- X4 frame contract: `320x180 -> 1280x720`
-- Tile cutting is performed by hardware from SD/DDR full-frame input
-- PC-side pre-cut tiles are not valid for final acceptance
-- Board output must be byte-exact with the software fixed-point reference
+- 实际运行板卡：`xczu19eg-ffvc1760-2-i`
+- 资源约束门限：XC7Z045 / ZC706
+- X2 输入输出约定：`640x360 -> 1280x720`
+- X4 输入输出约定：`320x180 -> 1280x720`
+- 大图从 SD 卡或 DDR 输入，由硬件负责切块
+- 最终验收不接受 PC 端提前切好的小块作为板卡输入
+- 板上输出必须与同一冻结模型、同一量化方案生成的软件定点参考逐字节一致
 
-## 2. Resource Gate
+## 2. 资源约束门限
 
-The implementation runs on the original board, but the final implementation
-report must not exceed the XC7Z045 resource limits:
+工程实际运行在当前原板卡上，但最终实现报告必须不超过 XC7Z045 / ZC706 的资源规模：
 
-| Resource | Limit |
+| 资源 | 上限 |
 | --- | ---: |
 | DSP | 900 |
 | BRAM Tile | 545 |
@@ -31,49 +29,47 @@ report must not exceed the XC7Z045 resource limits:
 | Slice LUT | 218600 |
 | Slice Register | 437200 |
 
-`value <= limit` is considered passing. Any `value > limit` is a failure.
+判定规则：`实际值 <= 上限` 为通过；只要任一资源 `实际值 > 上限`，资源门限即失败。
 
-## 3. Required Data Flow
+## 3. 必须支持的数据流
 
 ```text
-SD card or DDR full frame
- -> PS configuration registers
- -> PL tile scheduler
- -> DDR halo/tile fetch
- -> RGB normalize and quantize
- -> TinySPAN / SPAN compute core
- -> tail and PixelShuffle X2 or X4
- -> RGB888 output writer
- -> DDR 1280x720 output frame
- -> PS readback or display path
+SD 卡或 DDR 中的完整输入帧
+ -> PS 配置寄存器
+ -> PL 侧切块调度器
+ -> DDR halo / tile 读取
+ -> RGB 归一化与量化
+ -> TinySPAN / SPAN 计算核心
+ -> tail 与 PixelShuffle X2 或 X4
+ -> RGB888 输出写回
+ -> DDR 中的 1280x720 输出帧
+ -> PS 回读或显示通路
 ```
 
-The hardware must own tile splitting, halo fetch, border handling, and final
-output placement. Software may prepare the original full input frame and may
-verify the final output, but it must not pre-cut the image into inference
-tiles for the accepted board run.
+硬件必须负责切块、halo 读取、边界处理和最终输出位置写回。软件可以准备原始完整输入帧，
+也可以验证最终输出，但最终验收跑板时不能由 PC 端预先把图像切成推理小块。
 
-## 4. Repository Output Policy
+## 4. 工程产物放置规则
 
-All future generated evidence for this workflow should be copied under:
+后续这个工作流产生的验收材料统一放到：
 
 ```text
 G:\UESTC\feitengspan1\Tinyspan\artifacts
 ```
 
-Use one directory per run:
+每一次独立运行使用一个目录：
 
 ```text
 artifacts/YYYYMMDD_scale_model_tile_freq_shorttag/
 ```
 
-Example:
+示例：
 
 ```text
 artifacts/20260618_x4_w8a12_tile20_h21_f50_origboard/
 ```
 
-Each run directory should contain:
+每个运行目录建议至少包含：
 
 - `manifest.json`
 - `run_summary.md`
@@ -88,95 +84,97 @@ Each run directory should contain:
 - `board.log`
 - `throughput.json`
 
-Large Vivado temporary directories, `.Xil`, intermediate work folders, and
-oversized logs should stay outside Git or be summarized before upload.
+Vivado 临时目录、`.Xil`、中间构建目录和过大的原始日志不建议直接上传到 Git；
+需要时在 `run_summary.md` 中摘要说明，并保留可复现实验结论所需的关键证据。
 
-## 5. Workflow Gates
+## 5. 分阶段工作流
 
-### Gate A - Freeze Model
+### Gate A - 冻结模型
 
-Inputs:
+输入：
 
-- Final training checkpoint
-- Final `metrics.csv`
-- Model configuration
+- 最终训练 checkpoint
+- 最终 `metrics.csv`
+- 模型配置文件
 
-Outputs:
+输出：
 
-- Frozen checkpoint copy
-- SHA256 hashes
-- Final metric row
+- 冻结后的 checkpoint 副本
+- SHA256 哈希
+- 最后一行训练指标
 
-Pass condition:
+通过条件：
 
-- Checkpoint is immutable for the acceptance run
-- No training process is still modifying it
+- checkpoint 已固定用于本次验收
+- 没有训练进程继续修改该 checkpoint
+- 记录 checkpoint 哈希和最终指标
 
-### Gate B - Quantization and Software Reference
+### Gate B - 量化与软件定点参考
 
-Inputs:
+输入：
 
-- Frozen checkpoint
-- Calibration set
-- Target scale, X2 or X4
+- 冻结 checkpoint
+- 校准集
+- 目标倍率：X2 或 X4
 
-Outputs:
+输出：
 
-- Quant plan
-- Integer software reference
-- Reference output image/frame
+- 量化方案
+- 整数/定点软件参考
+- 参考输出图片或帧
 
-Pass condition:
+通过条件：
 
-- Quant plan and software reference are generated from the same frozen
-  checkpoint
-- SHA256 hashes are recorded
+- 量化方案和软件参考来自同一个冻结 checkpoint
+- 记录量化方案与软件参考输出的 SHA256 哈希
 
-### Gate C - RTL Export
+### Gate C - RTL 导出
 
-Inputs:
+输入：
 
-- Frozen checkpoint
-- Quant plan
+- 冻结 checkpoint
+- 量化方案
 
-Outputs:
+输出：
 
-- RTL memory files
+- RTL 使用的权重/参数内存文件
 - RTL manifest
-- Export summary
+- 导出摘要
 
-Pass condition:
+通过条件：
 
-- RTL export manifest references the exact checkpoint and quant plan hashes
-- No stale moving checkpoint is used
+- RTL manifest 明确记录 checkpoint 哈希
+- RTL manifest 明确记录量化方案哈希
+- 没有使用仍在变化的训练 checkpoint 或旧缓存
 
-### Gate D - Simulation
+### Gate D - RTL 仿真
 
-Inputs:
+输入：
 
-- RTL export
-- Software fixed-point vectors
-- Tile parameters
+- RTL 导出结果
+- 软件定点向量
+- tile 参数
 
-Outputs:
+输出：
 
-- Layer-level simulation logs
-- Tile-level simulation logs
-- Output comparison report
+- 层级仿真日志
+- tile 级仿真日志
+- 输出对比报告
 
-Pass condition:
+通过条件：
 
-- RTL tile output matches software fixed-point reference byte-for-byte
+- RTL tile 输出与软件定点参考逐字节一致
+- 有效输出中没有未解析的 `X` / `Z`
 
-### Gate E - Implementation
+### Gate E - 实现与资源约束
 
-Inputs:
+输入：
 
-- RTL core
-- PS DDR tile writer wrapper
-- Tile parameters
+- RTL 计算核心
+- PS/DDR tile writer wrapper
+- tile 参数
 
-Current preferred low-parallel candidate:
+当前优先尝试的低并行候选参数：
 
 ```text
 TileW=20
@@ -188,75 +186,71 @@ TapLanes=4
 ScaleLanes=1
 ```
 
-Pass condition:
+通过条件：
 
-- Bitstream is generated for `xczu19eg-ffvc1760-2-i`
-- Timing is met
-- XC7Z045 resource gate passes
-- Vivado exits cleanly and no Vivado helper process remains
+- 为 `xczu19eg-ffvc1760-2-i` 生成 bitstream
+- 时序通过
+- XC7Z045 / ZC706 资源门限通过
+- Vivado 正常退出，且没有残留的 Vivado helper 进程
 
-### Gate F - Board Smoke
+### Gate F - 板卡冒烟测试
 
-Inputs:
+输入：
 
-- Accepted bitstream
-- Full input frame in SD/DDR format
-- PS/PL runtime scripts
+- 已通过实现阶段的 bitstream
+- SD/DDR 格式的完整输入帧
+- PS/PL 运行脚本
 
-Pass condition:
+通过条件：
 
-- Hardware target is detected
-- Bitstream programs successfully
-- PS initializes DDR buffers
-- PL processes hardware-cut tiles
-- Board output is read back
+- 能检测到硬件目标
+- bitstream 成功下载
+- PS 初始化 DDR buffer
+- PL 完成硬件切块推理
+- 板上输出可以回读
 
-If JTAG target count is `0`, stop and fix board power, USB-JTAG, JTAG mode,
-driver, or tool ownership before rerunning.
+如果 JTAG target 数量为 `0`，应停止跑板流程，先检查板卡供电、USB-JTAG、JTAG 模式、
+驱动、Vivado 硬件管理器占用情况，再重新运行。
 
-### Gate G - Final 720p30 Acceptance
+### Gate G - 最终 720p30 验收
 
-Inputs:
+输入：
 
-- Frozen checkpoint
-- Quant plan
-- Same input frame
-- Same bitstream
-- Board output
+- 冻结 checkpoint
+- 量化方案
+- 同一张完整输入帧
+- 同一个 bitstream
+- 板上输出
 
-Pass condition:
+通过条件：
 
-- Output frame size is `1280x720`
-- Board output SHA256 equals software fixed-point reference SHA256
-- Measured throughput is at least `30fps`
-- Resource report passes the XC7Z045 gate
-- All evidence is copied into `Tinyspan/artifacts/...`
+- 输出帧尺寸为 `1280x720`
+- 板上输出 SHA256 等于软件定点参考 SHA256
+- 实测吞吐不低于 `30fps`
+- 资源报告通过 XC7Z045 / ZC706 门限
+- 所有证据已复制到 `Tinyspan/artifacts/...`
 
-## 6. Current Known Status
+## 6. 当前已知状态
 
-As of 2026-06-18:
+截至 2026-06-18：
 
-- TinySPAN training has completed.
-- A low-parallel W8A12 DDR tile writer bitstream for the original board has
-  passed timing and the XC7Z045 resource gate.
-- The latest board smoke did not reach bitstream programming because Vivado
-  found `0` JTAG targets.
-- Final acceptance is not complete until a real board output from the same
-  frozen checkpoint and quant plan matches the software fixed-point reference
-  and reaches 720p30.
+- TinySPAN 训练已经完成。
+- 面向原板卡的低并行 W8A12 DDR tile writer bitstream 已通过时序和 XC7Z045 资源门限。
+- 最近一次板卡冒烟测试还没有进入 bitstream 下载阶段，因为 Vivado 检测到 `0` 个 JTAG target。
+- 最终验收尚未完成；只有当同一冻结 checkpoint 与同一量化方案对应的真实板上输出
+  与软件定点参考一致，并达到 720p30，才可以宣告完成。
 
-## 7. Completion Definition
+## 7. 完成定义
 
-The task is complete only when both X2 and X4 requested modes have evidence
-bundles showing:
+只有当 X2 和 X4 所需模式都具备完整证据包，并满足以下条件时，任务才算完成：
 
 ```text
-same frozen checkpoint
-same quant plan
-same full-frame input
-same bitstream
-software fixed-point output == board output byte-for-byte
-output resolution == 1280x720
-measured throughput >= 30fps
-resource gate == PASS
+同一冻结 checkpoint
+同一量化方案
+同一完整输入帧
+同一个 bitstream
+软件定点输出 == 板上输出，逐字节一致
+输出分辨率 == 1280x720
+实测吞吐 >= 30fps
+资源门限 == PASS
 ```
