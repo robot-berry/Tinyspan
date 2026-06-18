@@ -1,0 +1,317 @@
+{
+  "input": "external\\SPAN\\test_scripts\\data\\baboon.png",
+  "quant_plan": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+  "checkpoint": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt",
+  "width": 32,
+  "height": 32,
+  "preview": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_b_integer_reference_rtl_fixed_base_32x32_20260618\\tinyspan_w8a8_integer_reference_preview.png",
+  "base_reference_mode": "rtl_fixed_q14_bicubic_x4",
+  "metrics": {
+    "pytorch_vs_fake": {
+      "mismatch_bytes": 26261,
+      "total_bytes": 49152,
+      "max_channel_diff": 2,
+      "mae": 0.5366414388020834,
+      "mse": 0.5413615107536316,
+      "psnr_db": 50.79592985424399
+    },
+    "pytorch_vs_integer": {
+      "mismatch_bytes": 28877,
+      "total_bytes": 49152,
+      "max_channel_diff": 2,
+      "mae": 0.6750895182291666,
+      "mse": 0.8502604365348816,
+      "psnr_db": 48.83528389476098
+    },
+    "fake_vs_integer": {
+      "mismatch_bytes": 11688,
+      "total_bytes": 49152,
+      "max_channel_diff": 3,
+      "mae": 0.5096638997395834,
+      "mse": 1.1215616464614868,
+      "psnr_db": 47.63257211364207
+    }
+  },
+  "stage_stats": {
+    "input": {
+      "q_min": 0,
+      "q_max": 124,
+      "zero_frac": 0.00032552084303461015,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "head.output": {
+      "q_min": -96,
+      "q_max": 77,
+      "zero_frac": 0.019378662109375,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.0.c1.output": {
+      "q_min": -98,
+      "q_max": 96,
+      "zero_frac": 0.015045166015625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.0.act1": {
+      "q_min": -55,
+      "q_max": 109,
+      "zero_frac": 0.015045166015625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.0.c2.output": {
+      "q_min": -112,
+      "q_max": 83,
+      "zero_frac": 0.01983642578125,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.0.act2": {
+      "q_min": -106,
+      "q_max": 122,
+      "zero_frac": 0.01983642578125,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.0.c3.output": {
+      "q_min": -120,
+      "q_max": 120,
+      "zero_frac": 0.0009765625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.0.residual_sum": {
+      "q_min": -35,
+      "q_max": 34,
+      "zero_frac": 0.024200439453125,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.0.sim_att": {
+      "q_min": -120,
+      "q_max": 120,
+      "zero_frac": 0.0009765625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.0.out": {
+      "q_min": -3,
+      "q_max": 39,
+      "zero_frac": 0.1578369140625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.c1.output": {
+      "q_min": -91,
+      "q_max": 127,
+      "zero_frac": 0.00030517578125,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00543212890625
+    },
+    "blocks.1.act1": {
+      "q_min": -69,
+      "q_max": 127,
+      "zero_frac": 0.00030517578125,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00543212890625
+    },
+    "blocks.1.c2.output": {
+      "q_min": -127,
+      "q_max": 124,
+      "zero_frac": 0.006805419921875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.act2": {
+      "q_min": -97,
+      "q_max": 126,
+      "zero_frac": 0.006805419921875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.c3.output": {
+      "q_min": -127,
+      "q_max": 76,
+      "zero_frac": 3.0517578125e-05,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.residual_sum": {
+      "q_min": -127,
+      "q_max": 78,
+      "zero_frac": 0.00848388671875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.sim_att": {
+      "q_min": -127,
+      "q_max": 76,
+      "zero_frac": 3.0517578125e-05,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.out": {
+      "q_min": 0,
+      "q_max": 127,
+      "zero_frac": 0.0322265625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.000213623046875
+    },
+    "blocks.2.c1.output": {
+      "q_min": -120,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.001861572265625
+    },
+    "blocks.2.act1": {
+      "q_min": -94,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.001861572265625
+    },
+    "blocks.2.c2.output": {
+      "q_min": -127,
+      "q_max": 91,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.2.act2": {
+      "q_min": -127,
+      "q_max": 124,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.2.c3.output": {
+      "q_min": -96,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.2.residual_sum": {
+      "q_min": -83,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.029327392578125
+    },
+    "blocks.2.sim_att": {
+      "q_min": -96,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.2.out": {
+      "q_min": 0,
+      "q_max": 127,
+      "zero_frac": 0.00091552734375,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.3.c1.output": {
+      "q_min": -118,
+      "q_max": 127,
+      "zero_frac": 0.000946044921875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.030303955078125
+    },
+    "blocks.3.act1": {
+      "q_min": -92,
+      "q_max": 127,
+      "zero_frac": 0.000946044921875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.030303955078125
+    },
+    "blocks.3.c2.output": {
+      "q_min": -101,
+      "q_max": 127,
+      "zero_frac": 0.0009765625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 3.0517578125e-05
+    },
+    "blocks.3.act2": {
+      "q_min": -81,
+      "q_max": 127,
+      "zero_frac": 0.0009765625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 3.0517578125e-05
+    },
+    "blocks.3.c3.output": {
+      "q_min": -127,
+      "q_max": 125,
+      "zero_frac": 0.00091552734375,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.3.residual_sum": {
+      "q_min": -116,
+      "q_max": 127,
+      "zero_frac": 0.028289794921875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.03125
+    },
+    "blocks.3.sim_att": {
+      "q_min": -127,
+      "q_max": 125,
+      "zero_frac": 0.00091552734375,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.3.out": {
+      "q_min": -11,
+      "q_max": 127,
+      "zero_frac": 0.11572265625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "fuse_tail.output": {
+      "q_min": -128,
+      "q_max": 121,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 3.0517578125e-05,
+      "sat_pos_frac": 0.0
+    },
+    "reconstruct.input": {
+      "q_min": -96,
+      "q_max": 77,
+      "zero_frac": 0.33692169189453125,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "reconstruct.output": {
+      "q_min": 0,
+      "q_max": 0,
+      "zero_frac": 1.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "pixelshuffle.output": {
+      "q_min": 0,
+      "q_max": 0,
+      "zero_frac": 1.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "base.input": {
+      "q_min": 1,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00018310546875
+    },
+    "output": {
+      "q_min": 1,
+      "q_max": 119,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    }
+  }
+}

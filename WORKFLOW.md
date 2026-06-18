@@ -523,6 +523,8 @@ Resource gate=XC7Z045 / ZC706 limits
 - 当前硬件安全基线已经确定为 `c32b4_30fps_frozen_20260613`。
 - 该基线 checkpoint SHA256 为 `6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`。
 - 该基线已有 X4 软件 30fps 验收、W8A8 量化计划、整数参考和 RTL manifest 证据。
+- 2026-06-18 已新增 RTL 同构 X4 软件定点参考生成路径，`320x180 -> 1280x720`
+  证据位于 `Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_b_integer_reference_rtl_fixed_base_320x180_20260618`。
 - `c32b4_final_20260615` 是质量更好的软件模型，并且软件侧已证明 `320x180 -> 1280x720 @ 30fps` 通过。
 - `c32b4_final_20260615` 当前 fused/export 交接存在边界漂移，不能直接作为上板验收 checkpoint。
 - `c32b4_30fps_frozen_20260613` 可以作为推进 TinySPAN RTL、bitstream 和板卡验证的硬件安全基线。
