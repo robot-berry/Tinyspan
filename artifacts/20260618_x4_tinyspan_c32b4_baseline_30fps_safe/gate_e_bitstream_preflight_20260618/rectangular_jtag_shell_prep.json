@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-06-18T13:35:27+08:00",
+  "status": "PARTIAL_PREP",
+  "purpose_zh": "为 320x180 到 1280x720 的 TinySPAN X4 上板路线准备矩形输入 shell，解除既有 JTAG/full-span smoke 只能处理正方形输入的限制。",
+  "does_not_pass_gate_e": true,
+  "vivado_started": false,
+  "jtag_started": false,
+  "local_root_branch": "hardware-test",
+  "local_changes_zh": [
+    "rtl/board/sr_sd_axi_lite_accel.v 新增 IMG_H 参数，OUTPUT_PIXELS 改为 IMG_W*IMG_H*SCALE*SCALE，并把 IMG_H 传给 TinySPAN/W8A10/W8A12 streaming 分支。",
+    "rtl/board/sr_jtag_rgb_transfer_endpoint.v 新增 IMG_H 参数并传入 sr_sd_axi_lite_accel。",
+    "scripts/create_vivado_jtag_full_span_bd_project.tcl 支持 JTAG_FULL_SPAN_IMG_H 环境变量，并给 sr_jtag_rgb_transfer_endpoint 设置 CONFIG.IMG_H。",
+    "scripts/run_vivado_bitstream_jtag_full_span_scale.ps1 新增 -ImgH，默认等于 -ImgW，输出 bit/report 命名扩展为 WxH。",
+    "scripts/run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1 新增 -ImgH 并透传到 full-span wrapper。",
+    "scripts/run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1 新增 -ImgH，raw 转换、JTAG transfer 和输出尺寸均改为矩形。"
+  ],
+  "static_checks_zh": [
+    "PowerShell parser 检查通过：bitstream wrappers、JTAG smoke wrapper、Gate D retry wrappers。",
+    "git diff --check 未发现格式错误。",
+    "未启动 Vivado、xsim、JTAG 或板卡流程。"
+  ],
+  "remaining_for_gate_e_zh": [
+    "仍需生成真实 TinySPAN-trained bitstream 和 timing/utilization/power 报告。",
+    "矩形 JTAG shell 只是 full-frame 中间验证入口，不等价于最终 SD/DDR 硬件切块验收。",
+    "最终 Gate E/F/G/H 仍需同一 frozen checkpoint、同一 quant plan、真实板上输出、软件定点逐字节一致和 >=30fps。"
+  ],
+  "candidate_next_command_zh": "只作为中间验证入口：scripts/run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1 -ImgW 320 -ImgH 180 -PlFreqMhz 100；运行前仍需确认 Vivado 空闲和主机内存。"
+}
