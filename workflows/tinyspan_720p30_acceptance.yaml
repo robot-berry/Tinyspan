@@ -365,6 +365,8 @@ workflow:
       first_scale: x4
       x4_input_resolution: [320, 180]
       x4_output_resolution: [1280, 720]
+      x4_fast_base_target: 8 镜像 BRAM、两行 tap/周期
+      x4_candidate_pl_freq_mhz: 150
       board: xczu19eg-ffvc1760-2-i
       resource_gate: xc7z045_zc706
     pass_when_zh:

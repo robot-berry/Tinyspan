@@ -13,9 +13,9 @@ Gate E completion because no TinySPAN bitstream has been generated yet.
 - Scale: X4
 - LR input geometry: `320x180`
 - SR output geometry: `1280x720`
-- PL clock target: `100 MHz`
+- PL clock target: `150 MHz` for the next throughput-capable retry
 - Expected bitstream:
-  `vivado\bitstreams\jfs_full_span_x4_320x180_f100m_tinyspan_w8a8_base_equiv_fast.bit`
+  `vivado\bitstreams\jfs_full_span_x4_320x180_f150m_tinyspan_w8a8_base_equiv_fast.bit`
 
 ## Retry Findings
 
@@ -26,10 +26,12 @@ Gate E completion because no TinySPAN bitstream has been generated yet.
 | `gate_e_x4_320x180_fast_retry_20260618_203923` | synthesis failed | Vivado reported missing `span_tinyspan_w8a8_scale_q31_symmetric` | Added Q31 scaler module to TinySPAN Vivado source list |
 | `gate_e_x4_320x180_fast_retry2_20260618_204338` | precheck stopped | Vivado idle check found an active Vivado process and cleanup removed it | Wait for stable Vivado idle before retrying |
 | `gate_e_x4_320x180_fast_retry3_20260618_204515` | precheck stopped | Vivado idle check found an active Vivado process and cleanup removed it | A separate W8A12 simulation later appeared active; do not start TinySPAN Vivado while it runs |
+| `gate_e_x4_320x180_fast_retry4_20260618_205112` | synthesis failed | Vivado entered TinySPAN synthesis, then failed to infer `frame_mem_reg` as RAM because the old fast base generator exposed a 16-read full-frame memory (`1382400` bits) | Replaced the fast base generator with an 8-mirror BRAM design that processes two bicubic row taps per cycle and aligns synchronous read data with delayed coefficients |
 
 ## Current Gate E State
 
 - TinySPAN fast source-list issues found so far have been fixed.
+- The old 16-read full-frame RAM structure has been replaced with a BRAM-oriented fast base generator.
 - No valid TinySPAN bitstream exists yet.
 - No utilization/timing/power report exists for this TinySPAN target yet.
 - No board output exists yet.
@@ -44,7 +46,7 @@ When Vivado/xsim is idle, rerun:
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1 `
   -ImgW 320 `
   -ImgH 180 `
-  -PlFreqMhz 100 `
+  -PlFreqMhz 150 `
   -Fast `
   -RequireVivadoIdle `
   -StableVivadoIdleSeconds 10 `

@@ -38,7 +38,8 @@
 powershell -ExecutionPolicy Bypass -File scripts\run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1 `
   -ImgW 320 `
   -ImgH 180 `
-  -PlFreqMhz 100
+  -PlFreqMhz 150 `
+  -Fast
 ```
 
 运行前需要确认 Vivado 空闲、主机内存足够，并明确该命令仍是中间 full-frame/JTAG 验证，不是最终 SD/DDR 硬件切块验收。

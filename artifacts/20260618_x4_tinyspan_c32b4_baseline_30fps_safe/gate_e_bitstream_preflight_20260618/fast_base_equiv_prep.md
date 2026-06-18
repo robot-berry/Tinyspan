@@ -10,7 +10,7 @@
 
 当前 serial bicubic base generator 约 `17 cycles/output pixel`。对 X4 `320x180 -> 1280x720` 而言，输出约 `921600` 像素，100MHz 下只有约 `6fps`，不满足 30fps 目标。
 
-fast/parallel base generator 的目标是接近 `1 output pixel/cycle`，配合 frozen W8A8 quant plan 中 learned-path 最终贡献为 0 的等价证明，才有进入 720p30 bitstream 验收的性能空间。
+后续综合重试发现，接近 `1 output pixel/cycle` 的 16 读口全帧 RAM 结构无法在 `320x180` 规模上安全推断为 BRAM。当前安全路线已改为 8 个镜像 BRAM 读口、每周期处理两行 tap，目标约 `4 cycles/output pixel`；因此后续 30fps 候选 bitstream 目标频率提高到 `150MHz`。
 
 ## 本地根工程准备
 
@@ -20,7 +20,7 @@ fast/parallel base generator 的目标是接近 `1 output pixel/cycle`，配合 
 - `create_vivado_jtag_full_span_bd_project.tcl` 支持 `JTAG_FULL_SPAN_USE_TINYSPAN_W8A8_BASE_EQUIV_SERIAL`。
 - `run_vivado_bitstream_jtag_full_span_scale.ps1` 新增 `-UseTinyspanW8A8BaseEquivFast`。
 - `run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1` 和 `run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1` 新增 `-Fast`。
-- `check_tinyspan_30fps_board_acceptance_ready.ps1` 默认目标改为 `jfs_full_span_x4_320x180_f100m_tinyspan_w8a8_base_equiv_fast.bit`。
+- `check_tinyspan_30fps_board_acceptance_ready.ps1` 默认目标改为 `jfs_full_span_x4_320x180_f150m_tinyspan_w8a8_base_equiv_fast.bit`。
 
 ## 已镜像到 Tinyspan 仓库
 
@@ -36,4 +36,4 @@ fast/parallel base generator 的目标是接近 `1 output pixel/cycle`，配合 
 - `git diff --check` 未发现格式错误。
 - 关键参数 `USE_SERIAL_BASE`、`USE_TINYSPAN_W8A8_BASE_EQUIV_SERIAL`、`UseTinyspanW8A8BaseEquivFast` 和 `320x180` fast bitstream 路径均可搜索到。
 
-下一步：等待当前 Vivado 任务结束后，先运行小尺寸 fast OOC 综合，再运行 `320x180` fast bitstream 构建并归档 `timing/utilization/power/resource_gate`。
+下一步：等待当前 Vivado 任务结束后，先运行 TinySPAN fast RTL 语法/小尺寸综合检查，再运行 `320x180 @ 150MHz` fast bitstream 构建并归档 `timing/utilization/power/resource_gate`。

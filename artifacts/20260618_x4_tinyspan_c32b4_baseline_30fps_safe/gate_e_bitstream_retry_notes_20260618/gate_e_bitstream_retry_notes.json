@@ -2,7 +2,8 @@
   "status": "IN_PROGRESS",
   "gate": "E",
   "target": "TinySPAN W8A8 base-equivalent fast X4 320x180",
-  "expected_bitstream": "vivado\\bitstreams\\jfs_full_span_x4_320x180_f100m_tinyspan_w8a8_base_equiv_fast.bit",
+  "expected_bitstream": "vivado\\bitstreams\\jfs_full_span_x4_320x180_f150m_tinyspan_w8a8_base_equiv_fast.bit",
+  "next_pl_freq_mhz": 150,
   "attempts": [
     {
       "label": "gate_e_x4_320x180_fast_20260618_203253",
@@ -31,6 +32,12 @@
       "label": "gate_e_x4_320x180_fast_retry3_20260618_204515",
       "result": "precheck_stopped",
       "reason": "Vivado idle check found an active Vivado process"
+    },
+    {
+      "label": "gate_e_x4_320x180_fast_retry4_20260618_205112",
+      "result": "synth_failed",
+      "reason": "old fast base generator exposed a 16-read 1382400-bit full-frame RAM that Vivado could not infer as block/distributed RAM",
+      "fix": "replace fast bicubic base RTL with an 8-mirror BRAM, two-row-tap-per-cycle design with explicit read-data/coeff alignment"
     }
   ],
   "fixed_scripts": [

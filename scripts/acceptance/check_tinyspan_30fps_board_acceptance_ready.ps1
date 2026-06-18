@@ -12,7 +12,7 @@ param(
   [string]$BoardResourceLogWriter = "tools\write_board_resource_log.py",
   [string]$VivadoIdleScript = "scripts\check_vivado_idle.ps1",
   [string]$VivadoCleanupScript = "scripts\cleanup_vivado_processes.ps1",
-  [string]$Bitstream = "vivado\bitstreams\jfs_full_span_x4_320x180_f100m_tinyspan_w8a8_base_equiv_fast.bit",
+  [string]$Bitstream = "vivado\bitstreams\jfs_full_span_x4_320x180_f150m_tinyspan_w8a8_base_equiv_fast.bit",
   [string]$BoardOutput = "",
   [string]$OutDir = "board_runs\tinyspan_board_acceptance\readiness_c32b4_30fps_frozen_20260613"
 )

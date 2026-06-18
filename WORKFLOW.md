@@ -531,6 +531,8 @@ Resource gate=XC7Z045 / ZC706 limits
 - 该基线目前仍缺真实 TinySPAN bitstream 和真实板上输出，不能宣告最终上板验收完成。
 - W8A12 DDR tile writer 相关结果仅作为历史参考，不再作为本工作流主线。
 - 2026-06-18 曾启动的 W8A12 `wf18d/wf18e` Vivado 已按路线修正停止，不能作为 TinySPAN 验收结果。
+- 2026-06-18 Gate E bitstream 重试已修复 TinySPAN source-list 问题；旧 fast base 的 16 读口全帧 RAM 在 `320x180` 综合时无法推断为 BRAM。
+- 当前 TinySPAN fast base 已改为 8 个镜像 BRAM 读口、每周期处理两行 tap 的结构；下一次 bitstream 候选目标为 `320x180 @ 150MHz`。
 - 最终验收尚未完成；只有当同一 TinySPAN 冻结 checkpoint 与同一 TinySPAN 量化方案对应的真实板上输出与软件定点参考一致，并达到 720p30，才可以宣告完成。
 
 ## 10. 下一步
@@ -540,7 +542,7 @@ Resource gate=XC7Z045 / ZC706 limits
 1. 以 `c32b4_30fps_frozen_20260613` 作为 TinySPAN 上板安全基线，生成 `baseline_decision.md` 和 `baseline_manifest.json`。
 2. 把该基线的 checkpoint、quant plan、整数参考、RTL manifest 和 readiness 摘要迁移或归档到 `Tinyspan/artifacts/...`。
 3. 基于该基线继续 TinySPAN RTL/export 与 RTL 仿真，确保 manifest、定点参考、RTL 仿真来自同一个 checkpoint 和同一个 quant plan。
-4. 生成真实 TinySPAN bitstream；bitstream 文件、utilization、timing、power 和 resource gate 报告必须进入同一个证据包。
+4. 等 Vivado 空闲后，先验证 8 镜像 BRAM fast base RTL，再生成真实 TinySPAN `320x180 @ 150MHz` bitstream；bitstream 文件、utilization、timing、power 和 resource gate 报告必须进入同一个证据包。
 5. 运行真实板卡 smoke，取得真实板上输出；selftest 或把软件图复制成 board 图不能替代真实板上输出。
 6. 运行图像一致性验证，生成 `comparison_preview.png` 和 `diff_heatmap.png`。
 7. 完成 X4 后补齐 X2 的独立证据包。

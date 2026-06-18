@@ -1,6 +1,6 @@
 # TinySPAN 赛题完成状态
 
-更新时间：`2026-06-18T13:22:42`
+更新时间：`2026-06-18T21:12:31+08:00`
 
 当前硬件安全基线：`c32b4_30fps_frozen_20260613`
 Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`
@@ -15,7 +15,7 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 | B TinySPAN 量化与软件定点参考 | `PASS` | W8A8 quant plan + integer reference summary | 后续 board 输出必须对齐同一软件定点参考 |
 | C TinySPAN RTL 导出 | `PASS` | Gate C re-export + TinySPAN W8A8 RTL manifest | 进入 RTL 仿真与实现前检查 |
 | D TinySPAN RTL 仿真 | `PASS` | 当前 artifacts 中 Gate D RTL gate rerun PASS | 进入 Gate E bitstream 生成前检查 |
-| E TinySPAN 实现与资源约束 | `BLOCKED` | bitstream 缺失 | 生成真实 TinySPAN bitstream 并归档 timing/utilization/power |
+| E TinySPAN 实现与资源约束 | `IN_PROGRESS` | bitstream 仍缺失；source-list 已修复，旧 16 读口全帧 RAM 结构综合失败，已改为 8 镜像 BRAM fast base | 等 Vivado 空闲后先做 TinySPAN fast RTL 验证，再生成 `320x180 @ 150MHz` bitstream 并归档 timing/utilization/power |
 | F TinySPAN 板卡冒烟测试 | `BLOCKED` | 真实板上输出缺失 | bitstream 通过后运行真实板卡 smoke，回读 board output |
 | G TinySPAN 图像一致性可视化验证 | `BLOCKED` | 缺 board_sr.png / comparison_preview.png / diff_heatmap.png | 拿到真实 board output 后运行图像一致性验证 |
 | H TinySPAN 最终 720p30 验收 | `BLOCKED` | 缺 byte-exact board compare、board 720p30、resource gate | 等 E/F/G 通过后执行最终验收 |
@@ -23,7 +23,7 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 
 ## 当前硬阻塞
 
-- 真实 TinySPAN-trained bitstream 尚未生成。
+- 真实 TinySPAN-trained bitstream 尚未生成；当前 Gate E 正在从 8 镜像 BRAM fast base 重新推进。
 - 真实板上输出尚未回读。
 - 板上输出与软件定点参考的逐字节一致性尚未完成。
 - 板上 720p30 throughput 和 resource gate 尚未完成。
