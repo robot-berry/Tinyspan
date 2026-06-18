@@ -271,7 +271,7 @@ Resource gate=XC7Z045 / ZC706 limits
 - `c32b4_final_20260615` 当前 fused/export 交接存在边界漂移，不能直接作为上板验收 checkpoint。
 - `c32b4_30fps_frozen_20260613` 是目前已证明 TinySPAN fused manifest 与软件输出逐字节一致的硬件安全候选。
 - W8A12 DDR tile writer 相关结果仅作为历史参考，不再作为本工作流主线。
-- 2026-06-18 曾启动的 W8A12 `wf18d` Vivado 已按路线修正停止，不能作为 TinySPAN 验收结果。
+- 2026-06-18 曾启动的 W8A12 `wf18d/wf18e` Vivado 已按路线修正停止，不能作为 TinySPAN 验收结果。
 - 最终验收尚未完成；只有当同一 TinySPAN 冻结 checkpoint 与同一 TinySPAN 量化方案对应的真实板上输出与软件定点参考一致，并达到 720p30，才可以宣告完成。
 
 ## 8. 下一步

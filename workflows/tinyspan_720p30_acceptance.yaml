@@ -54,7 +54,7 @@ current_status_zh:
   software_best: c32b4_final_20260615 软件质量更好，已通过 320x180 到 1280x720 的 30fps 软件验收。
   board_safe_candidate: c32b4_30fps_frozen_20260613 目前是已证明 fused manifest 与软件输出逐字节一致的 TinySPAN 硬件安全候选。
   blocker: c32b4_final_20260615 fused/export 存在边界漂移，修复前不能直接上板验收。
-  stopped_route: W8A12 wf18d Vivado 已停止；其结果不作为 TinySPAN 验收证据。
+  stopped_route: W8A12 wf18d/wf18e Vivado 已停止；其结果不作为 TinySPAN 验收证据。
 
 required_artifacts:
   - manifest.json
