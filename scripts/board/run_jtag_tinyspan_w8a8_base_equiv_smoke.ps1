@@ -46,6 +46,18 @@ function Get-TimingValue {
   return $null
 }
 
+function Get-PowerValue {
+  param(
+    [string]$Path,
+    [string]$Name
+  )
+  if (-not (Test-Path $Path)) { return $null }
+  $escaped = [regex]::Escape($Name)
+  $match = Select-String -Path $Path -Pattern "\|\s*$escaped\s*\|\s*([-+]?[0-9]+(?:\.[0-9]+)?)" | Select-Object -First 1
+  if ($null -eq $match) { return $null }
+  return $match.Matches[0].Groups[1].Value
+}
+
 $root = Resolve-Path (Join-Path $PSScriptRoot "..")
 Push-Location $root
 try {
@@ -75,11 +87,13 @@ try {
   $reportBase = $bitBase -replace "^jfs_full_span_", "jtag_full_span_"
   $utilReport = Join-Path $root ("vivado\reports\{0}_utilization_impl.rpt" -f $reportBase)
   $timingReport = Join-Path $root ("vivado\reports\{0}_timing_impl.rpt" -f $reportBase)
+  $powerReport = Join-Path $root ("vivado\reports\{0}_power_impl.rpt" -f $reportBase)
   $resourceJson = Join-Path $outDirAbs "implementation_resources.json"
   $resources = [ordered]@{
     bitstream = $Bitstream
     utilization_report = $utilReport
     timing_report = $timingReport
+    power_report = $powerReport
     vivado_idle_log = $vivadoIdleLog
     vivado_cleanup_log = $vivadoCleanupLog
     clb_luts = Get-UtilValue -Path $utilReport -Name "CLB LUTs"
@@ -88,17 +102,22 @@ try {
     dsps = Get-UtilValue -Path $utilReport -Name "DSPs"
     wns_ns = Get-TimingValue -Path $timingReport -Label "WNS"
     whs_ns = Get-TimingValue -Path $timingReport -Label "WHS"
+    total_on_chip_power_w = Get-PowerValue -Path $powerReport -Name "Total On-Chip Power (W)"
+    dynamic_power_w = Get-PowerValue -Path $powerReport -Name "Dynamic (W)"
+    device_static_power_w = Get-PowerValue -Path $powerReport -Name "Device Static (W)"
   }
   $resources | ConvertTo-Json -Depth 4 | Set-Content -Path $resourceJson -Encoding UTF8
   Write-Host "TINYSPAN_RESOURCE_JSON=$resourceJson"
   Write-Host "TINYSPAN_RESOURCE_UTIL=$utilReport"
   Write-Host "TINYSPAN_RESOURCE_TIMING=$timingReport"
+  Write-Host "TINYSPAN_RESOURCE_POWER=$powerReport"
   Write-Host "TINYSPAN_RESOURCE_CLB_LUTS=$($resources.clb_luts)"
   Write-Host "TINYSPAN_RESOURCE_CLB_REGISTERS=$($resources.clb_registers)"
   Write-Host "TINYSPAN_RESOURCE_BRAM_TILE=$($resources.block_ram_tile)"
   Write-Host "TINYSPAN_RESOURCE_DSPS=$($resources.dsps)"
   Write-Host "TINYSPAN_TIMING_WNS_NS=$($resources.wns_ns)"
   Write-Host "TINYSPAN_TIMING_WHS_NS=$($resources.whs_ns)"
+  Write-Host "TINYSPAN_POWER_TOTAL_W=$($resources.total_on_chip_power_w)"
 
   python tools\convert_rgb_raw.py to-raw $InputPng $inputRaw --width $ImgW --height $ImgH
   if ($LASTEXITCODE -ne 0) { throw "input PNG to raw conversion failed" }

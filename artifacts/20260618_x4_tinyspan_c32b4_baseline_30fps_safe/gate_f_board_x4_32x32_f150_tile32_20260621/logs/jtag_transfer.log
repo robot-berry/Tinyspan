@@ -1,0 +1,491 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Sun Jun 21 01:57:27 2026
+# Process ID         : 379312
+# Current directory  : G:/UESTC/feitengspan1
+# Command line       : vivado.exe -log G:\UESTC\feitengspan1\board_runs\tinyspan_w8a8_base_equiv_jtag\gate_f_x4_32x32_f150_20260621_tile32\jtag_transfer.log -journal G:\UESTC\feitengspan1\board_runs\tinyspan_w8a8_base_equiv_jtag\gate_f_x4_32x32_f150_20260621_tile32\jtag_transfer.jou -mode batch -source scripts\jtag_rgb_transfer.tcl -tclargs --input G:\UESTC\feitengspan1\board_runs\tinyspan_w8a8_base_equiv_jtag\gate_f_x4_32x32_f150_20260621_tile32\input_x4_32x32_tinyspan_w8a8_base_equiv.rgb --output G:\UESTC\feitengspan1\board_runs\tinyspan_w8a8_base_equiv_jtag\gate_f_x4_32x32_f150_20260621_tile32\board_output_x4_32x32_tinyspan_w8a8_base_equiv.rgb --width 32 --height 32 --scale 4 --bitstream vivado\bitstreams\jfs_full_span_x4_32x32_f150m_tinyspan_w8a8_base_equiv_fast.bit
+# Log file           : G:/UESTC/feitengspan1/board_runs/tinyspan_w8a8_base_equiv_jtag/gate_f_x4_32x32_f150_20260621_tile32/jtag_transfer.log
+# Journal file       : G:\UESTC\feitengspan1\board_runs\tinyspan_w8a8_base_equiv_jtag\gate_f_x4_32x32_f150_20260621_tile32\jtag_transfer.jou
+# Running On         : robot
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 7 6800H with Radeon Graphics         
+# CPU Frequency      : 3194 MHz
+# CPU Physical cores : 8
+# CPU Logical cores  : 16
+# Host memory        : 16371 MB
+# Swap memory        : 20401 MB
+# Total Virtual      : 36772 MB
+# Available Virtual  : 16131 MB
+#-----------------------------------------------------------
+source {scripts\jtag_rgb_transfer.tcl}
+# set input_file ""
+# set output_file ""
+# set bitstream_file ""
+# set base_addr 0xA0000000
+# set img_w 64
+# set img_h 64
+# set scale 2
+# set perf_only 0
+# set max_output_pixels 0
+# for {set i 0} {$i < [llength $argv]} {incr i} {
+#     set key [lindex $argv $i]
+#     switch -- $key {
+#         "--input" {
+#             incr i
+#             set input_file [lindex $argv $i]
+#         }
+#         "--output" {
+#             incr i
+#             set output_file [lindex $argv $i]
+#         }
+#         "--bitstream" {
+#             incr i
+#             set bitstream_file [lindex $argv $i]
+#         }
+#         "--base" {
+#             incr i
+#             set base_addr [expr [lindex $argv $i]]
+#         }
+#         "--width" {
+#             incr i
+#             set img_w [expr [lindex $argv $i]]
+#         }
+#         "--height" {
+#             incr i
+#             set img_h [expr [lindex $argv $i]]
+#         }
+#         "--scale" {
+#             incr i
+#             set scale [expr [lindex $argv $i]]
+#         }
+#         "--perf-only" {
+#             set perf_only 1
+#         }
+#         "--max-output-pixels" {
+#             incr i
+#             set max_output_pixels [expr [lindex $argv $i]]
+#         }
+#         default {
+#             error "Unknown argument: $key"
+#         }
+#     }
+# }
+# if {$input_file eq "" || $output_file eq ""} {
+#     error "Usage: --input input.rgb --output output.rgb \[--bitstream top.bit\] \[--base 0xA0000000\]"
+# }
+# set REG_STATUS       0x00
+# set REG_INPUT_FLAGS  0x04
+# set REG_INPUT_PIXEL  0x08
+# set REG_OUTPUT_PIXEL 0x0c
+# set REG_COUNTER_IN   0x14
+# set REG_COUNTER_OUT  0x18
+# set REG_ERROR        0x1c
+# set REG_FRAME_CYCLES 0x20
+# set REG_FRAME_DONE   0x24
+# set REG_PERF_CTRL    0x28
+# set REG_E2E_CYCLES   0x2c
+# set STATUS_IN_READY  0x40
+# set STATUS_OUT_VALID 0x80
+# proc parse_hex_data {value} {
+#     set s [string trim $value]
+#     set first [lindex $s 0]
+#     if {$first ne ""} {
+#         set s $first
+#     }
+#     regsub -all {[^0-9A-Fa-f]} $s "" s
+#     if {$s eq ""} {
+#         return 0
+#     }
+#     scan $s %x result
+#     return $result
+# }
+# proc axi_write32 {axi addr value} {
+#     set name [format "wr_%08X_%08X" $addr [clock clicks]]
+#     create_hw_axi_txn $name $axi -type write -address [format 0x%08X $addr] -data [format %08X [expr {$value & 0xffffffff}]]
+#     run_hw_axi [get_hw_axi_txns $name]
+#     delete_hw_axi_txn [get_hw_axi_txns $name]
+# }
+# proc axi_read32 {axi addr} {
+#     set name [format "rd_%08X_%08X" $addr [clock clicks]]
+#     create_hw_axi_txn $name $axi -type read -address [format 0x%08X $addr]
+#     run_hw_axi [get_hw_axi_txns $name]
+#     set data [get_property DATA [get_hw_axi_txns $name]]
+#     delete_hw_axi_txn [get_hw_axi_txns $name]
+#     return [parse_hex_data $data]
+# }
+# proc read_rgb_file {path expected_bytes} {
+#     set f [open $path rb]
+#     fconfigure $f -translation binary -encoding binary
+#     set blob [read $f]
+#     close $f
+#     set size [string length $blob]
+#     if {$size != $expected_bytes} {
+#         error "input raw size mismatch: got $size bytes, expected $expected_bytes bytes"
+#     }
+#     binary scan $blob c* signed_bytes
+#     set bytes {}
+#     foreach b $signed_bytes {
+#         lappend bytes [expr {$b & 0xff}]
+#     }
+#     return $bytes
+# }
+# proc write_rgb_file {path bytes} {
+#     set f [open $path wb]
+#     fconfigure $f -translation binary -encoding binary
+#     puts -nonewline $f [binary format c* $bytes]
+#     close $f
+# }
+# proc open_jtag_axi {bitstream_file} {
+#     open_hw_manager
+#     if {[llength [get_hw_servers -quiet]] == 0} {
+#         connect_hw_server
+#     }
+#     if {[llength [get_hw_targets -quiet]] == 0} {
+#         error "No hardware target found. Check USB-JTAG cable and board power."
+#     }
+#     set target [lindex [get_hw_targets -quiet] 0]
+#     current_hw_target $target
+#     open_hw_target
+# 
+#     set dev [lindex [get_hw_devices -quiet] 0]
+#     if {$dev eq ""} {
+#         error "No hardware device found on JTAG chain."
+#     }
+#     current_hw_device $dev
+# 
+#     if {$bitstream_file ne ""} {
+#         puts "Programming bitstream: $bitstream_file"
+#         set_property PROGRAM.FILE $bitstream_file $dev
+#         program_hw_devices $dev
+#         refresh_hw_device $dev
+#     } else {
+#         refresh_hw_device $dev
+#     }
+# 
+#     set axis [get_hw_axis -quiet *]
+#     if {[llength $axis] == 0} {
+#         error "No JTAG-to-AXI Master found. Regenerate bitstream with jtag_axi IP."
+#     }
+#     return [lindex $axis 0]
+# }
+# set input_pixels [expr {$img_w * $img_h}]
+# set output_pixels [expr {$img_w * $img_h * $scale * $scale}]
+# set output_pixels_to_read $output_pixels
+# if {$max_output_pixels > 0 && $max_output_pixels < $output_pixels} {
+#     set output_pixels_to_read $max_output_pixels
+# }
+# set input_bytes_expected [expr {$input_pixels * 3}]
+# set output_bytes_expected [expr {$output_pixels * 3}]
+# set output_bytes_to_write [expr {$output_pixels_to_read * 3}]
+# puts "Input : $input_file"
+Input : G:\UESTC\feitengspan1\board_runs\tinyspan_w8a8_base_equiv_jtag\gate_f_x4_32x32_f150_20260621_tile32\input_x4_32x32_tinyspan_w8a8_base_equiv.rgb
+# puts "Output: $output_file"
+Output: G:\UESTC\feitengspan1\board_runs\tinyspan_w8a8_base_equiv_jtag\gate_f_x4_32x32_f150_20260621_tile32\board_output_x4_32x32_tinyspan_w8a8_base_equiv.rgb
+# puts "Image : ${img_w}x${img_h}, scale x${scale}"
+Image : 32x32, scale x4
+# puts "Input bytes expected : $input_bytes_expected"
+Input bytes expected : 3072
+# puts "Output bytes expected: $output_bytes_expected"
+Output bytes expected: 49152
+# if {$output_pixels_to_read != $output_pixels} {
+#     puts "Output pixels to read: $output_pixels_to_read"
+# }
+# set input_bytes [read_rgb_file $input_file $input_bytes_expected]
+open_hw_manager: Time (s): cpu = 00:00:08 ; elapsed = 00:00:06 . Memory (MB): peak = 551.500 ; gain = 222.832
+INFO: [Labtools 27-2285] Connecting to hw_server url TCP:localhost:3121
+INFO: [Labtools 27-2222] Launching hw_server...
+INFO: [Labtools 27-2221] Launch Output:
+
+****** Xilinx hw_server v2025.2
+  **** Build date : Oct 28 2025 at 10:03:13
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+
+INFO: [Labtools 27-3415] Connecting to cs_server url TCP:localhost:0
+INFO: [Labtools 27-3417] Launching cs_server...
+INFO: [Labtools 27-2221] Launch Output:
+
+
+******** Xilinx cs_server v2025.2.0
+  ****** Build date   : Nov 14 2025-07:16:52
+    **** Build number : 2025.2.1763075812
+      ** Copyright 2017-2022 Xilinx, Inc. All Rights Reserved.
+      ** Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+
+
+
+connect_hw_server: Time (s): cpu = 00:00:00 ; elapsed = 00:00:07 . Memory (MB): peak = 556.457 ; gain = 0.004
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210203367162A
+Programming bitstream: vivado\bitstreams\jfs_full_span_x4_32x32_f150m_tinyspan_w8a8_base_equiv_fast.bit
+INFO: [Labtools 27-3164] End of startup status: HIGH
+program_hw_devices: Time (s): cpu = 00:00:20 ; elapsed = 00:00:21 . Memory (MB): peak = 558.777 ; gain = 0.000
+INFO: [Labtools 27-2302] Device xczu19 (JTAG device index = 0) is programmed with a design that has 1 JTAG AXI core(s).
+# set axi [open_jtag_axi $bitstream_file]
+# puts "Using hw_axi: $axi"
+Using hw_axi: hw_axi_1
+# set output_bytes {}
+# set written_pixels 0
+# proc drain_output_once {axi base_addr output_var written_var max_pixels} {
+#     upvar $output_var output_bytes
+#     upvar $written_var written_pixels
+#     global REG_STATUS REG_OUTPUT_PIXEL STATUS_OUT_VALID
+# 
+#     if {$written_pixels >= $max_pixels} {
+#         return 0
+#     }
+# 
+#     set status [axi_read32 $axi [expr {$base_addr + $REG_STATUS}]]
+#     if {($status & $STATUS_OUT_VALID) == 0} {
+#         return 0
+#     }
+# 
+#     set pix [axi_read32 $axi [expr {$base_addr + $REG_OUTPUT_PIXEL}]]
+#     lappend output_bytes [expr {($pix >> 16) & 0xff}]
+#     lappend output_bytes [expr {($pix >> 8) & 0xff}]
+#     lappend output_bytes [expr {$pix & 0xff}]
+#     incr written_pixels
+#     return 1
+# }
+# proc wait_input_ready {axi base_addr output_var written_var} {
+#     upvar $output_var output_bytes
+#     upvar $written_var written_pixels
+#     global REG_STATUS STATUS_IN_READY output_pixels_to_read
+# 
+#     for {set i 0} {$i < 1000000} {incr i} {
+#         set status [axi_read32 $axi [expr {$base_addr + $REG_STATUS}]]
+#         if {($status & $STATUS_IN_READY) != 0} {
+#             return
+#         }
+#         drain_output_once $axi $base_addr output_bytes written_pixels $output_pixels_to_read
+#     }
+#     error "timeout waiting for input_ready"
+# }
+# axi_write32 $axi [expr {$base_addr + $REG_ERROR}] 0x00000003
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000003
+# axi_write32 $axi [expr {$base_addr + $REG_PERF_CTRL}] $perf_only
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+# for {set i 0} {$i < $input_pixels} {incr i} {
+#     set idx [expr {$i * 3}]
+#     set r [lindex $input_bytes $idx]
+#     set g [lindex $input_bytes [expr {$idx + 1}]]
+#     set b [lindex $input_bytes [expr {$idx + 2}]]
+#     set x [expr {$i % $img_w}]
+# 
+#     set flags 0
+#     if {$i == 0} {
+#         set flags [expr {$flags | 1}]
+#     }
+#     if {$x == ($img_w - 1)} {
+#         set flags [expr {$flags | 2}]
+#     }
+# 
+#     wait_input_ready $axi $base_addr output_bytes written_pixels
+#     axi_write32 $axi [expr {$base_addr + $REG_INPUT_FLAGS}] $flags
+#     axi_write32 $axi [expr {$base_addr + $REG_INPUT_PIXEL}] [expr {($r << 16) | ($g << 8) | $b}]
+# 
+#     if {!$perf_only} {
+#         while {[drain_output_once $axi $base_addr output_bytes written_pixels $output_pixels_to_read] > 0} {
+#         }
+#         if {$output_pixels_to_read != $output_pixels && $written_pixels >= $output_pixels_to_read} {
+#             write_rgb_file $output_file $output_bytes
+#             puts "Done."
+#             puts "Prefix output pixels: $written_pixels"
+#             puts "Wrote $output_file ($output_bytes_to_write bytes)"
+#             puts "JTAG_PREFIX_ONLY=1"
+#             close_hw_manager
+#             exit 0
+#         }
+#     }
+# 
+#     if {(($i + 1) % 64) == 0} {
+#         puts "Sent [expr {$i + 1}]/$input_pixels input pixels, received $written_pixels/$output_pixels output pixels"
+#     }
+# }
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000001
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 004D4C1B
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 0064662B
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00727836
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 006E7A38
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 005D6834
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 003D4327
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00353B25
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 002A2B1B
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00272619
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00222318
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 001F2017
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00232217
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00201D12
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00282A24
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00354342
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00314037
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 002C3D33
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 002F3B32
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00272819
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 002A3023
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 002E2F21
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 003C3319
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00322D1C
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00232618
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] READ DATA is: 00000040
+INFO: [Labtoolstcl 44-481] WRITE DATA is: 00000000
+INFO: [Common 17-14] Message 'Labtoolstcl 44-481' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+Sent 64/1024 input pixels, received 0/16384 output pixels
+Sent 128/1024 input pixels, received 0/16384 output pixels
+Sent 192/1024 input pixels, received 0/16384 output pixels
+Sent 256/1024 input pixels, received 0/16384 output pixels
+Sent 320/1024 input pixels, received 0/16384 output pixels
+Sent 384/1024 input pixels, received 0/16384 output pixels
+Sent 448/1024 input pixels, received 0/16384 output pixels
+Sent 512/1024 input pixels, received 0/16384 output pixels
+Sent 576/1024 input pixels, received 0/16384 output pixels
+Sent 640/1024 input pixels, received 0/16384 output pixels
+Sent 704/1024 input pixels, received 0/16384 output pixels
+Sent 768/1024 input pixels, received 0/16384 output pixels
+Sent 832/1024 input pixels, received 0/16384 output pixels
+Sent 896/1024 input pixels, received 0/16384 output pixels
+Sent 960/1024 input pixels, received 0/16384 output pixels
+Sent 1024/1024 input pixels, received 16384/16384 output pixels
+# if {$perf_only} {
+#     for {set tries 0} {$tries < 5000000} {incr tries} {
+#         set frame_done_poll [axi_read32 $axi [expr {$base_addr + $REG_FRAME_DONE}]]
+#         if {($frame_done_poll & 0x1) != 0} {
+#             break
+#         }
+#         after 1
+#     }
+# } else {
+#     for {set tries 0} {$written_pixels < $output_pixels_to_read && $tries < 5000000} {incr tries} {
+#         if {[drain_output_once $axi $base_addr output_bytes written_pixels $output_pixels_to_read] == 0} {
+#             after 1
+#         }
+#     }
+# 
+#     if {$written_pixels != $output_pixels_to_read} {
+#         error "output timeout: got $written_pixels pixels, expected $output_pixels_to_read"
+#     }
+# 
+#     write_rgb_file $output_file $output_bytes
+# 
+#     if {$output_pixels_to_read != $output_pixels} {
+#         puts "Done."
+#         puts "Prefix output pixels: $written_pixels"
+#         puts "Wrote $output_file ($output_bytes_to_write bytes)"
+#         puts "JTAG_PREFIX_ONLY=1"
+#         close_hw_manager
+#         exit 0
+#     }
+# }
+# set counter_in  [axi_read32 $axi [expr {$base_addr + $REG_COUNTER_IN}]]
+# set counter_out [axi_read32 $axi [expr {$base_addr + $REG_COUNTER_OUT}]]
+# set errors      [axi_read32 $axi [expr {$base_addr + $REG_ERROR}]]
+# set frame_cycles [axi_read32 $axi [expr {$base_addr + $REG_FRAME_CYCLES}]]
+# set frame_done   [axi_read32 $axi [expr {$base_addr + $REG_FRAME_DONE}]]
+# set e2e_cycles   [axi_read32 $axi [expr {$base_addr + $REG_E2E_CYCLES}]]
+# if {($frame_done & 0x1) == 0 && $output_pixels_to_read == $output_pixels} {
+#     error "frame performance counter did not complete"
+# }
+# axi_write32 $axi [expr {$base_addr + $REG_PERF_CTRL}] 0x00000000
+# puts "Done."
+Done.
+# puts "Input counter : $counter_in"
+Input counter : 1024
+# puts "Output counter: $counter_out"
+Output counter: 16384
+# puts "Frame cycles  : $frame_cycles"
+Frame cycles  : 1781735490
+# puts "Frame done    : $frame_done"
+Frame done    : 1
+# puts "E2E cycles    : $e2e_cycles"
+E2E cycles    : -1770356354
+# puts [format "Error flags   : 0x%08X" $errors]
+Error flags   : 0x00000000
+# if {$perf_only} {
+#     puts "Perf-only run did not write output RGB."
+# } else {
+#     puts "Wrote $output_file ($output_bytes_to_write bytes)"
+# }
+Wrote G:\UESTC\feitengspan1\board_runs\tinyspan_w8a8_base_equiv_jtag\gate_f_x4_32x32_f150_20260621_tile32\board_output_x4_32x32_tinyspan_w8a8_base_equiv.rgb (49152 bytes)
+# puts "JTAG_FRAME_CYCLES=$frame_cycles"
+JTAG_FRAME_CYCLES=1781735490
+# puts "JTAG_FRAME_DONE=$frame_done"
+JTAG_FRAME_DONE=1
+# puts "JTAG_E2E_CYCLES=$e2e_cycles"
+JTAG_E2E_CYCLES=-1770356354
+# puts "JTAG_PERF_ONLY=$perf_only"
+JTAG_PERF_ONLY=0
+INFO: [Common 17-206] Exiting Vivado at Sun Jun 21 02:00:25 2026...

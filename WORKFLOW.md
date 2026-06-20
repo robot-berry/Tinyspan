@@ -152,7 +152,9 @@ TinySPAN X2/X4 实时超分，并输出完整 `1280x720` 画面，吞吐达到 `
 - X2 输入输出约定：`640x360 -> 1280x720`
 - X4 输入输出约定：`320x180 -> 1280x720`
 - 大图从 SD 卡或 DDR 输入，由硬件负责切块
+- 当前上板验收 tile：`32x32` LR tile；`64x64` 仅作为资源允许时的备选加速 tile
 - 最终验收不接受 PC 端提前切好的小块作为板卡输入
+- 最终验收不接受一次性整帧 TinySPAN 核直接处理 SD 卡完整 LR 帧来替代板端切块方案
 - 板上输出必须与同一 TinySPAN 冻结 checkpoint、同一 TinySPAN 量化方案生成的软件定点参考逐字节一致
 
 ## 4. 路线锁定
@@ -252,8 +254,14 @@ SD 卡或 DDR 中的完整输入帧
  -> PS 回读或显示通路
 ```
 
-硬件必须负责切块、halo 读取、边界处理和最终输出位置写回。软件可以准备原始完整输入帧，
-也可以验证最终输出，但最终验收跑板时不能由 PC 端预先把图像切成推理小块。
+帧级输入仍然是 SD 卡或 DDR 中的完整 LR 图像/视频帧；TinySPAN 计算核心的实际推理粒度是
+板端 tile。当前验收优先使用 `32x32` LR tile；如果后续资源、BRAM 和时序允许，可以补充
+`64x64` LR tile 作为减少调度开销的备选实现。对于 X4，`32x32` LR tile 对应 `128x128`
+SR tile，`64x64` LR tile 对应 `256x256` SR tile。
+
+硬件必须负责 tile 坐标生成、halo 读取、边界处理、有效区域裁剪、输出地址映射和最终输出位置写回。
+软件可以准备原始完整输入帧，也可以验证最终输出，但最终验收跑板时不能由 PC 端预先把图像切成
+推理小块后再送板卡。
 
 ## 7. 工程产物放置规则
 
@@ -459,6 +467,7 @@ Resource gate=XC7Z045 / ZC706 limits
 - PS 初始化 DDR buffer
 - PL 完成硬件切块 TinySPAN 推理
 - TinySPAN 板上输出可以回读
+- 板上输出对应同一完整输入帧和同一套 board-side tile 调度参数
 
 如果 JTAG target 数量为 `0`，应停止跑板流程，先检查板卡供电、USB-JTAG、JTAG 模式、
 驱动、Vivado 硬件管理器占用情况，再重新运行。
@@ -468,7 +477,7 @@ Resource gate=XC7Z045 / ZC706 limits
 输入：
 
 - 冻结 TinySPAN checkpoint
-- 同一张完整输入帧
+- 同一张完整输入帧和同一套 board-side tile 调度参数
 - TinySPAN 训练/浮点模型超分输出
 - TinySPAN 软件定点参考输出
 - TinySPAN 板上输出
@@ -502,7 +511,7 @@ Resource gate=XC7Z045 / ZC706 limits
 
 - 冻结 TinySPAN checkpoint
 - TinySPAN 量化方案
-- 同一张完整输入帧
+- 同一张完整输入帧和同一套 board-side tile 调度参数
 - 同一个 TinySPAN bitstream
 - TinySPAN 板上输出
 
@@ -527,12 +536,28 @@ Resource gate=XC7Z045 / ZC706 limits
   证据位于 `Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_b_integer_reference_rtl_fixed_base_320x180_20260618`。
 - `c32b4_final_20260615` 是质量更好的软件模型，并且软件侧已证明 `320x180 -> 1280x720 @ 30fps` 通过。
 - `c32b4_final_20260615` 当前 fused/export 交接存在边界漂移，不能直接作为上板验收 checkpoint。
-- `c32b4_30fps_frozen_20260613` 可以作为推进 TinySPAN RTL、bitstream 和板卡验证的硬件安全基线。
-- 该基线目前仍缺真实 TinySPAN bitstream 和真实板上输出，不能宣告最终上板验收完成。
+- `c32b4_30fps_frozen_20260613` 作为推进 TinySPAN RTL、bitstream 和板卡验证的硬件安全基线。
+- 2026-06-20 已完成 X4 `320x180 @ 150MHz` Gate E bitstream/timing/resource 核心证据：
+  `Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_e_bitstream_x4_320x180_f150_prew_20260620`。
+- Gate E 最新 bitstream SHA256 为
+  `B2C2F3A8571EA3FFFE596C804528AF955C19B8A56077DA879727C1AEAE91DDF2`。
+- Gate E timing 通过：`clk_pl_0` period `7.000ns`，`142.857MHz`，WNS `0.074ns`。
+- Gate E resource gate 通过：LUT `7371`，Register `5437`，DSP `94`，BRAM Tile `330.5`，URAM `0`，均在 ZC706 等效资源门限内。
+- Gate E power report 已归档：Total On-Chip Power `3.646W`，Dynamic `2.433W`，
+  Device Static `1.213W`，Confidence `Medium`。
+- Gate E 理论 X4 720p 吞吐通过：RTL 仿真稳态 `5 cycles/output pixel`，
+  `142.857MHz / (1280*720*5) = 31.0015fps`。
+- 最终 SD 卡图片/视频帧路线必须是板端切块拼接：完整 LR 帧在 SD/DDR 中保存，PL/PS wrapper
+  按 `32x32` LR tile 优先、`64x64` LR tile 备选进行读取、halo、推理、裁剪和写回。
+- 2026-06-21 已完成 X4 `32x32 -> 128x128 @ 150MHz` 真实板卡 smoke 和图像一致性验证：
+  `Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_f_board_x4_32x32_f150_tile32_20260621`。
+- X4 32x32 board-vs-software 通过：mismatch bytes `0 / 49152`，max channel diff `0`，
+  perf-only `81916` cycles，`1831.144098832951 fps`。
+- 该基线目前仍缺完整 SD/DDR frame tile scheduler、完整帧拼接输出、完整帧 throughput 和 X2 独立证据，不能宣告最终上板验收完成。
 - W8A12 DDR tile writer 相关结果仅作为历史参考，不再作为本工作流主线。
 - 2026-06-18 曾启动的 W8A12 `wf18d/wf18e` Vivado 已按路线修正停止，不能作为 TinySPAN 验收结果。
 - 2026-06-18 Gate E bitstream 重试已修复 TinySPAN source-list 问题；旧 fast base 的 16 读口全帧 RAM 在 `320x180` 综合时无法推断为 BRAM。
-- 当前 TinySPAN fast base 已改为 8 个镜像 BRAM 读口、每周期处理两行 tap 的结构；下一次 bitstream 候选目标为 `320x180 @ 150MHz`。
+- 2026-06-20 TinySPAN fast base 已改为 XPM BRAM 显式帧缓存、预计算双线性权重、并加入量化流水线；`320x180 @ 150MHz` 实现已通过 timing/resource。
 - 最终验收尚未完成；只有当同一 TinySPAN 冻结 checkpoint 与同一 TinySPAN 量化方案对应的真实板上输出与软件定点参考一致，并达到 720p30，才可以宣告完成。
 
 ## 10. 下一步
@@ -542,10 +567,11 @@ Resource gate=XC7Z045 / ZC706 limits
 1. 以 `c32b4_30fps_frozen_20260613` 作为 TinySPAN 上板安全基线，生成 `baseline_decision.md` 和 `baseline_manifest.json`。
 2. 把该基线的 checkpoint、quant plan、整数参考、RTL manifest 和 readiness 摘要迁移或归档到 `Tinyspan/artifacts/...`。
 3. 基于该基线继续 TinySPAN RTL/export 与 RTL 仿真，确保 manifest、定点参考、RTL 仿真来自同一个 checkpoint 和同一个 quant plan。
-4. 等 Vivado 空闲后，先验证 8 镜像 BRAM fast base RTL，再生成真实 TinySPAN `320x180 @ 150MHz` bitstream；bitstream 文件、utilization、timing、power 和 resource gate 报告必须进入同一个证据包。
-5. 运行真实板卡 smoke，取得真实板上输出；selftest 或把软件图复制成 board 图不能替代真实板上输出。
-6. 运行图像一致性验证，生成 `comparison_preview.png` 和 `diff_heatmap.png`。
-7. 完成 X4 后补齐 X2 的独立证据包。
+4. 基于已通过的 `32x32` tile 上板证据，继续实现 SD/DDR 完整帧 board-side tile scheduler。
+5. 补齐 tile 坐标生成、halo/边界处理、有效区域裁剪、拼接写回和最终 `1280x720` 输出验证。
+6. 对完整帧运行图像一致性验证，生成 `comparison_preview.png` 和 `diff_heatmap.png`。
+7. 记录完整帧实测板上 throughput，并与理论吞吐、32x32 tile throughput 分开标注。
+8. 完成 X4 完整帧闭环后补齐 X2 的独立证据包。
 8. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
 
 ## 11. 完成定义

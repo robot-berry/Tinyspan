@@ -124,7 +124,32 @@ route_lock:
     - full SPAN JTAG smoke
     - ZC706/PS7 board switch
     - PC-side pre-cut tile inference
+    - one-shot full-frame TinySPAN core for SD-card frame
   route_rule_zh: 参考路线的结果不能替代 TinySPAN checkpoint、TinySPAN 量化方案、TinySPAN bitstream 和 TinySPAN 板上输出。
+
+board_side_tiling:
+  mode: board_side_tiling
+  frame_source_zh: SD 卡或 DDR 中保存完整 LR 图像/视频帧，最终验收不把 PC 端预切 tile 作为板卡输入。
+  acceptance_tile_lr: [32, 32]
+  candidate_tile_lr: [64, 64]
+  tile_priority_zh: 当前 32x32 LR tile 是上板验收目标；64x64 LR tile 仅作为资源、BRAM 和时序允许时的备选加速路线。
+  x4_tile_output_sr:
+    tile_32x32: [128, 128]
+    tile_64x64: [256, 256]
+  x2_tile_output_sr:
+    tile_32x32: [64, 64]
+    tile_64x64: [128, 128]
+  scheduler_responsibilities_zh:
+    - tile 坐标生成
+    - DDR/SD 输入帧 tile 与 halo 读取
+    - 边界处理
+    - TinySPAN 推理启动与完成握手
+    - SR tile 有效区域裁剪
+    - 输出地址映射
+    - 1280x720 输出帧写回 DDR
+  forbidden_as_final_zh:
+    - PC 端预切小块后直接送板卡逐块推理
+    - 一次性整帧 TinySPAN 核直接处理完整 LR 帧并替代板端切块拼接方案
 
 active_hardware_baseline:
   id: c32b4_30fps_frozen_20260613
@@ -163,10 +188,17 @@ active_hardware_baseline:
     existing_pass_zh:
       - checkpoint、manifest、quant plan、integer reference、RTL manifest、layer/channel/postprocess 检查已通过。
       - head frontend synth DCP 已存在，可作为实现前端参考。
+    gate_e_x4_bitstream_zh:
+      status: PASS
+      artifact: artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_e_bitstream_x4_320x180_f150_prew_20260620
+      bitstream_sha256: B2C2F3A8571EA3FFFE596C804528AF955C19B8A56077DA879727C1AEAE91DDF2
+      timing_zh: clk_pl_0 7.000ns / 142.857MHz，WNS 0.074ns，TNS 0.000ns。
+      resource_gate_zh: XC7Z045 / ZC706 等效资源门限 PASS。
+      power_zh: Total On-Chip Power 3.646W，Dynamic 2.433W，Device Static 1.213W，Confidence Medium。
+      throughput_estimate_zh: RTL 仿真稳态 5 cycles/output pixel，X4 1280x720 理论吞吐 31.0015fps。
     missing_for_board_acceptance_zh:
-      - 真实 TinySPAN-trained bitstream 尚未存在。
       - 真实板上输出尚未提供。
-      - readiness 中的 selftest 不能替代真实 bitstream 和真实板上输出。
+      - readiness 中的 selftest 不能替代真实板上输出和真实逐字节一致性。
   baseline_rule_zh:
     - 后续 TinySPAN RTL、bitstream、板上输出和图像一致性验证默认使用该基线。
     - 不得把 c32b4_final_20260615 用于上板验收，除非先修复 fused/export 漂移并重新通过本基线同等级别的预检。
@@ -206,13 +238,17 @@ run_directory_pattern: "{date}_{scale}_tinyspan_{model}_{tile}_{freq}_{tag}"
 run_directory_pattern_zh: 每次运行使用一个独立目录，例如 20260618_x4_tinyspan_c32b4_tile32_h21_f50_origboard。
 
 current_status_zh:
-  date: 2026-06-18
+  date: 2026-06-21
   training: TinySPAN 训练已完成。
   active_baseline: c32b4_30fps_frozen_20260613 已提升为当前 TinySPAN 硬件安全基线。
   software_best: c32b4_final_20260615 软件质量更好，已通过 320x180 到 1280x720 的 30fps 软件验收。
   board_safe_candidate: c32b4_30fps_frozen_20260613 目前是已证明 frozen/source 哈希一致且具备量化、整数参考和 RTL manifest 证据的 TinySPAN 硬件安全基线。
   blocker: c32b4_final_20260615 fused/export 存在边界漂移，修复前不能直接上板验收。
-  board_acceptance_boundary: 当前基线仍缺真实 TinySPAN bitstream 和真实板上输出，不能宣告板上验收完成。
+  gate_e_x4: 已存在 X4 320x180@150MHz TinySPAN bitstream/timing/resource/power 证据，理论 X4 720p 吞吐 31.0015fps。
+  gate_f_g_x4_32x32: X4 32x32 tile 真实板卡 smoke 与 board-vs-software 已通过，证据位于 artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_f_board_x4_32x32_f150_tile32_20260621。
+  gate_f_g_x4_32x32_metrics: mismatch 0/49152，max channel diff 0，perf-only 1831.144098832951 fps，WNS 0.091ns，LUT 5943，Register 5232，DSP 78，BRAM Tile 10.5，Total On-Chip Power 3.469W。
+  board_side_tile_route: 最终 SD/DDR 大图或视频帧必须由板端按 32x32 LR tile 优先、64x64 LR tile 备选进行切块、halo、推理、裁剪和拼接。
+  board_acceptance_boundary: 当前基线已有 32x32 tile 真实板上输出、逐字节一致性和 tile throughput；仍缺完整 SD/DDR frame tile scheduler、完整帧拼接输出、完整帧 throughput 和 X2 独立证据，不能宣告最终赛题完成。
   stopped_route: W8A12 wf18d/wf18e Vivado 已停止；其结果不作为 TinySPAN 验收证据。
 
 required_artifacts:
@@ -389,6 +425,7 @@ workflow:
       - PS 完成 DDR buffer 初始化
       - PL 完成硬件切块 TinySPAN 推理
       - TinySPAN 板上输出可回读
+      - 板上输出对应同一完整输入帧和同一套 board-side tile 调度参数
     stop_when_zh:
       - JTAG target 数量为 0 时停止跑板流程，先检查板卡连接、驱动、模式和工具占用。
 
@@ -396,7 +433,7 @@ workflow:
     name_zh: TinySPAN 图像一致性可视化验证
     inputs_zh:
       - 冻结 TinySPAN checkpoint
-      - 同一完整输入帧
+      - 同一完整输入帧和同一套 board-side tile 调度参数
       - TinySPAN 训练或浮点推理超分输出
       - TinySPAN 软件定点参考输出
       - TinySPAN 板上输出
@@ -420,7 +457,7 @@ workflow:
     inputs_zh:
       - 冻结 TinySPAN checkpoint
       - TinySPAN 量化方案
-      - 同一完整输入帧
+      - 同一完整输入帧和同一套 board-side tile 调度参数
       - 同一个 TinySPAN bitstream
       - TinySPAN 板上输出
     pass_when_zh:

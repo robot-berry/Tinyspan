@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-06-18T13:22:42",
+  "generated_at": "2026-06-21T02:05:00+08:00",
   "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "gate_d_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_rtl_gate_summary.json",
+  "gate_f_board_32x32_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_f_board_x4_32x32_f150_tile32_20260621\\acceptance\\tinyspan_board_acceptance_summary.json",
   "gates": [
     {
       "gate": "A0",
@@ -41,30 +42,30 @@
     {
       "gate": "E",
       "name": "TinySPAN 实现与资源约束",
-      "status": "BLOCKED",
-      "evidence": "bitstream 缺失",
-      "next_action": "生成真实 TinySPAN bitstream 并归档 timing/utilization/power"
+      "status": "PASS",
+      "evidence": "gate_e_bitstream_x4_320x180_f150_prew_20260620：bitstream SHA256、timing WNS 0.074ns、resource gate PASS、power 3.646W、理论 X4 720p 31.0015fps",
+      "next_action": "运行真实 TinySPAN 板卡 smoke"
     },
     {
       "gate": "F",
       "name": "TinySPAN 板卡冒烟测试",
-      "status": "BLOCKED",
-      "evidence": "真实板上输出缺失",
-      "next_action": "bitstream 通过后运行真实板卡 smoke，回读 board output"
+      "status": "PASS",
+      "evidence": "gate_f_board_x4_32x32_f150_tile32_20260621：真实板上输出已回读，input counter 1024，output counter 16384，error flags 0x00000000",
+      "next_action": "扩展到 SD/DDR 完整帧板端切块"
     },
     {
       "gate": "G",
       "name": "TinySPAN 图像一致性可视化验证",
-      "status": "BLOCKED",
-      "evidence": "缺 board_sr.png / comparison_preview.png / diff_heatmap.png",
-      "next_action": "拿到真实 board output 后运行图像一致性验证"
+      "status": "PASS",
+      "evidence": "gate_f_board_x4_32x32_f150_tile32_20260621：board-vs-software 0/49152 mismatch，max diff 0，preview 已归档",
+      "next_action": "扩展到完整帧 tile 拼接可视化"
     },
     {
       "gate": "H",
       "name": "TinySPAN 最终 720p30 验收",
       "status": "BLOCKED",
-      "evidence": "缺 byte-exact board compare、board 720p30、resource gate",
-      "next_action": "等 E/F/G 通过后执行最终验收"
+      "evidence": "32x32 tile 已 PASS，但缺完整 SD/DDR frame tile scheduler、完整帧拼接输出、X2 独立证据",
+      "next_action": "完成板端完整帧切块拼接与 X2 证据后执行最终验收"
     },
     {
       "gate": "X2",

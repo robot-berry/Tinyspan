@@ -1,0 +1,73 @@
+{
+  "artifact_id": "gate_e_bitstream_x4_320x180_f150_prew_20260620",
+  "updated_at": "2026-06-20T16:05:00+08:00",
+  "baseline_id": "c32b4_30fps_frozen_20260613",
+  "checkpoint_sha256": "6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938",
+  "scale": 4,
+  "input_resolution": {
+    "width": 320,
+    "height": 180
+  },
+  "output_resolution": {
+    "width": 1280,
+    "height": 720
+  },
+  "implementation": {
+    "core": "TinySPAN W8A8 base-equivalent fast core",
+    "bitstream": "jfs_full_span_x4_320x180_f150m_tinyspan_w8a8_base_equiv_fast.bit",
+    "bitstream_sha256": "B2C2F3A8571EA3FFFE596C804528AF955C19B8A56077DA879727C1AEAE91DDF2",
+    "vivado_attempt_label": "x4_img320x180_tinyspan_w8a8_base_equiv_fast_mt1_20260620_143120",
+    "root_clean_log_dir": "board_runs/tinyspan_vivado_clean/bitstream_jtag_base_equiv/gate_e_x4_320x180_fast_xpmpipe_prew_f150_20260620_1431"
+  },
+  "timing": {
+    "status": "PASS",
+    "clock_name": "clk_pl_0",
+    "period_ns": 7.0,
+    "frequency_mhz": 142.857,
+    "wns_ns": 0.074,
+    "tns_ns": 0.0,
+    "report": "jtag_full_span_x4_320x180_f150m_tinyspan_w8a8_base_equiv_fast_timing_impl.rpt"
+  },
+  "power": {
+    "status": "PASS",
+    "report": "jtag_full_span_x4_320x180_f150m_tinyspan_w8a8_base_equiv_fast_power_impl.rpt",
+    "report_log": "report_power.log",
+    "total_on_chip_power_w": 3.646,
+    "dynamic_w": 2.433,
+    "device_static_w": 1.213,
+    "junction_temperature_c": 27.7,
+    "confidence_level": "Medium",
+    "note": "Vivado vector-less estimate; reset switching activity warning remains in report_power.log."
+  },
+  "resource_gate": {
+    "status": "PASS",
+    "gate_file": "resource_gate_xc7z045.json",
+    "limits": "XC7Z045/ZC706-equivalent contest resource cap",
+    "metrics": {
+      "lut": 7371,
+      "register": 5437,
+      "dsp": 94,
+      "bram_tile": 330.5,
+      "uram": 0
+    }
+  },
+  "simulation": {
+    "status": "PASS",
+    "log": "tinyspan_w8a8_fast_base_equiv_xsim.log",
+    "fast_span_cycles": 1275,
+    "outputs": 256,
+    "steady_state_cycles_per_output_pixel": 5
+  },
+  "throughput_estimate": {
+    "status": "PASS",
+    "kind": "RTL simulation + implemented clock estimate, not measured board throughput",
+    "fps_x4_1280x720": 31.0015,
+    "minimum_fps": 30
+  },
+  "pending_gates": [
+    "Gate F real board/JTAG smoke and board output capture",
+    "Gate G byte-exact board-vs-software comparison plus preview/heatmap",
+    "Gate H measured board throughput >=30fps",
+    "X2 independent evidence package"
+  ]
+}

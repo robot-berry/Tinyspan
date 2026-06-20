@@ -58,6 +58,7 @@ file delete -force $proj_dir
 create_project jfs $proj_dir -part xczu19eg-ffvc1760-2-i -force
 set_property target_language Verilog [current_project]
 set_property simulator_language Mixed [current_project]
+set_property xpm_libraries {XPM_MEMORY} [current_project]
 
 if {$use_w8a12_full_streamed} {
   # Keep the W8A12 JTAG project focused. Reading every rtl/span/*.v file pulls

@@ -9,6 +9,10 @@ def optional_path(value: str) -> str:
     return value if value else ""
 
 
+def read_json(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write TinySPAN board acceptance summary.")
     parser.add_argument("--compare-summary", type=Path, required=True)
@@ -24,12 +28,12 @@ def main() -> None:
     parser.add_argument("--target-name", default="TinySPAN")
     args = parser.parse_args()
 
-    compare = json.loads(args.compare_summary.read_text(encoding="utf-8"))
+    compare = read_json(args.compare_summary)
     board_resources = {}
     if args.board_log:
         board_log_path = Path(args.board_log)
         if board_log_path.exists() and board_log_path.suffix.lower() == ".json":
-            board_resources = json.loads(board_log_path.read_text(encoding="utf-8"))
+            board_resources = read_json(board_log_path)
     required_resource_fields = [
         "utilization_report",
         "timing_report",

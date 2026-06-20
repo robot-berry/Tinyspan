@@ -28,6 +28,7 @@ file mkdir $proj_dir
 create_project $::env(TINYSPAN_FAST_BASE_PROJ) $proj_dir -part xczu19eg-ffvc1760-2-i -force
 set_property target_language Verilog [current_project]
 set_property simulator_language Mixed [current_project]
+set_property xpm_libraries {XPM_MEMORY} [current_project]
 
 set rtl_sources [list \
     [file join $span_dir span_tinyspan_w8a8_bicubic_base_x4_streamed.v] \

@@ -73,14 +73,17 @@ try {
   $bit = Join-Path $root ("vivado\bitstreams\jfs_full_span_x4_{0}{1}_{2}.bit" -f $imgTag, $freqTag, $coreTag)
   $util = Join-Path $root ("vivado\reports\jtag_full_span_x4_{0}{1}_{2}_utilization_impl.rpt" -f $imgTag, $freqTag, $coreTag)
   $timing = Join-Path $root ("vivado\reports\jtag_full_span_x4_{0}{1}_{2}_timing_impl.rpt" -f $imgTag, $freqTag, $coreTag)
+  $power = Join-Path $root ("vivado\reports\jtag_full_span_x4_{0}{1}_{2}_power_impl.rpt" -f $imgTag, $freqTag, $coreTag)
   Write-Host "TINYSPAN_W8A8_BASE_EQUIV_BIT=$bit"
   Write-Host "TINYSPAN_W8A8_BASE_EQUIV_UTIL=$util"
   Write-Host "TINYSPAN_W8A8_BASE_EQUIV_TIMING=$timing"
+  Write-Host "TINYSPAN_W8A8_BASE_EQUIV_POWER=$power"
 } finally {
   if ($null -ne $cleanLogDirAbs) {
     if ([string]::IsNullOrWhiteSpace($vivadoCleanupLog)) {
       $vivadoCleanupLog = Join-Path $cleanLogDirAbs "vivado_cleanup.log"
     }
+    New-Item -ItemType Directory -Force -Path $cleanLogDirAbs | Out-Null
     powershell -NoProfile -ExecutionPolicy Bypass -File scripts\cleanup_vivado_processes.ps1 *> $vivadoCleanupLog
     $cleanupExit = $LASTEXITCODE
     Write-Host "TINYSPAN_BITSTREAM_VIVADO_CLEANUP_LOG=$vivadoCleanupLog"

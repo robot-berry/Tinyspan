@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-06-21T02:01:00+08:00",
+  "run_id": "gate_f_board_x4_32x32_f150_tile32_20260621",
+  "target": "TinySPAN-x4-32x32-board",
+  "baseline": "c32b4_30fps_frozen_20260613",
+  "checkpoint": "runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt",
+  "checkpoint_sha256": "6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938",
+  "quant_plan": "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+  "scale": 4,
+  "input_resolution": [32, 32],
+  "output_resolution": [128, 128],
+  "tile_mode": "board-side 32x32 LR tile",
+  "status": "PASS",
+  "board_smoke_pass": true,
+  "board_vs_software_pass": true,
+  "fps_pass": true,
+  "resource_gate_pass": true,
+  "mismatch_bytes": 0,
+  "total_bytes": 49152,
+  "max_channel_diff": 0,
+  "target_fps": 30.0,
+  "measured_fps": 1831.144098832951,
+  "bitstream": "jfs_full_span_x4_32x32_f150m_tinyspan_w8a8_base_equiv_fast.bit",
+  "bitstream_sha256": "82066FFE79D61C2128C19A68E1F88FDB989294B21380B4E1546071076A1DA600",
+  "board_rgb_sha256": "37A3F28A50777A0AA9A4504B02AAD764BA7AFBC6B0D8908DAA5673777FD3F55F",
+  "board_png_sha256": "0E463CBF5D9D0F325E883FD943726FEFC42E5B44F2ACA1A350D36C7C31360EA9",
+  "acceptance_summary_sha256": "DC063B176C4B59B3E293FC69BBA98672FEE30C23E50F4126C9F19CF7772E1E17",
+  "preview_sha256": "BA3C7C4D3FD179F4FB19B11A7439CFE1A3A385C90F5FF5E1B5A86FD3888C9971",
+  "timing": {
+    "clk_pl_0_period_ns": 7.0,
+    "clk_pl_0_mhz": 142.857,
+    "wns_ns": 0.091,
+    "whs_ns": 0.004
+  },
+  "resources": {
+    "clb_luts": 5943,
+    "clb_registers": 5232,
+    "dsp": 78,
+    "bram_tile": 10.5,
+    "uram": 0
+  },
+  "power": {
+    "total_on_chip_power_w": 3.469,
+    "dynamic_power_w": 2.260,
+    "device_static_power_w": 1.209
+  },
+  "jtag": {
+    "input_counter": 1024,
+    "output_counter": 16384,
+    "error_flags": "0x00000000",
+    "normal_frame_done": 1,
+    "perf_frame_cycles": 81916,
+    "perf_frame_done": 1,
+    "perf_e2e_cycles": 495227437
+  },
+  "evidence": {
+    "acceptance_summary": "acceptance\\tinyspan_board_acceptance_summary.md",
+    "acceptance_summary_json": "acceptance\\tinyspan_board_acceptance_summary.json",
+    "board_software_summary": "acceptance\\tinyspan_board_software_summary.md",
+    "preview": "acceptance\\tinyspan_board_software_preview.png",
+    "board_png": "board_output_x4_32x32_tinyspan_w8a8_base_equiv.png",
+    "board_rgb": "board_output_x4_32x32_tinyspan_w8a8_base_equiv.rgb",
+    "pytorch_base_equiv": "software_reference\\pytorch_base_equiv.png",
+    "rtl_fixed_reference": "software_reference\\rtl_base_equiv.png",
+    "resource_gate": "reports\\resource_gate_xc7z045.json",
+    "utilization_report": "reports\\jtag_full_span_x4_32x32_f150m_tinyspan_w8a8_base_equiv_fast_utilization_impl.rpt",
+    "timing_report": "reports\\jtag_full_span_x4_32x32_f150m_tinyspan_w8a8_base_equiv_fast_timing_impl.rpt",
+    "power_report": "reports\\jtag_full_span_x4_32x32_f150m_tinyspan_w8a8_base_equiv_fast_power_impl.rpt",
+    "jtag_transfer_log": "logs\\jtag_transfer.log",
+    "jtag_perf_log": "logs\\jtag_perf_only.log"
+  },
+  "not_final_acceptance_reasons": [
+    "This run validates one 32x32 LR tile, not the full SD/DDR frame tile scheduler.",
+    "Full-frame tile coordinate generation, halo handling, crop/stitch writeback, and display/SD output are still required.",
+    "X2 independent bitstream/board evidence is still required."
+  ]
+}

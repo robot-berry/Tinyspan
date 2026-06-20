@@ -181,10 +181,15 @@ try {
   New-Item -ItemType Directory -Path $reportDir -Force | Out-Null
   $srcUtil = Join-Path $root "vivado\jfs\reports\jtag_full_span_utilization_impl.rpt"
   $srcTiming = Join-Path $root "vivado\jfs\reports\jtag_full_span_timing_impl.rpt"
+  $srcPower = Join-Path $root "vivado\jfs\reports\jtag_full_span_power_impl.rpt"
   $dstUtil = Join-Path $reportDir ("jtag_full_span_x{0}_{1}{2}{3}_utilization_impl.rpt" -f $Scale, $imgTag, $freqTag, $coreTag)
   $dstTiming = Join-Path $reportDir ("jtag_full_span_x{0}_{1}{2}{3}_timing_impl.rpt" -f $Scale, $imgTag, $freqTag, $coreTag)
+  $dstPower = Join-Path $reportDir ("jtag_full_span_x{0}_{1}{2}{3}_power_impl.rpt" -f $Scale, $imgTag, $freqTag, $coreTag)
   Copy-Item -LiteralPath $srcUtil -Destination $dstUtil -Force
   Copy-Item -LiteralPath $srcTiming -Destination $dstTiming -Force
+  if (Test-Path -LiteralPath $srcPower) {
+    Copy-Item -LiteralPath $srcPower -Destination $dstPower -Force
+  }
 
   Write-Host "FULL_SPAN_SCALE=$Scale"
   Write-Host "FULL_SPAN_IMG_W=$ImgW"
@@ -202,6 +207,11 @@ try {
   Write-Host "FULL_SPAN_BIT=$dstBit"
   Write-Host "FULL_SPAN_UTIL=$dstUtil"
   Write-Host "FULL_SPAN_TIMING=$dstTiming"
+  if (Test-Path -LiteralPath $dstPower) {
+    Write-Host "FULL_SPAN_POWER=$dstPower"
+  } else {
+    Write-Host "FULL_SPAN_POWER=NOT_GENERATED"
+  }
   Write-Host "FULL_SPAN_VIVADO_LOG=$vivadoLog"
 }
 finally {

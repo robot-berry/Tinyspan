@@ -1,0 +1,73 @@
+{
+  "target": "XC7Z045 FFG900-2 resource limits",
+  "report": "vivado\\reports\\jtag_full_span_x4_32x32_f150m_tinyspan_w8a8_base_equiv_fast_utilization_impl.rpt",
+  "pass": true,
+  "metrics": {
+    "dsp": 78.0,
+    "bram_tile": 10.5,
+    "uram": 0.0,
+    "iob": 0.0,
+    "lut": 5943.0,
+    "register": 5232.0
+  },
+  "limits": {
+    "dsp": 900.0,
+    "bram_tile": 545.0,
+    "uram": 0.0,
+    "iob": 362.0,
+    "lut": 218600.0,
+    "register": 437200.0
+  },
+  "comparison": "value <= limit",
+  "fail_if": "value > limit",
+  "checks": [
+    {
+      "metric": "dsp",
+      "value": 78.0,
+      "limit": 900.0,
+      "comparison": "value <= limit",
+      "fail_if": "value > limit",
+      "pass": true
+    },
+    {
+      "metric": "bram_tile",
+      "value": 10.5,
+      "limit": 545.0,
+      "comparison": "value <= limit",
+      "fail_if": "value > limit",
+      "pass": true
+    },
+    {
+      "metric": "uram",
+      "value": 0.0,
+      "limit": 0.0,
+      "comparison": "value <= limit",
+      "fail_if": "value > limit",
+      "pass": true
+    },
+    {
+      "metric": "iob",
+      "value": 0.0,
+      "limit": 362.0,
+      "comparison": "value <= limit",
+      "fail_if": "value > limit",
+      "pass": true
+    },
+    {
+      "metric": "lut",
+      "value": 5943.0,
+      "limit": 218600.0,
+      "comparison": "value <= limit",
+      "fail_if": "value > limit",
+      "pass": true
+    },
+    {
+      "metric": "register",
+      "value": 5232.0,
+      "limit": 437200.0,
+      "comparison": "value <= limit",
+      "fail_if": "value > limit",
+      "pass": true
+    }
+  ]
+}

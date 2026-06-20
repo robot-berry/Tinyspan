@@ -1,0 +1,21 @@
+{
+  "software": "board_runs\\tinyspan_w8a8_base_equiv_jtag\\gate_f_x4_32x32_f150_20260621_tile32\\software_reference\\pytorch_base_equiv.png",
+  "fixed": "board_runs\\tinyspan_w8a8_base_equiv_jtag\\gate_f_x4_32x32_f150_20260621_tile32\\software_reference\\rtl_base_equiv.png",
+  "board": "board_runs\\tinyspan_w8a8_base_equiv_jtag\\gate_f_x4_32x32_f150_20260621_tile32\\board_output_x4_32x32_tinyspan_w8a8_base_equiv.png",
+  "preview": "board_runs\\tinyspan_w8a8_base_equiv_jtag\\gate_f_x4_32x32_f150_20260621_tile32\\acceptance\\tinyspan_board_software_preview.png",
+  "mismatch_bytes": 0,
+  "total_bytes": 49152,
+  "max_channel_diff": 0,
+  "software_size": [
+    128,
+    128
+  ],
+  "board_size": [
+    128,
+    128
+  ],
+  "size_match": true,
+  "max_allowed_diff": 0,
+  "max_allowed_mismatch_bytes": 0,
+  "pass": true
+}

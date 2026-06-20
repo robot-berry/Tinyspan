@@ -32,6 +32,10 @@ module tb_span_tinyspan_w8a8_bicubic_base_x4_fast_vs_serial;
     integer serial_count = 0;
     integer i;
     integer mismatch_count;
+    time fast_first_time;
+    time fast_last_time;
+    time serial_first_time;
+    time serial_last_time;
     reg fast_user_seen = 1'b0;
     reg serial_user_seen = 1'b0;
 
@@ -81,10 +85,17 @@ module tb_span_tinyspan_w8a8_bicubic_base_x4_fast_vs_serial;
         if (rst) begin
             fast_count <= 0;
             serial_count <= 0;
+            fast_first_time <= 0;
+            fast_last_time <= 0;
+            serial_first_time <= 0;
+            serial_last_time <= 0;
             fast_user_seen <= 1'b0;
             serial_user_seen <= 1'b0;
         end else begin
             if (fast_valid && m_ready) begin
+                if (fast_count == 0)
+                    fast_first_time <= $time;
+                fast_last_time <= $time;
                 if (fast_count < OUT_PIXELS)
                     fast_out[fast_count] <= fast_rgb;
                 if (fast_user)
@@ -92,6 +103,9 @@ module tb_span_tinyspan_w8a8_bicubic_base_x4_fast_vs_serial;
                 fast_count <= fast_count + 1;
             end
             if (serial_valid && m_ready) begin
+                if (serial_count == 0)
+                    serial_first_time <= $time;
+                serial_last_time <= $time;
                 if (serial_count < OUT_PIXELS)
                     serial_out[serial_count] <= serial_rgb;
                 if (serial_user)
@@ -160,6 +174,10 @@ module tb_span_tinyspan_w8a8_bicubic_base_x4_fast_vs_serial;
                     $fatal(1, "FAST_SERIAL_MISMATCH count=%0d", mismatch_count);
                 if (!fast_user_seen || !serial_user_seen)
                     $fatal(1, "Missing first-pixel user marker");
+                $display("FAST_TIMING first_time=%0t last_time=%0t span_cycles=%0d outputs=%0d",
+                    fast_first_time, fast_last_time, (fast_last_time - fast_first_time) / 10, OUT_PIXELS);
+                $display("SERIAL_TIMING first_time=%0t last_time=%0t span_cycles=%0d outputs=%0d",
+                    serial_first_time, serial_last_time, (serial_last_time - serial_first_time) / 10, OUT_PIXELS);
                 $display("PASS tinyspan_w8a8_fast_base_equiv outputs=%0d", OUT_PIXELS);
                 $finish;
             end

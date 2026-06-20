@@ -1,0 +1,22 @@
+{
+  "pass": true,
+  "pytorch_vs_rtl_fixed_pass": true,
+  "mismatch_bytes": 0,
+  "total_bytes": 49152,
+  "max_channel_diff": 0,
+  "mean_channel_diff": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "base_q31": 2007717611,
+  "reference_policy": {
+    "byte_exact_board_gate": "compare board output against the RTL-isomorphic fixed-point software reference",
+    "pytorch_bicubic_output": "visual quality reference only; do not use it as the byte-exact board gate"
+  },
+  "pytorch_quantized_output": "G:\\UESTC\\feitengspan1\\board_runs\\tinyspan_w8a8_base_equiv_jtag\\gate_f_x4_32x32_f150_20260621_tile32\\software_reference\\pytorch_base_equiv.png",
+  "rtl_fixed_output": "G:\\UESTC\\feitengspan1\\board_runs\\tinyspan_w8a8_base_equiv_jtag\\gate_f_x4_32x32_f150_20260621_tile32\\software_reference\\rtl_base_equiv.png",
+  "diff_output": "G:\\UESTC\\feitengspan1\\board_runs\\tinyspan_w8a8_base_equiv_jtag\\gate_f_x4_32x32_f150_20260621_tile32\\software_reference\\diff.png",
+  "mismatch_record_limit": 64,
+  "mismatch_records": []
+}
