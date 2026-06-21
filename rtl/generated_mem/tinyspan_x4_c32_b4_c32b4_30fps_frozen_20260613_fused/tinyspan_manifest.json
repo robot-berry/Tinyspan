@@ -1,0 +1,328 @@
+{
+  "source_checkpoint": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt",
+  "scale": 4,
+  "channels": 32,
+  "num_blocks": 4,
+  "epoch": 4,
+  "best_psnr": null,
+  "conv3xc_fused": true,
+  "conv3xc_fused_count": 12,
+  "fusion_note": "Conv3XC fused with interior-bias formula; validate border behavior against PyTorch before RTL signoff.",
+  "weights": [
+    {
+      "name": "head.weight",
+      "file": "weights/head_weight.mem",
+      "shape": [
+        32,
+        3,
+        3,
+        3
+      ],
+      "quant_scale": 0.0015142455579727654,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "head.bias",
+      "file": "weights/head_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0014650002708585244,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.0.c1.conv.weight",
+      "file": "weights/blocks_0_c1_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.0016014655743996928,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.0.c1.conv.bias",
+      "file": "weights/blocks_0_c1_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0020931907526151403,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.0.c2.conv.weight",
+      "file": "weights/blocks_0_c2_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.0016040413633106262,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.0.c2.conv.bias",
+      "file": "weights/blocks_0_c2_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0024576942751726766,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.0.c3.conv.weight",
+      "file": "weights/blocks_0_c3_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.001554259165065495,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.0.c3.conv.bias",
+      "file": "weights/blocks_0_c3_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0022845465367234597,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.1.c1.conv.weight",
+      "file": "weights/blocks_1_c1_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.0015218694379010539,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.1.c1.conv.bias",
+      "file": "weights/blocks_1_c1_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.002498193988649864,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.1.c2.conv.weight",
+      "file": "weights/blocks_1_c2_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.0016081610063868245,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.1.c2.conv.bias",
+      "file": "weights/blocks_1_c2_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0020034730903745637,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.1.c3.conv.weight",
+      "file": "weights/blocks_1_c3_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.001632280823752636,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.1.c3.conv.bias",
+      "file": "weights/blocks_1_c3_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.002337791553632481,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.2.c1.conv.weight",
+      "file": "weights/blocks_2_c1_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.0016652777439027321,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.2.c1.conv.bias",
+      "file": "weights/blocks_2_c1_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0020613473231398216,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.2.c2.conv.weight",
+      "file": "weights/blocks_2_c2_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.0015434119410402192,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.2.c2.conv.bias",
+      "file": "weights/blocks_2_c2_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0023323489925054113,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.2.c3.conv.weight",
+      "file": "weights/blocks_2_c3_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.001596058916857862,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.2.c3.conv.bias",
+      "file": "weights/blocks_2_c3_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.002490925976610559,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.3.c1.conv.weight",
+      "file": "weights/blocks_3_c1_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.0015868531672034677,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.3.c1.conv.bias",
+      "file": "weights/blocks_3_c1_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0019669728720282005,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.3.c2.conv.weight",
+      "file": "weights/blocks_3_c2_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.0015270550419965129,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.3.c2.conv.bias",
+      "file": "weights/blocks_3_c2_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0019530671553348931,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.3.c3.conv.weight",
+      "file": "weights/blocks_3_c3_conv_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.0016595531167007806,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "blocks.3.c3.conv.bias",
+      "file": "weights/blocks_3_c3_conv_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0018672528933352372,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "fuse_tail.weight",
+      "file": "weights/fuse_tail_weight.mem",
+      "shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "quant_scale": 0.00046391395015979377,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "fuse_tail.bias",
+      "file": "weights/fuse_tail_bias.mem",
+      "shape": [
+        32
+      ],
+      "quant_scale": 0.0004479021244631039,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "reconstruct.weight",
+      "file": "weights/reconstruct_weight.mem",
+      "shape": [
+        48,
+        128,
+        3,
+        3
+      ],
+      "quant_scale": 1e-12,
+      "dtype": "int8_hex_mem"
+    },
+    {
+      "name": "reconstruct.bias",
+      "file": "weights/reconstruct_bias.mem",
+      "shape": [
+        48
+      ],
+      "quant_scale": 1e-12,
+      "dtype": "int8_hex_mem"
+    }
+  ]
+}

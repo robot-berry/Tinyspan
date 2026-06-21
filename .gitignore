@@ -23,6 +23,11 @@ hs_err_pid*.dmp
 __pycache__/
 *.pyc
 
+# Training scratch logs: keep curated metrics, commands, previews, and checkpoints only.
+train/logs/**/*.log
+train/logs/**/student_last.pt
+train/logs/**/student_latest.pt
+
 # Keep final evidence, but avoid oversized raw dumps by default
 artifacts/**/raw/
 artifacts/**/*.dcp

@@ -26,6 +26,8 @@ Main documents:
 
 - [WORKFLOW.md](WORKFLOW.md): human-readable project workflow and acceptance
   gates.
+- [docs/training_artifacts.md](docs/training_artifacts.md): training source,
+  frozen checkpoints, quantization plans, and model-to-hardware handoff index.
 - [workflows/tinyspan_720p30_acceptance.yaml](workflows/tinyspan_720p30_acceptance.yaml):
   machine-readable workflow checklist.
 - [artifacts/README.md](artifacts/README.md): where future generated outputs

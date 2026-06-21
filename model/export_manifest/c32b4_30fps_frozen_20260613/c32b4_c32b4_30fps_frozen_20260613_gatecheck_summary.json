@@ -1,0 +1,38 @@
+﻿{
+    "passed":  true,
+    "tag":  "c32b4_30fps_frozen_20260613_gatecheck",
+    "checkpoint":  "runs\\tinyspan_frozen_candidates\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt",
+    "branch":  "hardware-test",
+    "width":  32,
+    "height":  32,
+    "preview_input":  "external\\SPAN\\test_scripts\\data\\baboon.png",
+    "calibration_input":  "G:\\REDS\\train_sharp",
+    "calibration_images":  4,
+    "fusion_report":  "runs\\tinyspan_fusion\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4\\fusion_check.md",
+    "fused_checkpoint":  "runs\\tinyspan_fusion\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4\\student_fused_conv3xc.pt",
+    "handoff_dir":  "rtl\\generated\\tinyspan_x4_c32_b4_c32b4_30fps_frozen_20260613_gatecheck_fused",
+    "manifest":  "rtl\\generated\\tinyspan_x4_c32_b4_c32b4_30fps_frozen_20260613_gatecheck_fused\\tinyspan_manifest.json",
+    "manifest_reference_summary":  "runs\\tinyspan_manifest_reference\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4_32x32\\tinyspan_manifest_reference_summary.md",
+    "manifest_reference_summary_json":  "runs\\tinyspan_manifest_reference\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4_32x32\\tinyspan_manifest_reference_summary.json",
+    "manifest_reference_preview":  "runs\\tinyspan_manifest_reference\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4_32x32\\tinyspan_manifest_reference_preview.png",
+    "manifest_reference_metrics":  {
+                                       "mismatch_bytes":  0,
+                                       "max_channel_diff":  0,
+                                       "psnr_db":  Infinity
+                                   },
+    "activation_scales":  "runs\\tinyspan_calibration\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4_reds4_32x32\\activation_scales.json",
+    "quant_plan":  "runs\\tinyspan_quant_plan\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+    "integer_reference_summary":  "runs\\tinyspan_integer_reference\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4_32x32_w8a8\\tinyspan_w8a8_integer_reference_summary.md",
+    "integer_reference_summary_json":  "runs\\tinyspan_integer_reference\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4_32x32_w8a8\\tinyspan_w8a8_integer_reference_summary.json",
+    "integer_reference_preview":  "runs\\tinyspan_integer_reference\\c32b4_30fps_frozen_20260613_gatecheck_x4_c32_b4_32x32_w8a8\\tinyspan_w8a8_integer_reference_preview.png",
+    "integer_reference_metrics":  {
+                                      "mismatch_bytes":  28877,
+                                      "max_channel_diff":  2,
+                                      "psnr_db":  48.835283894760977
+                                  },
+    "gates":  {
+                  "manifest_matches_software":  true,
+                  "integer_psnr_ok":  true,
+                  "integer_channel_diff_ok":  true
+              }
+}

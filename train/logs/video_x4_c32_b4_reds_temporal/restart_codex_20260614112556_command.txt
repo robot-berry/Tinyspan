@@ -1,0 +1,4 @@
+pid=64192
+python train/distill_tinyspan_video.py --train-frames G:/REDS/train_sharp --scale 4 --channels 32 --num-blocks 4 --patch-size 192 --batch-size 4 --epochs 50 --max-steps 0 --max-pairs 24000 --output runs/tinyspan_distill/video_x4_c32_b4_reds_temporal --save-every-steps 500 --resume-student runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/student_latest.pt
+stdout=G:/UESTC/feitengspan1/runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/restart_codex_20260614112556_stdout.log
+stderr=G:/UESTC/feitengspan1/runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/restart_codex_20260614112556_stderr.log

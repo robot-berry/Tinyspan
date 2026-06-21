@@ -1,0 +1,12 @@
+{
+  "candidate": "quality_stretch",
+  "student": "TinySPAN X4, channels=32, num_blocks=5",
+  "teacher": "REDS-trained/official SPAN X4 teacher; use the distiller default unless overriding --teacher-manifest/--teacher-checkpoint",
+  "hardware_assumption": "Conv3XC fused to one 3x3 C->C kernel before RTL deployment",
+  "estimated_fused_macs_per_lr_pixel": 203616,
+  "estimated_720p30_fps_200mhz_80pct_dsp": 53.682,
+  "smoke_command": "python train/distill_tinyspan_video.py --train-frames external/SPAN/test_scripts/data/baboon.png --scale 4 --channels 32 --num-blocks 5 --patch-size 128 --batch-size 1 --epochs 1 --max-steps 6 --synthetic-frames 12 --output runs/tinyspan_distill/video_smoke_x4_c32_b5_baboon --amp",
+  "full_command": "python train/distill_tinyspan_video.py --train-frames G:/REDS/train_sharp --scale 4 --channels 32 --num-blocks 5 --patch-size 192 --batch-size 6 --epochs 50 --max-pairs 24000 --output runs/tinyspan_distill/video_x4_c32_b5_reds_temporal --amp",
+  "acceptance_command": "python tools/run_tinyspan_realtime_acceptance.py --checkpoint runs/tinyspan_distill/video_x4_c32_b5_reds_temporal/student_last.pt --scale 4 --student-channels 32 --student-blocks 5 --input external/SPAN/test_scripts/data/baboon.png --width 320 --height 180 --fps 30 --stream-frames 60 --quality-frames 30 --min-fps 30 --out-dir runs/tinyspan_acceptance/video_x4_c32_b5_320x180_60f --half --async-writer --motion --preview-tile 180",
+  "handoff_command": "powershell -ExecutionPolicy Bypass -File scripts/prepare_tinyspan_hardware_handoff.ps1 -Checkpoint runs/tinyspan_distill/video_x4_c32_b5_reds_temporal/student_last.pt -Scale 4 -Channels 32 -Blocks 5 -OutputDir rtl/generated/tinyspan_x4_c32_b5_candidate"
+}

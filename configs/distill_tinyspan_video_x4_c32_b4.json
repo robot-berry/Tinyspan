@@ -1,0 +1,88 @@
+{
+  "candidate": "realtime_quality_max_1mac",
+  "student": "TinySPAN X4, channels=32, num_blocks=4",
+  "teacher": "REDS-trained/official SPAN X4 teacher; use the distiller default unless overriding --teacher-manifest/--teacher-checkpoint",
+  "hardware_assumption": "Conv3XC fused to one 3x3 C->C kernel before RTL deployment; sizing uses conservative 1 MAC/DSP/cycle",
+  "estimated_fused_macs_per_lr_pixel": 175968,
+  "estimated_720p30_fps_200mhz_80pct_dsp_1mac": 31.058,
+  "estimated_720p30_fps_250mhz_80pct_dsp_1mac": 38.823,
+  "latest_smoke_result": {
+    "date": "2026-06-13",
+    "distill_output": "runs/tinyspan_distill/video_smoke_x4_c32_b4_baboon",
+    "checkpoint": "runs/tinyspan_distill/video_smoke_x4_c32_b4_baboon/student_last.pt",
+    "preview": "runs/tinyspan_distill/video_smoke_x4_c32_b4_baboon/video_distill_preview.png",
+    "fusion_report": "runs/tinyspan_fusion/video_smoke_x4_c32_b4_baboon/fusion_check.md",
+    "fused_checkpoint": "runs/tinyspan_fusion/video_smoke_x4_c32_b4_baboon/student_fused_conv3xc.pt",
+    "fused_handoff_summary": "runs/tinyspan_hardware_handoff/handoff_x4_c32_b4_fused.md",
+    "fused_export_dir": "rtl/generated/tinyspan_x4_c32_b4_fused_handoff_smoke",
+    "manifest_reference_summary": "runs/tinyspan_manifest_reference/video_smoke_x4_c32_b4_baboon_32x32/tinyspan_manifest_reference_summary.md",
+    "manifest_reference_preview": "runs/tinyspan_manifest_reference/video_smoke_x4_c32_b4_baboon_32x32/tinyspan_manifest_reference_preview.png",
+    "manifest_vs_pytorch_mismatch_bytes": "39 / 49152",
+    "manifest_vs_pytorch_max_channel_diff": 1,
+    "manifest_vs_pytorch_psnr_db": 79.136,
+    "activation_calibration": "runs/tinyspan_calibration/c32_b4_smoke_reds4_32x32/activation_scales.json",
+    "w8a8_quant_plan": "runs/tinyspan_quant_plan/video_smoke_x4_c32_b4_reds4_w8a8/tinyspan_w8a8_quant_plan.json",
+    "w8a8_integer_reference_summary": "runs/tinyspan_integer_reference/video_smoke_x4_c32_b4_baboon_32x32_w8a8/tinyspan_w8a8_integer_reference_summary.md",
+    "w8a8_integer_reference_preview": "runs/tinyspan_integer_reference/video_smoke_x4_c32_b4_baboon_32x32_w8a8/tinyspan_w8a8_integer_reference_preview.png",
+    "w8a8_fake_vs_integer_mismatch_bytes": "11593 / 49152",
+    "w8a8_fake_vs_integer_max_channel_diff": 3,
+    "w8a8_fake_vs_integer_psnr_db": 47.661,
+    "note": "Smoke checkpoint proves the C32B4 training/fusion/handoff/reference pipeline, not final REDS quality."
+  },
+  "latest_reds_data_smoke": {
+    "date": "2026-06-13",
+    "command": "python train/distill_tinyspan_video.py --train-frames G:/REDS/train_sharp --scale 4 --channels 32 --num-blocks 4 --patch-size 192 --batch-size 1 --epochs 1 --max-steps 4 --max-pairs 24 --output runs/tinyspan_distill/video_reds_smoke_x4_c32_b4 --amp",
+    "result": "PASS",
+    "output": "runs/tinyspan_distill/video_reds_smoke_x4_c32_b4",
+    "checkpoint": "runs/tinyspan_distill/video_reds_smoke_x4_c32_b4/student_last.pt",
+    "preview": "runs/tinyspan_distill/video_reds_smoke_x4_c32_b4/video_distill_preview.png",
+    "note": "Verifies the real REDS sequence input path for C32B4; not a final-quality checkpoint."
+  },
+  "formal_training": {
+    "status": "running",
+    "started_at": "2026-06-13T15:53:52+08:00",
+    "launcher": "scripts/start_tinyspan_c32b4_training.ps1",
+    "status_script": "scripts/status_tinyspan_c32b4_training.ps1",
+    "command": "powershell -ExecutionPolicy Bypass -File scripts/start_tinyspan_c32b4_training.ps1 -BatchSize 6 -PatchSize 192 -Epochs 50 -MaxPairs 24000 -SaveEverySteps 500 -ResumeStudent runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/student_last.pt",
+    "output": "runs/tinyspan_distill/video_x4_c32_b4_reds_temporal",
+    "stdout": "runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/train_stdout.log",
+    "stderr": "runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/train_stderr.log",
+    "metrics": "runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/metrics.csv",
+    "latest_checkpoint": "runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/student_latest.pt",
+    "final_checkpoint": "runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/student_last.pt",
+    "latest_status_observed": "epoch 1/50, step 61/3960, running at about 1.6-1.7 it/s",
+    "note": "The first launch exposed a wrapper bug where max_steps defaulted to 20; that 20-step checkpoint was reused as the resume seed after fixing the wrapper to pass --max-steps 0."
+  },
+  "post_training_handoff_pipeline": {
+    "script": "scripts/prepare_tinyspan_c32b4_realtime_handoff.ps1",
+    "smoke_command": "powershell -ExecutionPolicy Bypass -File scripts/prepare_tinyspan_c32b4_realtime_handoff.ps1 -Checkpoint runs/tinyspan_distill/video_smoke_x4_c32_b4_baboon/student_last.pt -Tag smoke_baboon -PreviewInput external/SPAN/test_scripts/data/baboon.png -CalibrationInput G:/REDS/train_sharp -Width 32 -Height 32 -CalibrationImages 4 -Device auto -Tile 160",
+    "full_checkpoint_template": "powershell -ExecutionPolicy Bypass -File scripts/prepare_tinyspan_c32b4_realtime_handoff.ps1 -Checkpoint runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/student_last.pt -Tag reds_final -PreviewInput external/SPAN/test_scripts/data/baboon.png -CalibrationInput G:/REDS/train_sharp -Width 32 -Height 32 -CalibrationImages 8 -Device auto -Tile 160",
+    "latest_smoke_summary": "runs/tinyspan_realtime_handoff/c32b4_smoke_baboon_summary.md",
+    "latest_smoke_manifest_preview": "runs/tinyspan_manifest_reference/smoke_baboon_x4_c32_b4_32x32/tinyspan_manifest_reference_preview.png",
+    "latest_smoke_integer_preview": "runs/tinyspan_integer_reference/smoke_baboon_x4_c32_b4_32x32_w8a8/tinyspan_w8a8_integer_reference_preview.png",
+    "latest_smoke_status": "PASS"
+  },
+  "rtl_primitive_gate": {
+    "script": "scripts/run_tinyspan_c32b4_w8a8_rtl_gate.ps1",
+    "smoke_command": "powershell -ExecutionPolicy Bypass -File scripts/run_tinyspan_c32b4_w8a8_rtl_gate.ps1 -QuantPlan runs/tinyspan_quant_plan/smoke_baboon_x4_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json -ConvRuntime 2ms -PreviewTile 160",
+    "full_checkpoint_template": "powershell -ExecutionPolicy Bypass -File scripts/run_tinyspan_c32b4_w8a8_rtl_gate.ps1 -QuantPlan runs/tinyspan_quant_plan/reds_final_x4_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json -ConvRuntime 2ms -PreviewTile 160",
+    "latest_smoke_summary": "runs/tinyspan_quant_plan/smoke_baboon_x4_c32_b4_w8a8/tinyspan_w8a8_rtl_gate_summary.md",
+    "latest_smoke_status": "PASS",
+    "latest_smoke_conv_previews": [
+      "runs/tinyspan_quant_plan/smoke_baboon_x4_c32_b4_w8a8/conv_vector_previews/tinyspan_w8a8_head_conv_vector_preview.png",
+      "runs/tinyspan_quant_plan/smoke_baboon_x4_c32_b4_w8a8/conv_vector_previews/tinyspan_w8a8_blocks_0_c1_conv_vector_preview.png",
+      "runs/tinyspan_quant_plan/smoke_baboon_x4_c32_b4_w8a8/conv_vector_previews/tinyspan_w8a8_reconstruct_conv_vector_preview.png"
+    ],
+    "latest_smoke_postprocess_previews": [
+      "runs/tinyspan_quant_plan/smoke_baboon_x4_c32_b4_w8a8/postprocess_previews/tinyspan_w8a8_blocks_0_postprocess_preview.png",
+      "runs/tinyspan_quant_plan/smoke_baboon_x4_c32_b4_w8a8/postprocess_previews/tinyspan_w8a8_blocks_1_postprocess_preview.png",
+      "runs/tinyspan_quant_plan/smoke_baboon_x4_c32_b4_w8a8/postprocess_previews/tinyspan_w8a8_blocks_2_postprocess_preview.png",
+      "runs/tinyspan_quant_plan/smoke_baboon_x4_c32_b4_w8a8/postprocess_previews/tinyspan_w8a8_blocks_3_postprocess_preview.png"
+    ]
+  },
+  "smoke_command": "python train/distill_tinyspan_video.py --train-frames external/SPAN/test_scripts/data/baboon.png --scale 4 --channels 32 --num-blocks 4 --patch-size 128 --batch-size 1 --epochs 1 --max-steps 6 --synthetic-frames 12 --output runs/tinyspan_distill/video_smoke_x4_c32_b4_baboon --amp",
+  "full_command": "python train/distill_tinyspan_video.py --train-frames G:/REDS/train_sharp --scale 4 --channels 32 --num-blocks 4 --patch-size 192 --batch-size 6 --epochs 50 --max-pairs 24000 --output runs/tinyspan_distill/video_x4_c32_b4_reds_temporal --amp",
+  "acceptance_command": "python tools/run_tinyspan_realtime_acceptance.py --checkpoint runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/student_last.pt --scale 4 --student-channels 32 --student-blocks 4 --input external/SPAN/test_scripts/data/baboon.png --width 320 --height 180 --fps 30 --stream-frames 60 --quality-frames 30 --min-fps 30 --out-dir runs/tinyspan_acceptance/video_x4_c32_b4_320x180_60f --half --async-writer --motion --preview-tile 180",
+  "handoff_command": "powershell -ExecutionPolicy Bypass -File scripts/prepare_tinyspan_hardware_handoff.ps1 -Checkpoint runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/student_last.pt -Scale 4 -Channels 32 -Blocks 4 -OutputDir rtl/generated/tinyspan_x4_c32_b4_candidate",
+  "fused_handoff_command": "powershell -ExecutionPolicy Bypass -File scripts/prepare_tinyspan_hardware_handoff.ps1 -Checkpoint runs/tinyspan_distill/video_x4_c32_b4_reds_temporal/student_last.pt -Scale 4 -Channels 32 -Blocks 4 -OutputDir rtl/generated/tinyspan_x4_c32_b4_fused_candidate -FuseConv3XC"
+}

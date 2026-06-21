@@ -1,0 +1,10 @@
+﻿{
+    "tag":  "c32b4_final_20260615",
+    "source":  "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x4_c32_b4_reds_temporal\\student_latest.pt",
+    "frozen":  "G:\\UESTC\\feitengspan1\\runs\\tinyspan_frozen_candidates\\c32b4_final_20260615\\student_final_candidate.pt",
+    "source_sha256":  "F5FC59CD88D4A9DEB2CFB81F1CA47FB4FF50ECA3FD4C6F5EAC13CC6B8586AC64",
+    "frozen_sha256":  "F5FC59CD88D4A9DEB2CFB81F1CA47FB4FF50ECA3FD4C6F5EAC13CC6B8586AC64",
+    "source_last_write":  "2026-06-15T18:48:09",
+    "frozen_last_write":  "2026-06-15T18:48:09",
+    "copied_at":  "2026-06-15T23:20:37"
+}

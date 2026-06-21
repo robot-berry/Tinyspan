@@ -1,0 +1,38 @@
+{
+  "candidate": "balanced",
+  "student": "TinySPAN X4, channels=24, num_blocks=4",
+  "teacher": "REDS-trained/official SPAN X4 teacher; use the distiller default unless overriding --teacher-manifest/--teacher-checkpoint",
+  "hardware_assumption": "Conv3XC fused to one 3x3 C->C kernel before RTL deployment",
+  "estimated_fused_macs_per_lr_pixel": 109512,
+  "estimated_720p30_fps_200mhz_80pct_dsp": 99.811,
+  "latest_smoke_result": {
+    "date": "2026-06-13",
+    "distill_output": "runs/tinyspan_distill/video_smoke_x4_c24_b4_baboon",
+    "checkpoint": "runs/tinyspan_distill/video_smoke_x4_c24_b4_baboon/student_last.pt",
+    "handoff_summary": "runs/tinyspan_hardware_handoff/handoff_x4_c24_b4.md",
+    "acceptance_summary": "runs/tinyspan_acceptance/video_smoke_c24_b4_x4_320x180_12f/summary.md",
+    "handoff_pass": true,
+    "software_realtime_pass": false,
+    "end_to_end_fps": 19.39494558029683,
+    "psnr_vs_teacher_db": 29.87844027306674,
+    "note": "Software test uses the unfused training graph. Hardware realtime estimate assumes Conv3XC fusion before fixed-point/RTL implementation."
+  },
+  "latest_fusion_result": {
+    "date": "2026-06-13",
+    "fusion_report": "runs/tinyspan_fusion/video_smoke_x4_c24_b4_baboon/fusion_check.md",
+    "fused_checkpoint": "runs/tinyspan_fusion/video_smoke_x4_c24_b4_baboon/student_fused_conv3xc.pt",
+    "fused_manifest": "runs/tinyspan_fusion/video_smoke_x4_c24_b4_baboon/tinyspan_fused_manifest.json",
+    "model_full_psnr_db": 112.09647178649902,
+    "model_full_mae": 9.282813948630064e-7,
+    "model_crop16_psnr_db": 159.2443561553955,
+    "fused_handoff_summary": "runs/tinyspan_hardware_handoff/handoff_x4_c24_b4_fused.md",
+    "fused_handoff_pass": true,
+    "fused_weight_files": 30,
+    "fused_export_dir": "rtl/generated/tinyspan_x4_c24_b4_fused_handoff_smoke"
+  },
+  "smoke_command": "python train/distill_tinyspan_video.py --train-frames external/SPAN/test_scripts/data/baboon.png --scale 4 --channels 24 --num-blocks 4 --patch-size 128 --batch-size 1 --epochs 1 --max-steps 6 --synthetic-frames 12 --output runs/tinyspan_distill/video_smoke_x4_c24_b4_baboon --amp",
+  "full_command": "python train/distill_tinyspan_video.py --train-frames G:/REDS/train_sharp --scale 4 --channels 24 --num-blocks 4 --patch-size 192 --batch-size 8 --epochs 50 --max-pairs 24000 --output runs/tinyspan_distill/video_x4_c24_b4_reds_temporal --amp",
+  "acceptance_command": "python tools/run_tinyspan_realtime_acceptance.py --checkpoint runs/tinyspan_distill/video_x4_c24_b4_reds_temporal/student_last.pt --scale 4 --student-channels 24 --student-blocks 4 --input external/SPAN/test_scripts/data/baboon.png --width 320 --height 180 --fps 30 --stream-frames 60 --quality-frames 30 --min-fps 30 --out-dir runs/tinyspan_acceptance/video_x4_c24_b4_320x180_60f --half --async-writer --motion --preview-tile 180",
+  "handoff_command": "powershell -ExecutionPolicy Bypass -File scripts/prepare_tinyspan_hardware_handoff.ps1 -Checkpoint runs/tinyspan_distill/video_x4_c24_b4_reds_temporal/student_last.pt -Scale 4 -Channels 24 -Blocks 4 -OutputDir rtl/generated/tinyspan_x4_c24_b4_candidate",
+  "fused_handoff_command": "powershell -ExecutionPolicy Bypass -File scripts/prepare_tinyspan_hardware_handoff.ps1 -Checkpoint runs/tinyspan_distill/video_x4_c24_b4_reds_temporal/student_last.pt -Scale 4 -Channels 24 -Blocks 4 -OutputDir rtl/generated/tinyspan_x4_c24_b4_fused_candidate -FuseConv3XC"
+}

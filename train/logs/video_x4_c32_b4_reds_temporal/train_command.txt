@@ -1,0 +1,1 @@
+﻿powershell -NoProfile -ExecutionPolicy Bypass -File G:\UESTC\feitengspan1\scripts\train_tinyspan_video_x4_c32_b4.ps1 -TrainFrames G:\REDS\train_sharp -Output runs\tinyspan_distill\video_x4_c32_b4_reds_temporal -PatchSize 192 -BatchSize 6 -Epochs 50 -MaxPairs 24000 -SaveEverySteps 500 -ResumeStudent runs\tinyspan_distill\video_x4_c32_b4_reds_temporal\student_last.pt

@@ -1,0 +1,18 @@
+﻿# TinySPAN C32B4 W8A8 RTL Gate Summary
+
+- Status: PASS
+- Quant plan: G:\UESTC\feitengspan1\runs\tinyspan_quant_plan\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\tinyspan_w8a8_quant_plan.json
+- Conv runtime: 2ms
+
+## Conv Vector Previews
+- runs\tinyspan_quant_plan\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\conv_vector_previews\tinyspan_w8a8_head_conv_vector_preview.png
+- runs\tinyspan_quant_plan\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\conv_vector_previews\tinyspan_w8a8_blocks_0_c1_conv_vector_preview.png
+- runs\tinyspan_quant_plan\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\conv_vector_previews\tinyspan_w8a8_reconstruct_conv_vector_preview.png
+
+## Postprocess Previews
+- runs\tinyspan_quant_plan\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\postprocess_previews\tinyspan_w8a8_blocks_0_postprocess_preview.png
+- runs\tinyspan_quant_plan\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\postprocess_previews\tinyspan_w8a8_blocks_1_postprocess_preview.png
+- runs\tinyspan_quant_plan\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\postprocess_previews\tinyspan_w8a8_blocks_2_postprocess_preview.png
+- runs\tinyspan_quant_plan\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\postprocess_previews\tinyspan_w8a8_blocks_3_postprocess_preview.png
+
+This gate verifies representative TinySPAN W8A8 convolution primitives and every C32B4 block postprocess primitive against vectors generated from the same quantization plan used by the integer reference.

@@ -1,0 +1,71 @@
+{
+  "checkpoint": "runs\\tinyspan_distill\\video_x4_c32_b4_reds_temporal\\student_latest.pt",
+  "scale": 4,
+  "student_channels": 32,
+  "student_blocks": 4,
+  "input": "external\\SPAN\\test_scripts\\data\\baboon.png",
+  "target": {
+    "input_width": 320,
+    "input_height": 180,
+    "output_width": 1280,
+    "output_height": 720,
+    "fps": 30.0
+  },
+  "checks": {
+    "stream_fps": {
+      "pass": true,
+      "value": 36.07976731418754,
+      "target": ">= 30.0"
+    },
+    "stream_output_size": {
+      "pass": true,
+      "value": "1280x720",
+      "target": "1280x720"
+    },
+    "stream_frame_count": {
+      "pass": true,
+      "value": 60,
+      "target": 60
+    },
+    "quality_output_size": {
+      "pass": true,
+      "value": "1280x720",
+      "target": "1280x720"
+    },
+    "video_readback": {
+      "pass": true,
+      "value": "60 frames, 30.000 fps, 1280x720",
+      "target": "60 frames, 1280x720"
+    }
+  },
+  "passed": true,
+  "stream_metrics": {
+    "end_to_end_fps": 36.07976731418754,
+    "end_to_end_latency_ms": 27.716365000136044,
+    "inference_ms_per_frame": 21.29200333341335,
+    "preprocess_ms_per_frame": 3.2417516680046297,
+    "postprocess_ms_per_frame": 2.377006668151201,
+    "encode_ms_per_frame": 9.785934998944867,
+    "metrics": "runs\\tinyspan_acceptance\\c32b4_x4_320x180_30f_rerun_20260613\\stream\\metrics.json",
+    "preview": "runs\\tinyspan_acceptance\\c32b4_x4_320x180_30f_rerun_20260613\\stream\\baboon_tinyspan_c32_b4_stream_comparison_x4.png",
+    "video": "runs\\tinyspan_acceptance\\c32b4_x4_320x180_30f_rerun_20260613\\stream\\baboon_tinyspan_c32_b4_stream_x4.mp4",
+    "readback": {
+      "available": true,
+      "opened": true,
+      "frames": 60,
+      "fps": 30.0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "quality_metrics": {
+    "psnr_db_mean": 29.92493968381898,
+    "mae_mean": 0.02071114381154378,
+    "temporal_mae_mean": 0.027782056480646133,
+    "temporal_psnr_db_mean": 33.01621542134783,
+    "teacher_ms_per_frame": 90.63181666958069,
+    "student_ms_per_frame": 21.793650002412807,
+    "metrics": "runs\\tinyspan_acceptance\\c32b4_x4_320x180_30f_rerun_20260613\\quality\\metrics.json",
+    "preview": "runs\\tinyspan_acceptance\\c32b4_x4_320x180_30f_rerun_20260613\\quality\\baboon_tinyspan_teacher_quality_x4.png"
+  }
+}
