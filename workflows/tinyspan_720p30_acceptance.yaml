@@ -132,6 +132,12 @@ board_side_tiling:
   frame_source_zh: SD 卡或 DDR 中保存完整 LR 图像/视频帧，最终验收不把 PC 端预切 tile 作为板卡输入。
   acceptance_tile_lr: [32, 32]
   candidate_tile_lr: [64, 64]
+  route_decision_date: 2026-06-21
+  final_x4_frame_lr: [320, 180]
+  final_x4_frame_sr: [1280, 720]
+  smoke_frame_lr: [160, 90]
+  smoke_frame_sr: [640, 360]
+  smoke_frame_rule_zh: 160x90 只作为完整帧切块调度 smoke，不能替代最终 320x180 到 1280x720 验收。
   tile_priority_zh: 当前 32x32 LR tile 是上板验收目标；64x64 LR tile 仅作为资源、BRAM 和时序允许时的备选加速路线。
   x4_tile_output_sr:
     tile_32x32: [128, 128]
