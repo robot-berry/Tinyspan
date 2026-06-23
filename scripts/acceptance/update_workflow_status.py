@@ -54,6 +54,12 @@ def pass_checks(summary: dict[str, Any] | None) -> list[str]:
     return [str(item.get("name", "unknown")) for item in summary.get("checks", []) if item.get("pass")]
 
 
+def number_text(value: Any, default: str = "") -> str:
+    if value is None:
+        return default
+    return str(value)
+
+
 def status_from_inputs(
     baseline: dict[str, Any] | None,
     readiness: dict[str, Any] | None,
@@ -61,6 +67,8 @@ def status_from_inputs(
     gate_c: dict[str, Any] | None,
     gate_d: dict[str, Any] | None,
     gate_d_current: bool,
+    gate_e: dict[str, Any] | None,
+    gate_f: dict[str, Any] | None,
 ) -> list[dict[str, str]]:
     baseline_locked = bool(baseline and baseline.get("status") == "baseline_locked_not_board_accepted")
     readiness_failed = failed_checks(readiness)
@@ -108,25 +116,55 @@ def status_from_inputs(
                 evidence = "readiness 中 RTL manifest、引用、脚本检查已通过" if sim_related else "尚无 RTL 仿真汇总"
                 next_action = "运行/归档 TinySPAN RTL gate summary，补齐逐字节仿真报告"
         elif gate_id == "E":
-            status = "BLOCKED" if "tinyspan_trained_bitstream_exists" in readiness_failed else "未开始"
-            evidence = "bitstream 缺失" if "tinyspan_trained_bitstream_exists" in readiness_failed else "尚无"
-            next_action = "生成真实 TinySPAN bitstream 并归档 timing/utilization/power"
+            if gate_e and gate_e.get("timing", {}).get("status") == "PASS" and gate_e.get("resource_gate", {}).get("status") == "PASS":
+                status = "PASS"
+                evidence = (
+                    "X4 320x180 Gate E bitstream/resource PASS；"
+                    f"WNS {number_text(gate_e.get('timing', {}).get('wns_ns'))}ns，"
+                    f"理论 {number_text(gate_e.get('throughput_estimate', {}).get('fps_x4_1280x720'))}fps"
+                )
+                next_action = "继续接入完整帧板端 tile scheduler"
+            else:
+                status = "BLOCKED" if "tinyspan_trained_bitstream_exists" in readiness_failed else "未开始"
+                evidence = "bitstream 缺失" if "tinyspan_trained_bitstream_exists" in readiness_failed else "尚无"
+                next_action = "生成真实 TinySPAN bitstream 并归档 timing/utilization/power"
         elif gate_id == "F":
-            board_missing = (
-                "real_board_output_provided" in readiness_failed
-                or "real_board_output_exists" in input_failed
-            )
-            status = "BLOCKED" if board_missing else "未开始"
-            evidence = "真实板上输出缺失" if board_missing else "尚无"
-            next_action = "bitstream 通过后运行真实板卡 smoke，回读 board output"
+            if gate_f and gate_f.get("pass"):
+                resources = gate_f.get("board_resources", {}) or {}
+                status = "PASS"
+                evidence = (
+                    "X4 32x32 真实板卡 smoke PASS；"
+                    f"fps {number_text(gate_f.get('measured_fps'))}，"
+                    f"LUT {number_text(resources.get('clb_luts'))}，"
+                    f"DSP {number_text(resources.get('dsps'))}"
+                )
+                next_action = "扩展到 SD/DDR 完整帧板端切块和回写"
+            else:
+                board_missing = (
+                    "real_board_output_provided" in readiness_failed
+                    or "real_board_output_exists" in input_failed
+                )
+                status = "BLOCKED" if board_missing else "未开始"
+                evidence = "真实板上输出缺失" if board_missing else "尚无"
+                next_action = "bitstream 通过后运行真实板卡 smoke，回读 board output"
         elif gate_id == "G":
-            status = "BLOCKED"
-            evidence = "缺 board_sr.png / comparison_preview.png / diff_heatmap.png"
-            next_action = "拿到真实 board output 后运行图像一致性验证"
+            if gate_f and gate_f.get("compare_pass"):
+                status = "PASS"
+                evidence = (
+                    "X4 32x32 board-vs-software byte-exact；"
+                    f"mismatch {number_text(gate_f.get('mismatch_bytes'))}/"
+                    f"{number_text(gate_f.get('total_bytes'))}，"
+                    f"max diff {number_text(gate_f.get('max_channel_diff'))}"
+                )
+                next_action = "扩展到完整帧拼接可视化和 diff heatmap"
+            else:
+                status = "BLOCKED"
+                evidence = "缺 board_sr.png / comparison_preview.png / diff_heatmap.png"
+                next_action = "拿到真实 board output 后运行图像一致性验证"
         elif gate_id == "H":
             status = "BLOCKED"
-            evidence = "缺 byte-exact board compare、board 720p30、resource gate"
-            next_action = "等 E/F/G 通过后执行最终验收"
+            evidence = "32x32 tile 已 PASS；缺 SD/DDR 完整帧调度、拼接输出和实测 720p30"
+            next_action = "完成完整帧 tile controller、bitstream、板上回读和吞吐验收"
         elif gate_id == "X2":
             status = "BLOCKED"
             evidence = "当前主证据为 X4，X2 需独立证据包"
@@ -144,7 +182,13 @@ def status_from_inputs(
     return rows
 
 
-def write_markdown(path: Path, rows: list[dict[str, str]], baseline: dict[str, Any] | None) -> None:
+def write_markdown(
+    path: Path,
+    rows: list[dict[str, str]],
+    baseline: dict[str, Any] | None,
+    gate_e: dict[str, Any] | None,
+    gate_f: dict[str, Any] | None,
+) -> None:
     baseline_id = ""
     checkpoint_sha = ""
     measured_fps = ""
@@ -178,15 +222,46 @@ def write_markdown(path: Path, rows: list[dict[str, str]], baseline: dict[str, A
             "",
             "## 当前硬阻塞",
             "",
-            "- 真实 TinySPAN-trained bitstream 尚未生成。",
-            "- 真实板上输出尚未回读。",
-            "- 板上输出与软件定点参考的逐字节一致性尚未完成。",
-            "- 板上 720p30 throughput 和 resource gate 尚未完成。",
+            "- 32x32 LR tile 的真实 TinySPAN 板上输出已经 PASS，但还没有 SD/DDR 完整 LR 帧的板端 tile scheduler 闭环。",
+            "- 还没有完整帧 tile 坐标生成、边缘 padding、动态有效区域裁剪、拼接写回和最终 `1280x720` 输出证据。",
+            "- 还没有完整帧实测板上 `720p30` throughput。",
             "- X2 证据包尚未补齐。",
             "",
-            "本文件由 `scripts/acceptance/update_workflow_status.py` 生成，不启动 Vivado、JTAG 或板卡流程。",
         ]
     )
+    if gate_e:
+        impl = gate_e.get("implementation", {}) or {}
+        timing = gate_e.get("timing", {}) or {}
+        resource = gate_e.get("resource_gate", {}) or {}
+        throughput = gate_e.get("throughput_estimate", {}) or {}
+        metrics = resource.get("metrics", {}) or {}
+        lines.extend(
+            [
+                "## Gate E 证据",
+                "",
+                f"- Bitstream：`{number_text(impl.get('bitstream'))}`",
+                f"- Bitstream SHA256：`{number_text(impl.get('bitstream_sha256'))}`",
+                f"- Timing：WNS `{number_text(timing.get('wns_ns'))}ns`，TNS `{number_text(timing.get('tns_ns'))}ns`，frequency `{number_text(timing.get('frequency_mhz'))}MHz`",
+                f"- Resource gate：`{number_text(resource.get('status'))}`，LUT `{number_text(metrics.get('lut'))}`，Register `{number_text(metrics.get('register'))}`，DSP `{number_text(metrics.get('dsp'))}`，BRAM Tile `{number_text(metrics.get('bram_tile'))}`",
+                f"- 理论 X4 720p throughput：`{number_text(throughput.get('fps_x4_1280x720'))}fps`",
+                "",
+            ]
+        )
+    if gate_f:
+        resources = gate_f.get("board_resources", {}) or {}
+        lines.extend(
+            [
+                "## Gate F/G 32x32 上板证据",
+                "",
+                f"- Board-vs-software：`mismatch {number_text(gate_f.get('mismatch_bytes'))}/{number_text(gate_f.get('total_bytes'))}`，max diff `{number_text(gate_f.get('max_channel_diff'))}`",
+                f"- Perf-only throughput：`{number_text(gate_f.get('measured_fps'))}fps`",
+                f"- Resource：LUT `{number_text(resources.get('clb_luts'))}`，Register `{number_text(resources.get('clb_registers'))}`，DSP `{number_text(resources.get('dsps'))}`，BRAM Tile `{number_text(resources.get('block_ram_tile'))}`",
+                f"- Timing：WNS `{number_text(resources.get('wns_ns'))}ns`，WHS `{number_text(resources.get('whs_ns'))}ns`",
+                f"- Preview：`{number_text(gate_f.get('preview'))}`",
+                "",
+            ]
+        )
+    lines.append("本文件由 `scripts/acceptance/update_workflow_status.py` 生成，不启动 Vivado、JTAG 或板卡流程。")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -209,8 +284,20 @@ def main() -> int:
     if gate_d is None:
         gate_d = load_json(artifact_dir / "gate_d_rtl_gate_existing" / "tinyspan_w8a8_rtl_gate_summary.json")
 
-    rows = status_from_inputs(baseline, readiness, input_preflight, gate_c, gate_d, gate_d_current)
-    write_markdown(args.docs_out, rows, baseline)
+    gate_e = load_json(artifact_dir / "gate_e_bitstream_x4_320x180_f150_prew_20260620" / "manifest.json")
+    gate_f = load_json(artifact_dir / "gate_f_board_x4_32x32_f150_tile32_20260621" / "acceptance" / "tinyspan_board_acceptance_summary.json")
+
+    rows = status_from_inputs(
+        baseline,
+        readiness,
+        input_preflight,
+        gate_c,
+        gate_d,
+        gate_d_current,
+        gate_e,
+        gate_f,
+    )
+    write_markdown(args.docs_out, rows, baseline, gate_e, gate_f)
 
     json_out = args.json_out or artifact_dir / "contest_completion_status.json"
     json_out.parent.mkdir(parents=True, exist_ok=True)
@@ -220,6 +307,8 @@ def main() -> int:
                 "generated_at": datetime.now().isoformat(timespec="seconds"),
                 "artifact_dir": str(artifact_dir),
                 "gate_d_summary": str(gate_d_path) if gate_d_path else "",
+                "gate_e_summary": str(artifact_dir / "gate_e_bitstream_x4_320x180_f150_prew_20260620" / "manifest.json") if gate_e else "",
+                "gate_f_summary": str(artifact_dir / "gate_f_board_x4_32x32_f150_tile32_20260621" / "acceptance" / "tinyspan_board_acceptance_summary.json") if gate_f else "",
                 "gates": rows,
             },
             ensure_ascii=False,

@@ -52,14 +52,32 @@ SD/DDR 完整 LR 帧
 
 ## 当前缺口
 
-还需要新增或接入一个 TinySPAN full-frame tile controller，负责把这些模块串起来：
+已新增 TinySPAN X4 full-frame tile controller 骨架：
+
+- `rtl/board_wrapper/sr_stream_dynamic_cropper.v`
+- `rtl/board_wrapper/sr_tile_tinyspan_x4_writer_shell.v`
+
+根工程同步开发源位于：
+
+- `G:\UESTC\feitengspan1\rtl\board\sr_stream_dynamic_cropper.v`
+- `G:\UESTC\feitengspan1\rtl\board\sr_tile_tinyspan_x4_writer_shell.v`
+
+`sr_tile_tinyspan_x4_writer_shell` 负责把这些模块串起来：
 
 1. 启动 `sr_tile_scheduler` 枚举 `320x180` LR frame 的所有 `32x32` tile。
 2. 对每个 tile，触发 `sr_tile_fetch_stream_shell` 从 SD/DDR LR frame 读入 tile。
 3. 将 tile stream 喂给 TinySPAN `32x32` X4 compute 核。
-4. 将 TinySPAN 输出的 `128x128` SR tile 送入 `sr_tile_output_writer`。
-5. 等当前 tile 写回完成后再取下一 tile。
-6. 最后给出 frame done、tile count、cycle counter、error flags。
+4. 用 `sr_stream_dynamic_cropper` 消费完整 `128x128` SR tile，并只输出 edge tile 的有效区域。
+5. 将有效 SR 区域送入 `sr_tile_output_writer`，写回完整 SR 帧地址。
+6. 等当前 tile 读入、推理、裁剪和写回都完成后再取下一 tile。
+7. 最后给出 frame done、tile count、cycle counter、error flags。
+
+仍未完成的工作：
+
+- 为新增 shell 补 Vivado/xsim testbench。
+- 用小完整帧验证边缘 tile padding、动态裁剪和写回地址。
+- 接入 PS/DDR 或 SD 输入输出 wrapper。
+- 生成 full-frame bitstream 并进行真实板卡完整帧回读。
 
 ## 验收顺序
 

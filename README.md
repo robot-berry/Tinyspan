@@ -26,8 +26,18 @@ Main documents:
 
 - [WORKFLOW.md](WORKFLOW.md): human-readable project workflow and acceptance
   gates.
+- [docs/model_design.md](docs/model_design.md): TinySPAN model structure and
+  frozen baseline.
 - [docs/training_artifacts.md](docs/training_artifacts.md): training source,
   frozen checkpoints, quantization plans, and model-to-hardware handoff index.
+- [docs/training_quantization.md](docs/training_quantization.md): REDS
+  training, freezing, W8A8 quantization, and fixed-point reference flow.
+- [docs/hardware_design.md](docs/hardware_design.md): hardware accelerator
+  dataflow, current 32x32 board evidence, and full-frame tiling modules.
+- [docs/verification_plan.md](docs/verification_plan.md): gate-by-gate
+  verification plan and remaining full-frame/X2 tests.
+- [docs/ppa_analysis.md](docs/ppa_analysis.md): resource, timing, power, and
+  throughput evidence.
 - [workflows/tinyspan_720p30_acceptance.yaml](workflows/tinyspan_720p30_acceptance.yaml):
   machine-readable workflow checklist.
 - [artifacts/README.md](artifacts/README.md): where future generated outputs

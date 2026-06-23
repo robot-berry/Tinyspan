@@ -1,8 +1,9 @@
 {
-  "generated_at": "2026-06-21T02:05:00+08:00",
+  "generated_at": "2026-06-24T07:56:01",
   "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "gate_d_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_rtl_gate_summary.json",
-  "gate_f_board_32x32_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_f_board_x4_32x32_f150_tile32_20260621\\acceptance\\tinyspan_board_acceptance_summary.json",
+  "gate_e_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_e_bitstream_x4_320x180_f150_prew_20260620\\manifest.json",
+  "gate_f_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_f_board_x4_32x32_f150_tile32_20260621\\acceptance\\tinyspan_board_acceptance_summary.json",
   "gates": [
     {
       "gate": "A0",
@@ -43,29 +44,29 @@
       "gate": "E",
       "name": "TinySPAN 实现与资源约束",
       "status": "PASS",
-      "evidence": "gate_e_bitstream_x4_320x180_f150_prew_20260620：bitstream SHA256、timing WNS 0.074ns、resource gate PASS、power 3.646W、理论 X4 720p 31.0015fps",
-      "next_action": "运行真实 TinySPAN 板卡 smoke"
+      "evidence": "X4 320x180 Gate E bitstream/resource PASS；WNS 0.074ns，理论 31.0015fps",
+      "next_action": "继续接入完整帧板端 tile scheduler"
     },
     {
       "gate": "F",
       "name": "TinySPAN 板卡冒烟测试",
       "status": "PASS",
-      "evidence": "gate_f_board_x4_32x32_f150_tile32_20260621：真实板上输出已回读，input counter 1024，output counter 16384，error flags 0x00000000",
-      "next_action": "扩展到 SD/DDR 完整帧板端切块"
+      "evidence": "X4 32x32 真实板卡 smoke PASS；fps 1831.14409883295，LUT 5943，DSP 78",
+      "next_action": "扩展到 SD/DDR 完整帧板端切块和回写"
     },
     {
       "gate": "G",
       "name": "TinySPAN 图像一致性可视化验证",
       "status": "PASS",
-      "evidence": "gate_f_board_x4_32x32_f150_tile32_20260621：board-vs-software 0/49152 mismatch，max diff 0，preview 已归档",
-      "next_action": "扩展到完整帧 tile 拼接可视化"
+      "evidence": "X4 32x32 board-vs-software byte-exact；mismatch 0/49152，max diff 0",
+      "next_action": "扩展到完整帧拼接可视化和 diff heatmap"
     },
     {
       "gate": "H",
       "name": "TinySPAN 最终 720p30 验收",
       "status": "BLOCKED",
-      "evidence": "32x32 tile 已 PASS，但缺完整 SD/DDR frame tile scheduler、完整帧拼接输出、X2 独立证据",
-      "next_action": "完成板端完整帧切块拼接与 X2 证据后执行最终验收"
+      "evidence": "32x32 tile 已 PASS；缺 SD/DDR 完整帧调度、拼接输出和实测 720p30",
+      "next_action": "完成完整帧 tile controller、bitstream、板上回读和吞吐验收"
     },
     {
       "gate": "X2",
