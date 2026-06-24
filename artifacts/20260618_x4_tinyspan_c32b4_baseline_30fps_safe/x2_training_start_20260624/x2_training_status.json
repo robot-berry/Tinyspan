@@ -1,0 +1,71 @@
+{
+  "status": "training_running",
+  "route": "TinySPAN X2 independent evidence seed",
+  "student": {
+    "family": "TinySPAN",
+    "scale": 2,
+    "channels": 32,
+    "num_blocks": 4
+  },
+  "teacher": {
+    "family": "official SPAN X2",
+    "manifest": "G:\\UESTC\\feitengspan1\\rtl\\generated\\official_span_x2\\official_span_manifest.json",
+    "checkpoint": "G:\\UESTC\\feitengspan1\\runs\\official_span\\official_SPAN_REDS_x2_f48\\models\\net_g_latest.pth",
+    "checkpoint_sha256": "E39A5FD89380CFABB01DAE44A487156030C3FA941C596A1CB5CDB36C3435D20C"
+  },
+  "frame_contract": {
+    "input_width": 640,
+    "input_height": 360,
+    "output_width": 1280,
+    "output_height": 720,
+    "preferred_lr_tile_width": 32,
+    "preferred_lr_tile_height": 32,
+    "preferred_sr_tile_width": 64,
+    "preferred_sr_tile_height": 64
+  },
+  "smoke": {
+    "status": "PASS",
+    "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\train_tinyspan_video_x2_c32_b4.ps1 -TrainFrames .\\external\\SPAN\\test_scripts\\data\\baboon.png -Smoke -MaxSteps 2",
+    "output": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_reds_smoke_x2_c32_b4",
+    "checkpoint": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_reds_smoke_x2_c32_b4\\student_last.pt",
+    "preview": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_reds_smoke_x2_c32_b4\\video_distill_preview.png",
+    "latest_step": 2,
+    "latest_loss": 0.03792384,
+    "latest_student_psnr": 25.689696
+  },
+  "formal_training": {
+    "status": "RUNNING",
+    "started_at": "2026-06-24T15:54:01+08:00",
+    "launcher": "G:\\UESTC\\feitengspan1\\scripts\\start_tinyspan_c32b4_x2_training.ps1",
+    "command": "powershell -NoProfile -ExecutionPolicy Bypass -File G:\\UESTC\\feitengspan1\\scripts\\train_tinyspan_video_x2_c32_b4.ps1 -TrainFrames G:\\REDS\\train_sharp -Output runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal -PatchSize 192 -BatchSize 6 -Epochs 50 -MaxPairs 24000 -SaveEverySteps 500",
+    "output": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal",
+    "metrics": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\metrics.csv",
+    "stdout": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\train_stdout.log",
+    "stderr": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\train_stderr.log",
+    "observed_processes": {
+      "launcher_pid": 27940,
+      "python_pid": 34236
+    },
+    "latest_observed": {
+      "epoch": 1,
+      "step": 217,
+      "loss": 0.02817443,
+      "student_psnr": 27.845871,
+      "steps_per_second": 1.3944,
+      "stderr_error_hints": "none"
+    }
+  },
+  "acceptance_boundary": {
+    "status": "NOT_ACCEPTED",
+    "missing": [
+      "finished/frozen X2 TinySPAN checkpoint",
+      "X2 W8A8 quant plan",
+      "X2 fixed-point/tiled reference",
+      "X2 RTL export and simulation",
+      "X2 bitstream",
+      "real X2 board output",
+      "board-vs-software byte-exact comparison",
+      "measured >=30fps throughput"
+    ]
+  }
+}

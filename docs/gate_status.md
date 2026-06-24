@@ -1,6 +1,6 @@
 # TinySPAN 赛题完成状态
 
-更新时间：`2026-06-24T15:48:58`
+更新时间：`2026-06-24T15:57:34`
 
 当前硬件安全基线：`c32b4_30fps_frozen_20260613`
 Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`
@@ -19,7 +19,7 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 | F TinySPAN 板卡冒烟测试 | `PASS` | X4 32x32 真实板卡 smoke PASS；fps 1831.14409883295，LUT 5943，DSP 78 | 扩展到 SD/DDR 完整帧板端切块和回写 |
 | G TinySPAN 图像一致性可视化验证 | `PASS` | X4 32x32 board-vs-software byte-exact；mismatch 0/49152，max diff 0 | 扩展到完整帧拼接可视化和 diff heatmap |
 | H TinySPAN 最终 720p30 验收 | `BLOCKED` | 32x32 tile 已 PASS；X4 整帧 tiled FixedPng 已准备；缺真实完整帧板上输出和实测 720p30 | 完成完整帧 tile controller、bitstream、板上回读和吞吐验收 |
-| X2 X2 独立证据包 | `BLOCKED` | 当前主证据为 X4，X2 需独立证据包 | 完成 X4 闭环后补齐 X2 量化/RTL/board 证据 |
+| X2 X2 独立证据包 | `PARTIAL` | X2 TinySPAN smoke PASS，正式训练运行中；epoch 1 step 217 | 等待 X2 训练完成，再冻结、量化、导出 RTL、上板验证 |
 
 ## 当前硬阻塞
 
@@ -27,7 +27,7 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 - X4 `320x180 -> 1280x720` 的 hardware-tiled FixedPng 已生成，可作为后续真实板上输出比较的目标。
 - 还没有真实板上完整帧 tile 坐标生成、边缘 padding、动态有效区域裁剪、拼接写回和最终 `1280x720` 回读输出证据。
 - 还没有完整帧实测板上 `720p30` throughput。
-- X2 证据包尚未补齐。
+- X2 已启动 TinySPAN 独立训练，但 X2 冻结、量化、RTL、bitstream、真实板上输出和 `>=30fps` 证据仍未补齐。
 
 ## Gate E 证据
 
@@ -36,6 +36,17 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 - Timing：WNS `0.074ns`，TNS `0.0ns`，frequency `142.857MHz`
 - Resource gate：`PASS`，LUT `7371`，Register `5437`，DSP `94`，BRAM Tile `330.5`
 - 理论 X4 720p throughput：`31.0015fps`
+
+## X2 TinySPAN 训练状态
+
+- 状态：`training_running`
+- Student：`TinySPAN X2 c32 b4`
+- Smoke：`PASS`，checkpoint `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_reds_smoke_x2_c32_b4\student_last.pt`
+- Formal training：`RUNNING`，output `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`
+- Latest observed：epoch `1`，step `217`，speed `1.3944 step/s`
+- Acceptance boundary：`NOT_ACCEPTED`
+
+说明：X2 训练运行中只能证明路线已启动；不能替代 X2 frozen checkpoint、量化、RTL、bitstream、板上输出和吞吐验收。
 
 ## X4 完整帧 tiled FixedPng 证据
 

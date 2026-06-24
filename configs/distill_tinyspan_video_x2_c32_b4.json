@@ -1,0 +1,39 @@
+{
+  "candidate": "tinyspan_x2_independent_evidence_seed",
+  "student": "TinySPAN X2, channels=32, num_blocks=4",
+  "teacher": "REDS-trained/official SPAN X2 teacher from G:/UESTC/feitengspan1/rtl/generated/official_span_x2/official_span_manifest.json",
+  "teacher_checkpoint": "G:/UESTC/feitengspan1/runs/official_span/official_SPAN_REDS_x2_f48/models/net_g_latest.pth",
+  "teacher_checkpoint_sha256": "E39A5FD89380CFABB01DAE44A487156030C3FA941C596A1CB5CDB36C3435D20C",
+  "frame_contract": {
+    "scale": 2,
+    "input_resolution": [640, 360],
+    "output_resolution": [1280, 720],
+    "preferred_lr_tile": [32, 32],
+    "preferred_sr_tile": [64, 64]
+  },
+  "smoke_command": "powershell -ExecutionPolicy Bypass -File scripts/train_tinyspan_video_x2_c32_b4.ps1 -TrainFrames external/SPAN/test_scripts/data/baboon.png -Smoke -MaxSteps 2",
+  "latest_smoke_result": {
+    "date": "2026-06-24",
+    "result": "PASS",
+    "output": "runs/tinyspan_distill/video_reds_smoke_x2_c32_b4",
+    "checkpoint": "runs/tinyspan_distill/video_reds_smoke_x2_c32_b4/student_last.pt",
+    "preview": "runs/tinyspan_distill/video_reds_smoke_x2_c32_b4/video_distill_preview.png",
+    "latest_step": 2,
+    "latest_student_psnr": 25.689696,
+    "note": "Smoke proves the TinySPAN X2 c32/b4 training path and teacher loading only; it is not final REDS quality evidence."
+  },
+  "reds_smoke_command": "powershell -ExecutionPolicy Bypass -File scripts/train_tinyspan_video_x2_c32_b4.ps1 -Smoke -MaxSteps 4",
+  "full_command": "powershell -ExecutionPolicy Bypass -File scripts/start_tinyspan_c32b4_x2_training.ps1 -BatchSize 6 -PatchSize 192 -Epochs 50 -MaxPairs 24000 -SaveEverySteps 500",
+  "formal_training": {
+    "status": "running",
+    "started_at": "2026-06-24T15:54:01+08:00",
+    "output": "runs/tinyspan_distill/video_x2_c32_b4_reds_temporal",
+    "metrics": "runs/tinyspan_distill/video_x2_c32_b4_reds_temporal/metrics.csv",
+    "stdout": "runs/tinyspan_distill/video_x2_c32_b4_reds_temporal/train_stdout.log",
+    "stderr": "runs/tinyspan_distill/video_x2_c32_b4_reds_temporal/train_stderr.log",
+    "latest_observed": "epoch 1/50, step 217/3960, about 1.39 step/s, no recent stderr errors"
+  },
+  "status_command": "powershell -ExecutionPolicy Bypass -File scripts/status_tinyspan_c32b4_training.ps1 -Output runs/tinyspan_distill/video_x2_c32_b4_reds_temporal -TotalEpochs 50 -StepsPerEpoch 3960",
+  "acceptance_command_template": "python tools/model_to_hardware/run_tinyspan_realtime_acceptance.py --checkpoint runs/tinyspan_distill/video_x2_c32_b4_reds_temporal/student_last.pt --scale 2 --student-channels 32 --student-blocks 4 --input external/SPAN/test_scripts/data/baboon.png --width 640 --height 360 --fps 30 --stream-frames 60 --quality-frames 30 --min-fps 30 --out-dir runs/tinyspan_acceptance/video_x2_c32_b4_640x360_60f --half --async-writer --motion --preview-tile 180",
+  "note": "This is an X2 TinySPAN route seed only. It becomes contest evidence only after training, freeze, W8A8 quantization, RTL export/simulation, bitstream, real board output, byte-exact board-vs-software comparison, and measured >=30fps are complete."
+}

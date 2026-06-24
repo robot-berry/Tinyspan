@@ -15,7 +15,7 @@ try {
     Where-Object {
       $cmd = ($_.CommandLine -replace "\\", "/")
       ($_.Name -eq "python.exe" -or $_.Name -eq "powershell.exe") -and
-      ($cmd -match "distill_tinyspan_video|train_tinyspan_video_x4_c32_b4|tinyspan_distill") -and
+      ($cmd -match "distill_tinyspan_video|train_tinyspan_video_x[24]_c32_b4|tinyspan_distill") -and
       ($cmd -match [regex]::Escape($normalizedOutput))
     } |
     Select-Object ProcessId, Name, CommandLine
