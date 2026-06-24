@@ -9,6 +9,10 @@ Current folders:
 - `vivado/`: Vivado simulation, OOC synthesis, and JTAG/full-frame bitstream
   entry scripts for the TinySPAN W8A8 base-equivalent route.
 - `board/`: JTAG board smoke and output-capture wrapper.
+  - `board/run_tinyspan_gate_h_tiledref_waitrun.ps1`: mirror-side entrypoint
+    for the X4 Gate H 320x180 full-frame tiled-reference board run. It waits
+    for Vivado to become idle, then calls the main workspace JTAG and
+    acceptance scripts through `-WorkspaceRoot`.
 - `acceptance/`: workflow status, board-readiness checks, 32x32 smoke
   acceptance, 720p30 acceptance, preflight hashing, hardware-tiled fixed
   reference generation, and board/software image comparison wrappers.
