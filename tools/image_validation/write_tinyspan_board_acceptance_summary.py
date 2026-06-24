@@ -52,7 +52,7 @@ def main() -> None:
         for field in required_resource_fields
         if field not in board_resources or board_resources.get(field) in ("", None)
     ]
-    compare_pass = bool(compare.get("pass", False))
+    compare_pass = bool(compare.get("board_vs_fixed_pass", compare.get("pass", False)))
     fps_pass = args.measured_fps >= args.target_fps
     resources_pass = not args.require_board_resources or not missing_resource_fields
     passed = compare_pass and fps_pass and resources_pass
@@ -82,6 +82,10 @@ def main() -> None:
         "max_channel_diff": compare.get("max_channel_diff"),
         "max_allowed_diff": compare.get("max_allowed_diff"),
         "max_allowed_mismatch_bytes": compare.get("max_allowed_mismatch_bytes"),
+        "board_vs_fixed": compare.get("board_vs_fixed", {}),
+        "board_vs_training": compare.get("board_vs_training", {}),
+        "fixed_vs_training": compare.get("fixed_vs_training", {}),
+        "board_vs_fixed_pass": compare_pass,
     }
 
     args.summary_json.parent.mkdir(parents=True, exist_ok=True)
@@ -113,12 +117,14 @@ def main() -> None:
         "# TinySPAN Board Acceptance Summary\n\n"
         f"- Status: `{status}`\n"
         f"- Target: `{args.target_name}`\n"
-        f"- Board-vs-software compare: `{compare_status}`\n"
+        f"- Board-vs-fixed-point compare: `{compare_status}`\n"
         f"- Throughput: `{fps_status}` ({args.measured_fps:.4f} fps / target {args.target_fps:.4f} fps)\n"
         f"- Resource evidence: `{resources_status}`\n"
         f"- missing resource fields: `{', '.join(summary['missing_resource_fields'])}`\n"
-        f"- mismatch bytes: `{summary['mismatch_bytes']} / {summary['total_bytes']}`\n"
-        f"- max channel diff: `{summary['max_channel_diff']}`\n"
+        f"- board-vs-fixed mismatch bytes: `{summary['mismatch_bytes']} / {summary['total_bytes']}`\n"
+        f"- board-vs-fixed max channel diff: `{summary['max_channel_diff']}`\n"
+        f"- board-vs-training: `{summary['board_vs_training']}`\n"
+        f"- fixed-vs-training: `{summary['fixed_vs_training']}`\n"
         f"- checkpoint: `{summary['checkpoint']}`\n"
         f"- quant plan: `{summary['quant_plan']}`\n"
         f"- bitstream: `{summary['bitstream']}`\n"

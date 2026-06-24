@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T16:19:53",
+  "generated_at": "2026-06-24T16:33:58",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "accepted": false,
@@ -230,7 +230,7 @@
           "kind": "file"
         }
       ],
-      "conclusion": "32x32 board-vs-software byte-exact 已通过，整帧 FixedPng 预览已准备；整帧真实板上验证仍缺。",
+      "conclusion": "32x32 board-vs-fixed byte-exact 已通过，整帧 FixedPng 预览已准备；整帧真实板上验证仍缺。",
       "next_action": "拿到整帧 board_sr 后运行 720p30 acceptance，生成 comparison_preview 和 diff_heatmap。"
     },
     {

@@ -50,27 +50,39 @@ def main() -> None:
     software = Image.open(args.software).convert("RGB")
     fixed = Image.open(args.fixed).convert("RGB")
     board = Image.open(args.board).convert("RGB")
-    diff, max_diff, mismatch_bytes = make_diff(software, board, args.diff_gain)
+    fixed_diff, fixed_max_diff, fixed_mismatch_bytes = make_diff(fixed, board, args.diff_gain)
+    software_diff, software_max_diff, software_mismatch_bytes = make_diff(software, board, args.diff_gain)
 
     panels = [
         (f"Input {inp.width}x{inp.height}", fit_tile(inp, args.tile)),
         (f"PyTorch {software.width}x{software.height}", fit_tile(software, args.tile)),
         (f"Fixed Ref {fixed.width}x{fixed.height}", fit_tile(fixed, args.tile)),
         (f"Board {board.width}x{board.height}", fit_tile(board, args.tile)),
-        (f"Board-Software Diff x{args.diff_gain}", fit_tile(diff, args.tile)),
+        (f"Board-Fixed Diff x{args.diff_gain}", fit_tile(fixed_diff, args.tile)),
+        (f"Board-PyTorch Diff x{args.diff_gain}", fit_tile(software_diff, args.tile)),
     ]
 
     label_h = 28
     title_h = 42
-    summary_h = 30
+    summary_h = 46
     gap = 12
     width = len(panels) * args.tile + (len(panels) + 1) * gap
     height = title_h + label_h + args.tile + summary_h + 2 * gap
     canvas = Image.new("RGB", (width, height), (246, 248, 250))
     draw = ImageDraw.Draw(canvas)
     draw.text((gap, 12), args.title, fill=(20, 24, 31))
-    summary = f"board-vs-software mismatch bytes: {mismatch_bytes}/{software.width * software.height * 3}, max channel diff: {max_diff}"
-    draw.text((gap, height - summary_h + 5), summary, fill=(64, 72, 84))
+    fixed_summary = (
+        "board-vs-fixed mismatch bytes: "
+        f"{fixed_mismatch_bytes}/{fixed.width * fixed.height * 3}, "
+        f"max channel diff: {fixed_max_diff}"
+    )
+    software_summary = (
+        "board-vs-pytorch mismatch bytes: "
+        f"{software_mismatch_bytes}/{software.width * software.height * 3}, "
+        f"max channel diff: {software_max_diff}"
+    )
+    draw.text((gap, height - summary_h + 5), fixed_summary, fill=(64, 72, 84))
+    draw.text((gap, height - summary_h + 23), software_summary, fill=(64, 72, 84))
 
     x = gap
     for label, img in panels:

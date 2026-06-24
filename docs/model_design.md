@@ -35,7 +35,7 @@ sha256: 6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938
 
 当前已通过上板的 TinySPAN W8A8 base-equivalent 路线实现的是同一冻结 checkpoint、同一量化计划下的软件定点参考输出。32x32 tile 上板证据显示：
 
-- board-vs-software mismatch：`0 / 49152`
+- board-vs-fixed mismatch：`0 / 49152`
 - max channel diff：`0`
 - board output、RTL-fixed software output、PyTorch base-equivalent preview 在当前 32x32 证据中一致
 
@@ -54,4 +54,3 @@ sha256: 6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938
 - RTL/memory 导出
 - RTL 仿真和 bitstream
 - 真实板上输出逐字节一致性验证
-

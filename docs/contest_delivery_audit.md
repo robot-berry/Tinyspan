@@ -1,6 +1,6 @@
 # TinySPAN 赛题交付审计
 
-生成时间：`2026-06-24T16:19:53`
+生成时间：`2026-06-24T16:33:58`
 
 总体结论：`NOT_COMPLETE`
 
@@ -16,7 +16,7 @@
 | 模型到硬件加速器转换工具 | `PASS` | X2/X4 通用 post-training handoff 入口已补齐，X4 RTL 导出证据已归档。 | X2 训练完成后用同一入口生成 X2 RTL manifest 与 readiness。 |
 | 硬件加速器详细设计文档及源代码 | `PARTIAL` | TinySPAN core、32x32 board smoke 和完整帧切块 shell 已有；完整帧 shell xsim/bitstream 仍缺。 | Vivado 空闲后运行 full-frame tiling xsim，再推进完整帧 PS/DDR wrapper 和 bitstream。 |
 | Vivado 仿真、综合/实现和 bitstream 证据 | `PARTIAL` | Gate E 当前状态为 PASS；但 Gate H 仍为 BLOCKED。 | 补齐完整帧 shell xsim、真实整帧 bitstream、板上回读和吞吐。 |
-| 完善的验证方案与验证用例 | `PARTIAL` | 32x32 board-vs-software byte-exact 已通过，整帧 FixedPng 预览已准备；整帧真实板上验证仍缺。 | 拿到整帧 board_sr 后运行 720p30 acceptance，生成 comparison_preview 和 diff_heatmap。 |
+| 完善的验证方案与验证用例 | `PARTIAL` | 32x32 board-vs-fixed byte-exact 已通过，整帧 FixedPng 预览已准备；整帧真实板上验证仍缺。 | 拿到整帧 board_sr 后运行 720p30 acceptance，生成 comparison_preview 和 diff_heatmap。 |
 | PPA 指标与资源门线分析 | `PARTIAL` | 资源、时序、功耗和理论 X4 720p30 已有基线；最终 PPA 仍需真实整帧正确性和实测吞吐支撑。 | 完整帧 Gate H PASS 后把最终 utilization/timing/power/throughput 汇总为最终 PPA。 |
 
 ## 当前阻塞项

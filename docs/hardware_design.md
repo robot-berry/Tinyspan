@@ -20,7 +20,7 @@ SD/DDR 完整 LR 帧
 已通过真实板卡的 X4 32x32 tile 证据：
 
 - 证据包：`artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_f_board_x4_32x32_f150_tile32_20260621`
-- board-vs-software：`0 / 49152` mismatch
+- board-vs-fixed：`0 / 49152` mismatch
 - max channel diff：`0`
 - perf-only throughput：`1831.144098832951 fps`
 - timing：WNS `0.091ns`

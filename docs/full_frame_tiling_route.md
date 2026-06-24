@@ -30,7 +30,7 @@ SD/DDR 完整 LR 帧
 
 - TinySPAN X4 `32x32 -> 128x128` 真实板卡已通过：
   `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_f_board_x4_32x32_f150_tile32_20260621`
-- Board-vs-software：`0 / 49152` mismatch bytes，max channel diff `0`
+- Board-vs-fixed：`0 / 49152` mismatch bytes，max channel diff `0`
 - 32x32 tile perf-only：`1831.144098832951 fps`
 - 32x32 tile bitstream timing：WNS `0.091ns`
 - 32x32 tile 资源：LUT `5943`，Register `5232`，DSP `78`，BRAM Tile `10.5`

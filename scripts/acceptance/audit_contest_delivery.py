@@ -225,7 +225,7 @@ def build_audit(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
                     "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile32_20260624/diff_heatmap.png",
                 ],
             ),
-            "32x32 board-vs-software byte-exact 已通过，整帧 FixedPng 预览已准备；整帧真实板上验证仍缺。",
+            "32x32 board-vs-fixed byte-exact 已通过，整帧 FixedPng 预览已准备；整帧真实板上验证仍缺。",
             "拿到整帧 board_sr 后运行 720p30 acceptance，生成 comparison_preview 和 diff_heatmap。",
         )
     )

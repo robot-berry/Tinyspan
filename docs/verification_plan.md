@@ -36,7 +36,7 @@ board output == software fixed-point reference
 
 3. X4 32x32 tile 真实板卡 smoke
    - 位置：`artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_f_board_x4_32x32_f150_tile32_20260621`
-   - 结果：board-vs-software `0/49152` mismatch，perf-only `1831.144098832951fps`
+   - 结果：board-vs-fixed `0/49152` mismatch，perf-only `1831.144098832951fps`
 
 ## 下一批验证用例
 

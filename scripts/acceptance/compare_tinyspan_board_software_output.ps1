@@ -16,7 +16,7 @@
 )
 
 $ErrorActionPreference = "Stop"
-$root = Resolve-Path (Join-Path $PSScriptRoot "..")
+$root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Push-Location $root
 try {
   if ([string]::IsNullOrWhiteSpace($SoftwarePng)) { throw "SoftwarePng is required" }
@@ -48,7 +48,7 @@ try {
     --fixed $FixedPng `
     --board $boardPngPath `
     --out $preview `
-    --title "TinySPAN board-vs-software comparison" `
+    --title "TinySPAN board-vs-fixed comparison" `
     --diff-gain $DiffGain
   if ($LASTEXITCODE -ne 0) { throw "preview generation failed" }
 
@@ -70,7 +70,7 @@ try {
 
   $summary = Get-Content -Raw -Path $metricsJson | ConvertFrom-Json
   if (-not $summary.pass) {
-    throw "TinySPAN board-vs-software comparison failed: mismatch=$($summary.mismatch_bytes), max_diff=$($summary.max_channel_diff)"
+    throw "TinySPAN board-vs-fixed comparison failed: mismatch=$($summary.mismatch_bytes), max_diff=$($summary.max_channel_diff)"
   }
 
   Write-Host "PASS compare_tinyspan_board_software_output"

@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-06-24T16:11:47",
-  "artifact_dir": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
-  "gate_d_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_rtl_gate_summary.json",
-  "gate_e_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_e_bitstream_x4_320x180_f150_prew_20260620\\manifest.json",
-  "gate_f_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_f_board_x4_32x32_f150_tile32_20260621\\acceptance\\tinyspan_board_acceptance_summary.json",
-  "x4_tiled_reference_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile32_20260624\\tinyspan_tiled_fixed_reference_summary.json",
-  "x2_training_status": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_training_start_20260624\\x2_training_status.json",
+  "generated_at": "2026-06-24T16:33:41",
+  "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
+  "gate_d_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_rtl_gate_summary.json",
+  "gate_e_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_e_bitstream_x4_320x180_f150_prew_20260620\\manifest.json",
+  "gate_f_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_f_board_x4_32x32_f150_tile32_20260621\\acceptance\\tinyspan_board_acceptance_summary.json",
+  "x4_tiled_reference_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile32_20260624\\tinyspan_tiled_fixed_reference_summary.json",
+  "x2_training_status": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_training_start_20260624\\x2_training_status.json",
   "gates": [
     {
       "gate": "A0",
@@ -60,7 +60,7 @@
       "gate": "G",
       "name": "TinySPAN 图像一致性可视化验证",
       "status": "PASS",
-      "evidence": "X4 32x32 board-vs-software byte-exact；mismatch 0/49152，max diff 0",
+      "evidence": "X4 32x32 board-vs-fixed byte-exact；mismatch 0/49152，max diff 0",
       "next_action": "扩展到完整帧拼接可视化和 diff heatmap"
     },
     {

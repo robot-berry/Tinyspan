@@ -569,7 +569,7 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   按 `32x32` LR tile 优先、`64x64` LR tile 备选进行读取、halo、推理、裁剪和写回。
 - 2026-06-21 已完成 X4 `32x32 -> 128x128 @ 150MHz` 真实板卡 smoke 和图像一致性验证：
   `Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_f_board_x4_32x32_f150_tile32_20260621`。
-- X4 32x32 board-vs-software 通过：mismatch bytes `0 / 49152`，max channel diff `0`，
+- X4 32x32 board-vs-fixed 通过：mismatch bytes `0 / 49152`，max channel diff `0`，
   perf-only `81916` cycles，`1831.144098832951 fps`。
 - 2026-06-24 已新增完整帧板端切块 RTL 骨架：
   `rtl/board_wrapper/sr_stream_dynamic_cropper.v` 与
@@ -630,7 +630,7 @@ X4 路线使用同一个入口，只把 `-Scale` 改为 `4`，并使用对应的
 例如 `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`。
 
 训练完成后仍不能直接宣告通过；post-training prep 只补齐冻结、量化和 RTL 导出入口。后续仍需完成对应倍率的
-RTL 仿真、bitstream、真实板上输出、board-vs-software 逐字节一致性、可视化预览和 `>=30fps` 实测吞吐。
+RTL 仿真、bitstream、真实板上输出、board-vs-fixed 逐字节一致性、可视化预览和 `>=30fps` 实测吞吐。
 
 ## 11. 完成定义
 

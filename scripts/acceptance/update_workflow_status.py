@@ -159,7 +159,7 @@ def status_from_inputs(
             if gate_f and gate_f.get("compare_pass"):
                 status = "PASS"
                 evidence = (
-                    "X4 32x32 board-vs-software byte-exact；"
+                    "X4 32x32 board-vs-fixed byte-exact；"
                     f"mismatch {number_text(gate_f.get('mismatch_bytes'))}/"
                     f"{number_text(gate_f.get('total_bytes'))}，"
                     f"max diff {number_text(gate_f.get('max_channel_diff'))}"
@@ -321,7 +321,7 @@ def write_markdown(
             [
                 "## Gate F/G 32x32 上板证据",
                 "",
-                f"- Board-vs-software：`mismatch {number_text(gate_f.get('mismatch_bytes'))}/{number_text(gate_f.get('total_bytes'))}`，max diff `{number_text(gate_f.get('max_channel_diff'))}`",
+                f"- Board-vs-fixed：`mismatch {number_text(gate_f.get('mismatch_bytes'))}/{number_text(gate_f.get('total_bytes'))}`，max diff `{number_text(gate_f.get('max_channel_diff'))}`",
                 f"- Perf-only throughput：`{number_text(gate_f.get('measured_fps'))}fps`",
                 f"- Resource：LUT `{number_text(resources.get('clb_luts'))}`，Register `{number_text(resources.get('clb_registers'))}`，DSP `{number_text(resources.get('dsps'))}`，BRAM Tile `{number_text(resources.get('block_ram_tile'))}`",
                 f"- Timing：WNS `{number_text(resources.get('wns_ns'))}ns`，WHS `{number_text(resources.get('whs_ns'))}ns`",

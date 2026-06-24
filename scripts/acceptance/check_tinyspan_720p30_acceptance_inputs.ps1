@@ -55,7 +55,7 @@ function ConvertTo-NormalizedFullPath {
   return ((Resolve-Path $expanded -ErrorAction SilentlyContinue).Path -replace "\\", "/").ToLowerInvariant()
 }
 
-$root = Resolve-Path (Join-Path $PSScriptRoot "..")
+$root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Push-Location $root
 try {
   New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
