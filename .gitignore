@@ -1,7 +1,7 @@
 # Vivado and simulator scratch
 .Xil/
-build/
-vivado/
+/build/
+/vivado/
 xsim.dir/
 *.jou
 *.pb
