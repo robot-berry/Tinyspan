@@ -74,10 +74,28 @@ SD/DDR 完整 LR 帧
 
 仍未完成的工作：
 
-- 为新增 shell 补 Vivado/xsim testbench。
+- 运行新增 shell 的 Vivado/xsim testbench。
 - 用小完整帧验证边缘 tile padding、动态裁剪和写回地址。
 - 接入 PS/DDR 或 SD 输入输出 wrapper。
 - 生成 full-frame bitstream 并进行真实板卡完整帧回读。
+
+已准备的仿真入口：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\vivado\run_vivado_sim_sr_stream_dynamic_cropper.ps1 -RequireVivadoIdle
+powershell -ExecutionPolicy Bypass -File scripts\vivado\run_vivado_sim_sr_tile_tinyspan_x4_writer_shell.ps1 -RequireVivadoIdle
+powershell -ExecutionPolicy Bypass -File scripts\vivado\run_tinyspan_full_frame_tiling_sims.ps1 -WaitForVivadoIdleSeconds 7200
+```
+
+根工程开发入口位于：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_vivado_sim_sr_stream_dynamic_cropper.ps1 -RequireVivadoIdle
+powershell -ExecutionPolicy Bypass -File scripts\run_vivado_sim_sr_tile_tinyspan_x4_writer_shell.ps1 -RequireVivadoIdle
+powershell -ExecutionPolicy Bypass -File scripts\run_tinyspan_full_frame_tiling_sims.ps1 -WaitForVivadoIdleSeconds 7200
+```
+
+当前状态：仿真脚本和 testbench 已准备；最近一次继续推进时 Vivado 仍被 `PID 22068` 占用，因此尚未启动新增 xsim。
 
 ## 验收顺序
 

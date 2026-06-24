@@ -32,6 +32,11 @@ SD/DDR 完整 LR 帧
 
 - `rtl/board/sr_stream_dynamic_cropper.v`
 - `rtl/board/sr_tile_tinyspan_x4_writer_shell.v`
+- `sim/testbench/tb_sr_stream_dynamic_cropper.sv`
+- `sim/testbench/tb_sr_tile_tinyspan_x4_writer_shell.sv`
+- `scripts/vivado/run_vivado_sim_sr_stream_dynamic_cropper.ps1`
+- `scripts/vivado/run_vivado_sim_sr_tile_tinyspan_x4_writer_shell.ps1`
+- `scripts/vivado/run_tinyspan_full_frame_tiling_sims.ps1`
 
 `sr_stream_dynamic_cropper` 用于解决边缘 tile 的动态有效区域问题。TinySPAN 32x32 X4 核固定输出 `128x128`，但 `320x180` 的底边 tile 只有 `32x20` LR 有效区域，对应 `128x80` SR 有效区域。裁剪器会消费完整 `128x128` 输出，只把有效区域送入 writer，避免上游 core 因无效区域无法排空而卡住。
 
@@ -67,4 +72,3 @@ SD/DDR 完整 LR 帧
 - 硬件输出与同一软件定点参考逐字节一致
 - 实测完整帧 throughput `>=30fps`
 - Vivado utilization/timing/power 和资源门线 PASS
-

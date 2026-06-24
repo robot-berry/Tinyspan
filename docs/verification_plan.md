@@ -45,11 +45,18 @@ board output == software fixed-point reference
    - valid region 覆盖 `128x128`、`128x80`、`64x64`
    - 检查输出数量、坐标顺序和 backpressure
    - 已新增基础 testbench：`sim/testbench/tb_sr_stream_dynamic_cropper.sv`
+   - 已新增运行入口：`scripts/vivado/run_vivado_sim_sr_stream_dynamic_cropper.ps1`
+   - 可用总入口：`scripts/vivado/run_tinyspan_full_frame_tiling_sims.ps1`
 
 2. `sr_tile_tinyspan_x4_writer_shell` 小帧仿真
    - `64x64 -> 256x256`
    - `96x48 -> 384x192`
    - 验证 tile count、边缘 padding、有效区域裁剪和写回地址
+   - 已新增基础 testbench：`sim/testbench/tb_sr_tile_tinyspan_x4_writer_shell.sv`
+   - 当前小帧用例：`6x5 -> 24x20`，tile `4x4`，覆盖右边缘和底边缘非整 tile。
+   - 已新增运行入口：`scripts/vivado/run_vivado_sim_sr_tile_tinyspan_x4_writer_shell.ps1`
+   - 可用总入口：`scripts/vivado/run_tinyspan_full_frame_tiling_sims.ps1`
+   - 状态：待 Vivado 空闲后运行。
 
 3. X4 最终完整帧仿真
    - `320x180 -> 1280x720`
