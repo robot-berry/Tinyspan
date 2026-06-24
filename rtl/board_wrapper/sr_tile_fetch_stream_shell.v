@@ -2,18 +2,23 @@
 
 // One-tile fetch and stream shell.
 //
-// Consumes a hardware tile command, issues linear RGB888 read requests for the
-// valid region from a large image buffer, writes the pixels into a tile-local
-// buffer, then streams a fixed TILE_W x TILE_H tile with hardware zero padding.
-// The output stream is the input side of the future time-multiplexed W8A12 tile
-// compute engine.
+// Consumes a hardware tile command, issues linear RGB888/XRGB888 read requests
+// for the valid region from a large image buffer, writes the pixels into a
+// tile-local buffer, then streams a fixed TILE_W x TILE_H tile with hardware
+// zero padding.
+//
+// The read side can keep multiple AXI read requests outstanding through the
+// simple rd_req/rd_resp interface. Responses are consumed in order and matched
+// to tile-local coordinates through a small FIFO. This is AXI user logic only;
+// board DDR remains the PS DDR controller IP in the Vivado Block Design.
 module sr_tile_fetch_stream_shell #(
     parameter integer DATA_W = 24,
     parameter integer TILE_W = 16,
     parameter integer TILE_H = 16,
     parameter integer COORD_W = 16,
     parameter integer ADDR_W = 32,
-    parameter integer BYTES_PER_PIXEL = 3
+    parameter integer BYTES_PER_PIXEL = 3,
+    parameter integer MAX_RD_OUTSTANDING = 16
 ) (
     input  wire                  clk,
     input  wire                  rst,
@@ -44,13 +49,28 @@ module sr_tile_fetch_stream_shell #(
 );
     localparam [2:0] ST_IDLE       = 3'd0;
     localparam [2:0] ST_CLEAR_WAIT = 3'd1;
-    localparam [2:0] ST_REQ        = 3'd2;
-    localparam [2:0] ST_WAIT_RESP  = 3'd3;
-    localparam [2:0] ST_STREAM_ARM = 3'd4;
-    localparam [2:0] ST_STREAM     = 3'd5;
+    localparam [2:0] ST_FETCH      = 3'd2;
+    localparam [2:0] ST_STREAM_ARM = 3'd3;
+    localparam [2:0] ST_STREAM     = 3'd4;
 
     localparam [COORD_W-1:0] TILE_W_C = TILE_W[COORD_W-1:0];
     localparam [COORD_W-1:0] TILE_H_C = TILE_H[COORD_W-1:0];
+
+    function integer clog2;
+        input integer value;
+        integer v;
+        begin
+            v = value - 1;
+            for (clog2 = 0; v > 0; clog2 = clog2 + 1)
+                v = v >> 1;
+        end
+    endfunction
+
+    localparam integer RD_PTR_W = (MAX_RD_OUTSTANDING <= 2) ? 1 : clog2(MAX_RD_OUTSTANDING);
+    localparam integer RD_COUNT_W = clog2(MAX_RD_OUTSTANDING + 1);
+    localparam [RD_PTR_W-1:0] RD_PTR_LAST = MAX_RD_OUTSTANDING - 1;
+    localparam [RD_COUNT_W-1:0] MAX_RD_OUTSTANDING_C = MAX_RD_OUTSTANDING;
+    localparam [RD_COUNT_W-1:0] MAX_RD_OUTSTANDING_M1_C = MAX_RD_OUTSTANDING - 1;
 
     reg [2:0] state;
     reg [COORD_W-1:0] image_w;
@@ -59,9 +79,13 @@ module sr_tile_fetch_stream_shell #(
     reg [ADDR_W-1:0] base_addr;
     reg [COORD_W-1:0] fetch_x;
     reg [COORD_W-1:0] fetch_y;
-    reg [COORD_W-1:0] resp_x;
-    reg [COORD_W-1:0] resp_y;
     reg saw_buffer_clear;
+    reg issue_done;
+    reg [RD_PTR_W-1:0] fifo_wr_ptr;
+    reg [RD_PTR_W-1:0] fifo_rd_ptr;
+    reg [RD_COUNT_W-1:0] fifo_count;
+    reg [COORD_W-1:0] fifo_x [0:MAX_RD_OUTSTANDING-1];
+    reg [COORD_W-1:0] fifo_y [0:MAX_RD_OUTSTANDING-1];
     reg buf_load_start;
     reg buf_wr_valid;
     wire buf_wr_ready;
@@ -75,12 +99,30 @@ module sr_tile_fetch_stream_shell #(
     wire command_bad = (cmd_image_w == 0) || (cmd_valid_w == 0) || (cmd_valid_h == 0) ||
                        (cmd_valid_w > TILE_W_C) || (cmd_valid_h > TILE_H_C);
     wire req_fire = rd_req_valid && rd_req_ready;
-    wire last_fetch = (fetch_x == (valid_w - {{(COORD_W-1){1'b0}}, 1'b1})) &&
+    wire resp_fire = rd_resp_valid;
+    wire issue_last = (fetch_x == (valid_w - {{(COORD_W-1){1'b0}}, 1'b1})) &&
                       (fetch_y == (valid_h - {{(COORD_W-1){1'b0}}, 1'b1}));
-    wire end_fetch_row = (fetch_x == (valid_w - {{(COORD_W-1){1'b0}}, 1'b1}));
+    wire end_issue_row = (fetch_x == (valid_w - {{(COORD_W-1){1'b0}}, 1'b1}));
+    wire [COORD_W-1:0] next_fetch_x =
+        end_issue_row ? {COORD_W{1'b0}} : fetch_x + {{(COORD_W-1){1'b0}}, 1'b1};
+    wire [COORD_W-1:0] next_fetch_y =
+        end_issue_row ? fetch_y + {{(COORD_W-1){1'b0}}, 1'b1} : fetch_y;
+    wire fifo_full = (fifo_count == MAX_RD_OUTSTANDING_C);
+    wire fifo_empty = (fifo_count == {RD_COUNT_W{1'b0}});
+    wire can_start_req = (state == ST_FETCH) && !issue_done && !fifo_full;
+    wire can_keep_req_after_fire =
+        !issue_last && ((fifo_count < MAX_RD_OUTSTANDING_M1_C) || (resp_fire && !fifo_empty));
+    wire [RD_COUNT_W:0] fifo_count_plus_req =
+        {1'b0, fifo_count} + {{RD_COUNT_W{1'b0}}, req_fire};
+    wire final_response = resp_fire && !fifo_empty &&
+                          (issue_done || (req_fire && issue_last)) &&
+                          (fifo_count_plus_req == {{RD_COUNT_W{1'b0}}, 1'b1});
     wire [ADDR_W+COORD_W+3:0] pixel_offset =
         (({{(ADDR_W+4){1'b0}}, fetch_y} * {{(ADDR_W+4){1'b0}}, image_w}) +
          {{(ADDR_W+4){1'b0}}, fetch_x}) * BYTES_PER_PIXEL;
+    wire [ADDR_W+COORD_W+3:0] next_pixel_offset =
+        (({{(ADDR_W+4){1'b0}}, next_fetch_y} * {{(ADDR_W+4){1'b0}}, image_w}) +
+         {{(ADDR_W+4){1'b0}}, next_fetch_x}) * BYTES_PER_PIXEL;
 
     assign cmd_ready = (state == ST_IDLE);
 
@@ -121,9 +163,11 @@ module sr_tile_fetch_stream_shell #(
             base_addr <= {ADDR_W{1'b0}};
             fetch_x <= {COORD_W{1'b0}};
             fetch_y <= {COORD_W{1'b0}};
-            resp_x <= {COORD_W{1'b0}};
-            resp_y <= {COORD_W{1'b0}};
             saw_buffer_clear <= 1'b0;
+            issue_done <= 1'b0;
+            fifo_wr_ptr <= {RD_PTR_W{1'b0}};
+            fifo_rd_ptr <= {RD_PTR_W{1'b0}};
+            fifo_count <= {RD_COUNT_W{1'b0}};
             rd_req_valid <= 1'b0;
             rd_req_addr <= {ADDR_W{1'b0}};
             buf_load_start <= 1'b0;
@@ -156,6 +200,10 @@ module sr_tile_fetch_stream_shell #(
                             fetch_x <= {COORD_W{1'b0}};
                             fetch_y <= {COORD_W{1'b0}};
                             saw_buffer_clear <= 1'b0;
+                            issue_done <= 1'b0;
+                            fifo_wr_ptr <= {RD_PTR_W{1'b0}};
+                            fifo_rd_ptr <= {RD_PTR_W{1'b0}};
+                            fifo_count <= {RD_COUNT_W{1'b0}};
                             buf_load_start <= 1'b1;
                             busy <= 1'b1;
                             state <= ST_CLEAR_WAIT;
@@ -165,53 +213,75 @@ module sr_tile_fetch_stream_shell #(
 
                 ST_CLEAR_WAIT: begin
                     busy <= 1'b1;
+                    rd_req_valid <= 1'b0;
                     if (!buf_wr_ready)
                         saw_buffer_clear <= 1'b1;
                     if (saw_buffer_clear && buf_wr_ready)
-                        state <= ST_REQ;
+                        state <= ST_FETCH;
                 end
 
-                ST_REQ: begin
+                ST_FETCH: begin
                     busy <= 1'b1;
-                    rd_req_valid <= 1'b1;
-                    rd_req_addr <= base_addr + pixel_offset[ADDR_W-1:0];
-                    if (req_fire) begin
+
+                    if (rd_req_valid && !rd_req_ready) begin
+                        rd_req_valid <= 1'b1;
+                    end else if (req_fire && can_keep_req_after_fire) begin
+                        rd_req_valid <= 1'b1;
+                        rd_req_addr <= base_addr + next_pixel_offset[ADDR_W-1:0];
+                    end else if (!rd_req_valid && can_start_req) begin
+                        rd_req_valid <= 1'b1;
+                        rd_req_addr <= base_addr + pixel_offset[ADDR_W-1:0];
+                    end else begin
                         rd_req_valid <= 1'b0;
-                        resp_x <= fetch_x;
-                        resp_y <= fetch_y;
-                        state <= ST_WAIT_RESP;
                     end
-                end
 
-                ST_WAIT_RESP: begin
-                    busy <= 1'b1;
-                    if (rd_resp_valid) begin
-                        buf_wr_valid <= 1'b1;
-                        buf_wr_x <= resp_x;
-                        buf_wr_y <= resp_y;
-                        buf_wr_data <= rd_resp_data;
-                        if (last_fetch) begin
-                            state <= ST_STREAM_ARM;
+                    if (req_fire) begin
+                        fifo_x[fifo_wr_ptr] <= fetch_x;
+                        fifo_y[fifo_wr_ptr] <= fetch_y;
+                        fifo_wr_ptr <= (fifo_wr_ptr == RD_PTR_LAST) ?
+                                       {RD_PTR_W{1'b0}} : fifo_wr_ptr + 1'b1;
+                        if (issue_last) begin
+                            issue_done <= 1'b1;
                         end else begin
-                            if (end_fetch_row) begin
-                                fetch_x <= {COORD_W{1'b0}};
-                                fetch_y <= fetch_y + {{(COORD_W-1){1'b0}}, 1'b1};
-                            end else begin
-                                fetch_x <= fetch_x + {{(COORD_W-1){1'b0}}, 1'b1};
-                            end
-                            state <= ST_REQ;
+                            fetch_x <= next_fetch_x;
+                            fetch_y <= next_fetch_y;
                         end
                     end
+
+                    if (resp_fire) begin
+                        if (fifo_empty) begin
+                            error <= 1'b1;
+                        end else begin
+                            if (!buf_wr_ready)
+                                error <= 1'b1;
+                            buf_wr_valid <= buf_wr_ready;
+                            buf_wr_x <= fifo_x[fifo_rd_ptr];
+                            buf_wr_y <= fifo_y[fifo_rd_ptr];
+                            buf_wr_data <= rd_resp_data;
+                            fifo_rd_ptr <= (fifo_rd_ptr == RD_PTR_LAST) ?
+                                           {RD_PTR_W{1'b0}} : fifo_rd_ptr + 1'b1;
+                            if (final_response)
+                                state <= ST_STREAM_ARM;
+                        end
+                    end
+
+                    case ({req_fire, resp_fire && !fifo_empty})
+                        2'b10: fifo_count <= fifo_count + {{(RD_COUNT_W-1){1'b0}}, 1'b1};
+                        2'b01: fifo_count <= fifo_count - {{(RD_COUNT_W-1){1'b0}}, 1'b1};
+                        default: fifo_count <= fifo_count;
+                    endcase
                 end
 
                 ST_STREAM_ARM: begin
                     busy <= 1'b1;
+                    rd_req_valid <= 1'b0;
                     stream_start <= 1'b1;
                     state <= ST_STREAM;
                 end
 
                 ST_STREAM: begin
                     busy <= 1'b1;
+                    rd_req_valid <= 1'b0;
                     if (stream_done) begin
                         done <= 1'b1;
                         busy <= 1'b0;
@@ -221,6 +291,7 @@ module sr_tile_fetch_stream_shell #(
 
                 default: begin
                     state <= ST_IDLE;
+                    rd_req_valid <= 1'b0;
                 end
             endcase
         end

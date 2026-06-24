@@ -74,7 +74,7 @@ module tb_sr_ddr_tinyspan_x4_endpoint_data;
     wire [3:0] m_axi_arcache;
     wire [2:0] m_axi_arprot;
     wire m_axi_arvalid;
-    logic m_axi_arready = 1'b0;
+    logic m_axi_arready;
     logic [AXI_DATA_W-1:0] m_axi_rdata = '0;
     logic [1:0] m_axi_rresp = 2'b00;
     logic m_axi_rlast = 1'b1;
@@ -112,6 +112,8 @@ module tb_sr_ddr_tinyspan_x4_endpoint_data;
     logic [(AXI_DATA_W/8)-1:0] w_hold_strb = '0;
 
     always #5 clk = ~clk;
+
+    assign m_axi_arready = rstn && !ar_pending && !m_axi_rvalid && ((ready_tick % 11) != 4);
 
     sr_ddr_tinyspan_x4_tile_writer_endpoint #(
         .M_AXI_DATA_WIDTH(AXI_DATA_W),
@@ -380,12 +382,10 @@ module tb_sr_ddr_tinyspan_x4_endpoint_data;
             ready_tick <= 0;
             m_axi_awready <= 1'b0;
             m_axi_wready <= 1'b0;
-            m_axi_arready <= 1'b0;
         end else begin
             ready_tick <= ready_tick + 1;
             m_axi_awready <= !aw_hold_valid && ((ready_tick % 7) != 3);
             m_axi_wready <= !w_hold_valid && ((ready_tick % 5) != 2);
-            m_axi_arready <= !ar_pending && !m_axi_rvalid && ((ready_tick % 11) != 4);
         end
     end
 

@@ -21,7 +21,7 @@ board output == software fixed-point reference
 | E | X4 320x180 bitstream、资源和理论吞吐 | PASS |
 | F | X4 32x32 真实板卡 smoke | PASS |
 | G | X4 32x32 图像一致性可视化 | PASS |
-| H | X4 完整帧 720p30 上板验收 | PARTIAL |
+| H | X4 完整帧 720p30 上板验收 | PASS_X4：吞吐过线，A53 in-DDR 逐字节一致 |
 | X2 | X2 独立证据包 | BLOCKED |
 
 ## 已有验证用例
@@ -44,7 +44,24 @@ board output == software fixed-point reference
    - A53 DDR alias probe：PASS
    - `32x32 -> 128x128` FULL readback：board-vs-fixed `0/49152` mismatch，max diff `0`
    - `320x180 -> 1280x720` SKIP-read：`tiles_done=60`，`22.1776304000312fps @150MHz`
-   - 结论：完整帧切块和 DDR 写回能跑通，但尚未完成完整帧读回一致性和 `>=30fps`
+   - 结论：完整帧切块和 DDR 写回能跑通，但该版本尚未完成完整帧读回一致性和 `>=30fps`
+
+5. TinySPAN PS/DDR X4 tile64 FIFO f155 board smoke
+   - 位置：`sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md`
+   - DDR 路线：继续调用板卡 `zynq_ultra_ps_e` / PS DDR controller IP、HP/HPC 和 Xilinx 标准 AXI IP
+   - 自研 DDR controller/PHY：无
+   - A53 DDR alias probe：PASS，mismatch `0`
+   - `320x180 -> 1280x720` SKIP-read：tile `64x64`，`tiles_done=15`，
+     `frame_cycles=5097068`，`30.4096394240767fps @155MHz`
+   - 结论：X4 完整帧真实板卡吞吐已过 `30fps`
+
+6. TinySPAN PS/DDR X4 tile64 FIFO f155 A53 in-DDR compare
+   - 位置：`sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_a53_compare_20260625.md`
+   - run：`board_runs/tinyspan_ps_ddr_x4_a53_compare/x4_320x180_tile64_fifo_f155_20260625_0559`
+   - DDR 路线：继续调用板卡 `zynq_ultra_ps_e` / PS DDR controller IP，不自研 DDR controller/PHY
+   - 比较范围：完整 `1280x720` SR frame，`921600` pixels，`2764800` bytes
+   - 结果：mismatch `0 / 2764800`，max diff `0`
+   - 结论：X4 完整帧真实板卡输出与 tile64 hardware-tiled fixed reference 逐字节一致
 
 ## 下一批验证用例
 
@@ -73,6 +90,12 @@ board output == software fixed-point reference
    - 输出：`software_tiled_fixed_point_sr.png`、`tile_manifest.json`、`comparison_preview.png`、`diff_heatmap.png`
    - 结果：PASS，作为后续完整帧上板验收的 FixedPng 候选；它本身不代表真实板上完成
 
+3b. X4 `320x180 -> 1280x720` tile64 hardware-tiled fixed reference
+   - 位置：`artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625`
+   - tile：`64x64` LR，`15` 个 tile
+   - 输出：`software_tiled_fixed_point_sr.png`、`tile_manifest.json`、`comparison_preview.png`、`diff_heatmap.png`
+   - 结果：PASS，作为 tile64 FIFO f155 bitstream 的 FixedPng 候选；最终板上比较必须使用同 tile contract 的参考
+
 4. X4 最终完整帧仿真
    - `320x180 -> 1280x720`
    - 输出与软件 tiled fixed-point reference 逐字节一致
@@ -83,10 +106,13 @@ board output == software fixed-point reference
 5. X4 完整帧上板
    - SD/DDR 输入完整 LR 帧
    - PS/PL 配置启动
-   - DDR 回读完整 SR 帧
+   - DDR 回读完整 SR 帧，或用 A53 in-DDR comparator 对完整 SR frame 做逐字节一致性验证
    - `run_tinyspan_720p30_board_acceptance.ps1` 生成 summary、preview 和 diff
    - 每次 PS/DDR/BD/AXI 修改后先跑 A53 DDR alias probe
-   - 继续使用板卡 PS DDR controller IP、HP/HPC 端口和 Xilinx 标准 AXI IP，不新增自研 DDR 控制器
+   - 继续使用板卡 PS DDR controller IP、HP/HPC 端口和 Xilinx AXI DMA/DataMover/VDMA/SmartConnect 等标准 IP
+   - 不新增自研 DDR 控制器、DDR PHY、DDR 仲裁器或 DDR 时序模块
+   - 当前 `sr_ddr_pixel_axi_master` 只作为 AXI 用户逻辑/调试桥，不作为最终高性能 I/O 方案
+   - 当前 X4 tile64 FIFO f155 已通过 A53 in-DDR compare；后续 board PNG/显示/SD 写回属于展示增强
 
 6. X2 独立证据
    - 独立 X2 量化/RTL/bitstream/board output

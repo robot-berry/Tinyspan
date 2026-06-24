@@ -1,0 +1,55 @@
+{
+  "pass": true,
+  "input": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile32_20260624\\lr_input_resized.png",
+  "input_sha256": "FF7DBFC26361AFA3F15BF6205D8E539EEAA1757A77A10CF6AC131F82C1FBFEF0",
+  "input_width": 320,
+  "input_height": 180,
+  "output_width": 1280,
+  "output_height": 720,
+  "scale": 4,
+  "tile_width": 64,
+  "tile_height": 64,
+  "tile_count": 15,
+  "padding_policy": "zero-pad LR edge tiles to fixed tile size before TinySPAN core",
+  "crop_policy": "crop top-left valid_w*scale by valid_h*scale region from each SR tile",
+  "checkpoint": "G:\\UESTC\\feitengspan1\\Tinyspan\\model\\checkpoints\\c32b4_30fps_frozen_20260613\\student_30fps_candidate.pt",
+  "checkpoint_sha256": "6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938",
+  "quant_plan": "G:\\UESTC\\feitengspan1\\Tinyspan\\quant\\quant_plan\\c32b4_30fps_frozen_20260613_x4_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+  "quant_plan_sha256": "EB6EEDDDE9360F61E6FC30141B2A1E6539E519CB226AC18B8C219B9E40092C9D",
+  "device": "cpu",
+  "metrics": {
+    "pytorch_vs_tiled": {
+      "mismatch_bytes": 1679477,
+      "total_bytes": 2764800,
+      "max_channel_diff": 57,
+      "mae": 0.8397981770833334,
+      "mse": 3.132519483566284,
+      "psnr_db": 43.171865799793736
+    },
+    "full_integer_vs_tiled": {
+      "mismatch_bytes": 101043,
+      "total_bytes": 2764800,
+      "max_channel_diff": 58,
+      "mae": 0.1859617332175926,
+      "mse": 2.313941240310669,
+      "psnr_db": 44.487280344859066
+    },
+    "pytorch_vs_full_integer": {
+      "mismatch_bytes": 1641523,
+      "total_bytes": 2764800,
+      "max_channel_diff": 2,
+      "mae": 0.6870569299768519,
+      "mse": 0.873726487159729,
+      "psnr_db": 48.71704859249146
+    }
+  },
+  "outputs": {
+    "lr_input_resized": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625\\lr_input_resized.png",
+    "pytorch_training_sr": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625\\pytorch_training_sr.png",
+    "software_full_frame_fixed_point_sr": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625\\software_full_frame_fixed_point_sr.png",
+    "software_tiled_fixed_point_sr": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625\\software_tiled_fixed_point_sr.png",
+    "comparison_preview": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625\\comparison_preview.png",
+    "diff_heatmap": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625\\diff_heatmap.png",
+    "tile_manifest": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625\\tile_manifest.json"
+  }
+}

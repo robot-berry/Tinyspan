@@ -152,7 +152,7 @@ TinySPAN X2/X4 实时超分，并输出完整 `1280x720` 画面，吞吐达到 `
 - X2 输入输出约定：`640x360 -> 1280x720`
 - X4 输入输出约定：`320x180 -> 1280x720`
 - 大图从 SD 卡或 DDR 输入，由硬件负责切块
-- 当前上板验收 tile：`32x32` LR tile；`64x64` 仅作为资源允许时的备选加速 tile
+- 当前上板验收 tile：`32x32` LR tile 作为正确性安全基线；`64x64` LR tile 作为当前完整帧吞吐候选
 - 最终验收不接受 PC 端提前切好的小块作为板卡输入
 - 最终验收不接受一次性整帧 TinySPAN 核直接处理 SD 卡完整 LR 帧来替代板端切块方案
 - 板上输出必须与同一 TinySPAN 冻结 checkpoint、同一 TinySPAN 量化方案生成的软件定点参考逐字节一致
@@ -645,8 +645,8 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 - `sr_tile_tinyspan_x4_writer_shell` 小帧 xsim 已通过，报告见
   `sim/reports/sr_tile_tinyspan_x4_writer_shell_sim_20260624.md`：
   `PASS sr_tile_tinyspan_x4_writer_shell tiles=4 writes=480 frame_cycles=17941`。
-  该结果只证明 shell 级多 tile 仿真通过；后续 posted-write bitstream 和 SKIP-read 上板证据已补齐，
-  但仍不能替代完整输出读回、board-vs-fixed 和 `>=30fps` 实测验收。
+  该结果只证明 shell 级多 tile 仿真通过；后续 posted-write 和 tile64 FIFO bitstream、SKIP-read 上板证据已补齐，
+  但仍不能替代完整输出读回和 board-vs-fixed 实测验收。
 - 2026-06-24 已新增 TinySPAN 专用 DDR/PS endpoint 骨架：
   `rtl/board_wrapper/sr_ddr_tinyspan_x4_tile_writer_endpoint.v`。
   该 endpoint 通过 AXI-Lite 暴露 `start/clear`、图像尺寸、DDR 输入/输出 base、
@@ -726,12 +726,27 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   折算 `22.1776304000312fps @ 150MHz`。该结果证明板端完整帧切块与 DDR 写回能跑通，
   但因为没有读回完整输出并做 board-vs-fixed 比较，且吞吐仍低于 `30fps`，不能宣告 Gate H 完成。
   报告见 `sim/reports/ps_tinyspan_ddr_x4_posted_write_full_frame_20260625.md`。
+- 2026-06-25 tile64 FIFO f155 bitstream 的完整帧 SKIP-read board smoke 已通过：
+  `320x180 -> 1280x720`、tile `64x64`、`tiles_done=15`、`frame_cycles=5097068`，
+  折算 `30.4096394240767fps @ 155MHz`。该结果是真实板卡完整帧吞吐过 `30fps` 的证据，
+  路线仍直接调用板卡 `zynq_ultra_ps_e` / PS DDR controller IP，不自研 DDR 控制器或 PHY。
+  单独看该 SKIP-read run，因为 readback mode 为 `SKIP`，不能替代完整 SR 帧 board-vs-fixed 逐字节比较。
+  报告见 `sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md`。
+- 2026-06-25 tile64 FIFO f155 bitstream 的完整帧 A53 in-DDR compare 已通过：
+  `board_runs/tinyspan_ps_ddr_x4_a53_compare/x4_320x180_tile64_fifo_f155_20260625_0559`。
+  该 run 将 LR input、tile64 FixedPng reference 和 poison output buffer 放入 PS DDR，启动 TinySPAN 后固定等待，
+  再由 A53 在 DDR 内部比较完整 `1280x720` SR frame。结果为 mismatch `0 / 2764800`、max diff `0`。
+  该证据与上面的 SKIP-read 吞吐证据来自同一 bitstream、checkpoint、quant plan 和 tile64 contract，
+  因此 X4 Gate H 的完整帧正确性与 `>=30fps` 吞吐已经闭合。报告见
+  `sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_a53_compare_20260625.md`。
 - 2026-06-24 已主动停止 X4 `320x180 -> 1280x720` JTAG 全帧逐像素读回诊断 run：
   `board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullread_diag2`。
   停止前读到 `204800 / 921600` 个输出像素，`status=0x00000080`，说明输出端持续有效；
   但未生成完整 `board_output.rgb`，不能作为最终整帧一致性验收。该 run 证明 JTAG 全量读回耗时过高，
   后续完整帧输入输出必须改走 TinySPAN 专用 DDR/PS/DMA 路线。
-- 当前仍缺完整帧输出读回、board-vs-fixed 一致性、`>=30fps` 完整帧吞吐和 X2 独立证据，
+- 当前仍缺 X2 独立证据和可展示 board PNG/显示/SD 写回材料；X4 完整帧吞吐已有
+  tile64 FIFO f155 SKIP-read `30.4096394240767fps @155MHz` 真实板卡证据，完整帧一致性已有
+  A53 in-DDR compare `0 / 2764800` mismatch 证据，
   不能宣告最终上板验收完成。
 - W8A12 DDR tile writer 相关结果仅作为历史参考，不再作为本工作流主线。
 - 2026-06-18 曾启动的 W8A12 `wf18d/wf18e` Vivado 已按路线修正停止，不能作为 TinySPAN 验收结果。
@@ -752,16 +767,17 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 5. FACE-ZUSSD 参考 PS DDR 配置 bitstream、A53 DDR alias probe 和 X4 `32x32 -> 128x128`
    board-vs-fixed smoke 已通过；后续每次修改 PS/DDR/BD 后仍需把 alias probe 作为回归门禁。
 6. 在不自研 DDR 控制器的前提下继续优化 I/O：保留板卡 PS DDR controller IP、HP/HPC 端口和
-   SmartConnect，优先把剩余阻塞式逐像素 DDR read 改成 AXI burst 或 Xilinx AXI DMA/DataMover
-   读 tile/halo；posted-write 单 beat 仅作为中间过渡，不作为最终 720p30 I/O 方案。
-7. 补齐最终 `1280x720` 输出读回与 board-vs-fixed 比较；posted-write SKIP-read 的
-   `22.1776304000312fps @150MHz` 只能作为吞吐中间证据。
+   SmartConnect，正式交付优先调用 Xilinx AXI DMA/DataMover/VDMA 等标准 IP；当前
+   `sr_ddr_pixel_axi_master` 只作为 AXI 用户逻辑/调试桥，不作为最终高性能 I/O 方案。
+7. X4 `1280x720` 输出已由 A53 in-DDR comparator 完成完整帧 board-vs-fixed 比较；
+   后续继续补 board PNG/显示/SD 写回展示材料。
 8. JTAG 后续只用于寄存器调试、小图 smoke 或应急 dump，不再作为完整帧输出读回主路径。
 9. 先用 `make_tinyspan_tiled_fixed_reference.ps1` 为完整帧生成硬件同构 FixedPng、
    `tile_manifest.json`、`comparison_preview.png` 和 `diff_heatmap.png`。
-10. 对 DDR 输出完整帧运行图像一致性验证，生成最终板上 `comparison_preview.png` 和 `diff_heatmap.png`。
+10. 对 DDR 输出完整帧运行图像一致性验证；当前 A53 in-DDR compare 已证明 byte-exact，
+    若需要展示，再补最终板上 `board_sr.png`、`comparison_preview.png` 和 `diff_heatmap.png`。
 11. 记录完整帧实测板上 throughput，并与理论吞吐、32x32 tile throughput 分开标注。
-12. 完成 X4 完整帧闭环后补齐 X2 的独立证据包。
+12. X4 完整帧正确性与吞吐已闭合，继续补齐 X2 的独立证据包。
 13. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
 
 ### 10.1 训练完成后的固定入口

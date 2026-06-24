@@ -10,7 +10,8 @@ module sr_tile_rgb_buffer_streamer #(
     parameter integer DATA_W = 24,
     parameter integer TILE_W = 16,
     parameter integer TILE_H = 16,
-    parameter integer COORD_W = 8
+    parameter integer COORD_W = 8,
+    parameter integer STREAM_FIFO_DEPTH = 8
 ) (
     input  wire                     clk,
     input  wire                     rst,
@@ -30,20 +31,26 @@ module sr_tile_rgb_buffer_streamer #(
     output reg                      stream_busy,
     output reg                      stream_done,
 
-    output reg                      m_valid,
+    output wire                     m_valid,
     input  wire                     m_ready,
-    output reg  [DATA_W-1:0]        m_data,
-    output reg                      m_pixel_valid,
-    output reg                      m_user,
-    output reg                      m_last
+    output wire [DATA_W-1:0]        m_data,
+    output wire                     m_pixel_valid,
+    output wire                     m_user,
+    output wire                     m_last
 );
     localparam integer TILE_PIXELS = TILE_W * TILE_H;
     localparam integer ADDR_W = (TILE_PIXELS <= 2) ? 1 : $clog2(TILE_PIXELS);
     localparam integer X_W = (TILE_W <= 2) ? 1 : $clog2(TILE_W);
     localparam integer Y_W = (TILE_H <= 2) ? 1 : $clog2(TILE_H);
+    localparam integer ISSUE_COUNT_W = $clog2(TILE_PIXELS + 1);
+    localparam integer FIFO_PTR_W = (STREAM_FIFO_DEPTH <= 2) ? 1 : $clog2(STREAM_FIFO_DEPTH);
+    localparam integer FIFO_COUNT_W = $clog2(STREAM_FIFO_DEPTH + 1);
     localparam [COORD_W-1:0] TILE_W_C = TILE_W[COORD_W-1:0];
     localparam [COORD_W-1:0] TILE_H_C = TILE_H[COORD_W-1:0];
     localparam [ADDR_W-1:0] ADDR_ONE = 1;
+    localparam [ADDR_W-1:0] TILE_PIXELS_LAST = (TILE_PIXELS-1);
+    localparam [ISSUE_COUNT_W-1:0] TILE_PIXELS_COUNT = TILE_PIXELS[ISSUE_COUNT_W-1:0];
+    localparam [FIFO_COUNT_W-1:0] FIFO_DEPTH_C = STREAM_FIFO_DEPTH[FIFO_COUNT_W-1:0];
 
     (* ram_style = "block" *)
     reg [DATA_W-1:0] mem [0:TILE_PIXELS-1];
@@ -51,43 +58,79 @@ module sr_tile_rgb_buffer_streamer #(
     reg valid_mem [0:TILE_PIXELS-1];
     reg [COORD_W-1:0] valid_w;
     reg [COORD_W-1:0] valid_h;
-    reg [X_W-1:0] out_x;
-    reg [Y_W-1:0] out_y;
-    reg [ADDR_W-1:0] out_addr;
+    reg [X_W-1:0] issue_x;
+    reg [Y_W-1:0] issue_y;
+    reg [ADDR_W-1:0] issue_addr;
+    reg [ISSUE_COUNT_W-1:0] issue_count;
     reg [ADDR_W-1:0] rd_addr;
     reg [DATA_W-1:0] rd_data;
     reg rd_valid_data;
-    reg [1:0] read_wait;
+    reg rd_pipe0_valid;
+    reg [X_W-1:0] rd_pipe0_x;
+    reg [Y_W-1:0] rd_pipe0_y;
+    reg [ADDR_W-1:0] rd_pipe0_addr;
+    reg rd_pipe1_valid;
+    reg [X_W-1:0] rd_pipe1_x;
+    reg [Y_W-1:0] rd_pipe1_y;
+    reg [ADDR_W-1:0] rd_pipe1_addr;
+    reg [FIFO_PTR_W-1:0] fifo_wr_ptr;
+    reg [FIFO_PTR_W-1:0] fifo_rd_ptr;
+    reg [FIFO_COUNT_W-1:0] fifo_count;
+    reg [DATA_W-1:0] fifo_data [0:STREAM_FIFO_DEPTH-1];
+    reg fifo_pixel_valid [0:STREAM_FIFO_DEPTH-1];
+    reg fifo_user [0:STREAM_FIFO_DEPTH-1];
+    reg fifo_last [0:STREAM_FIFO_DEPTH-1];
+    reg fifo_final [0:STREAM_FIFO_DEPTH-1];
     reg load_pending;
 
     wire wr_in_tile = (wr_x < TILE_W_C) && (wr_y < TILE_H_C);
     wire wr_in_valid = (wr_x < valid_w) && (wr_y < valid_h);
     wire [ADDR_W-1:0] wr_addr = (wr_y[Y_W-1:0] * TILE_W) + wr_x[X_W-1:0];
     wire accept_out = m_valid && m_ready;
-    wire last_pixel = (out_addr == TILE_PIXELS-1);
-    wire end_row = (out_x == TILE_W-1);
+    wire issue_more = (issue_count < TILE_PIXELS_COUNT);
+    wire issue_end_row = (issue_x == TILE_W-1);
+    wire [FIFO_COUNT_W:0] buffered_total =
+        {1'b0, fifo_count} +
+        {{FIFO_COUNT_W{1'b0}}, rd_pipe0_valid} +
+        {{FIFO_COUNT_W{1'b0}}, rd_pipe1_valid};
+    wire can_issue_read = stream_busy && issue_more &&
+                          ((buffered_total - {{FIFO_COUNT_W{1'b0}}, accept_out}) <
+                           {1'b0, FIFO_DEPTH_C});
+    wire push_fifo = stream_busy && rd_pipe1_valid;
+    wire pop_final = accept_out && fifo_final[fifo_rd_ptr];
 
     assign wr_ready = !load_pending && !stream_busy;
+    assign m_valid = stream_busy && (fifo_count != {FIFO_COUNT_W{1'b0}});
+    assign m_data = fifo_data[fifo_rd_ptr];
+    assign m_pixel_valid = m_valid && fifo_pixel_valid[fifo_rd_ptr];
+    assign m_user = m_valid && fifo_user[fifo_rd_ptr];
+    assign m_last = m_valid && fifo_last[fifo_rd_ptr];
 
     always @(posedge clk) begin
         if (rst) begin
             valid_w <= {COORD_W{1'b0}};
             valid_h <= {COORD_W{1'b0}};
-            out_x <= {X_W{1'b0}};
-            out_y <= {Y_W{1'b0}};
-            out_addr <= {ADDR_W{1'b0}};
+            issue_x <= {X_W{1'b0}};
+            issue_y <= {Y_W{1'b0}};
+            issue_addr <= {ADDR_W{1'b0}};
+            issue_count <= {ISSUE_COUNT_W{1'b0}};
             rd_addr <= {ADDR_W{1'b0}};
             rd_data <= {DATA_W{1'b0}};
             rd_valid_data <= 1'b0;
-            read_wait <= 2'd0;
+            rd_pipe0_valid <= 1'b0;
+            rd_pipe0_x <= {X_W{1'b0}};
+            rd_pipe0_y <= {Y_W{1'b0}};
+            rd_pipe0_addr <= {ADDR_W{1'b0}};
+            rd_pipe1_valid <= 1'b0;
+            rd_pipe1_x <= {X_W{1'b0}};
+            rd_pipe1_y <= {Y_W{1'b0}};
+            rd_pipe1_addr <= {ADDR_W{1'b0}};
+            fifo_wr_ptr <= {FIFO_PTR_W{1'b0}};
+            fifo_rd_ptr <= {FIFO_PTR_W{1'b0}};
+            fifo_count <= {FIFO_COUNT_W{1'b0}};
             load_pending <= 1'b0;
             stream_busy <= 1'b0;
             stream_done <= 1'b0;
-            m_valid <= 1'b0;
-            m_data <= {DATA_W{1'b0}};
-            m_pixel_valid <= 1'b0;
-            m_user <= 1'b0;
-            m_last <= 1'b0;
         end else begin
             stream_done <= 1'b0;
             rd_data <= mem[rd_addr];
@@ -98,9 +141,16 @@ module sr_tile_rgb_buffer_streamer #(
                 valid_h <= (valid_h_i > TILE_H_C) ? TILE_H_C : valid_h_i;
                 load_pending <= 1'b1;
                 stream_busy <= 1'b0;
-                read_wait <= 2'd0;
+                rd_pipe0_valid <= 1'b0;
+                rd_pipe1_valid <= 1'b0;
+                fifo_wr_ptr <= {FIFO_PTR_W{1'b0}};
+                fifo_rd_ptr <= {FIFO_PTR_W{1'b0}};
+                fifo_count <= {FIFO_COUNT_W{1'b0}};
+                issue_addr <= {ADDR_W{1'b0}};
+                issue_count <= {ISSUE_COUNT_W{1'b0}};
+                issue_x <= {X_W{1'b0}};
+                issue_y <= {Y_W{1'b0}};
                 rd_addr <= {ADDR_W{1'b0}};
-                m_valid <= 1'b0;
             end else if (load_pending) begin
                 load_pending <= 1'b0;
             end else if (wr_valid && wr_ready && wr_in_tile && wr_in_valid) begin
@@ -110,46 +160,67 @@ module sr_tile_rgb_buffer_streamer #(
 
             if (stream_start && !stream_busy && !load_pending) begin
                 stream_busy <= 1'b1;
-                read_wait <= 2'd2;
-                out_x <= {X_W{1'b0}};
-                out_y <= {Y_W{1'b0}};
-                out_addr <= {ADDR_W{1'b0}};
+                issue_x <= {X_W{1'b0}};
+                issue_y <= {Y_W{1'b0}};
+                issue_addr <= {ADDR_W{1'b0}};
+                issue_count <= {ISSUE_COUNT_W{1'b0}};
                 rd_addr <= {ADDR_W{1'b0}};
-                m_valid <= 1'b0;
-                m_user <= 1'b0;
-                m_last <= 1'b0;
-                m_pixel_valid <= 1'b0;
-            end else if (read_wait != 2'd0) begin
-                read_wait <= read_wait - 2'd1;
-                if (read_wait == 2'd1) begin
-                    m_valid <= 1'b1;
-                    m_data <= out_pixel_for(out_x, out_y, rd_data);
-                    m_pixel_valid <= out_valid_for(out_x, out_y, rd_valid_data);
-                    m_user <= (out_addr == {ADDR_W{1'b0}});
-                    m_last <= end_row;
+                rd_pipe0_valid <= 1'b0;
+                rd_pipe1_valid <= 1'b0;
+                fifo_wr_ptr <= {FIFO_PTR_W{1'b0}};
+                fifo_rd_ptr <= {FIFO_PTR_W{1'b0}};
+                fifo_count <= {FIFO_COUNT_W{1'b0}};
+            end else if (stream_busy) begin
+                if (push_fifo) begin
+                    fifo_data[fifo_wr_ptr] <= out_pixel_for(rd_pipe1_x, rd_pipe1_y, rd_data);
+                    fifo_pixel_valid[fifo_wr_ptr] <= out_valid_for(rd_pipe1_x, rd_pipe1_y, rd_valid_data);
+                    fifo_user[fifo_wr_ptr] <= (rd_pipe1_addr == {ADDR_W{1'b0}});
+                    fifo_last[fifo_wr_ptr] <= (rd_pipe1_x == TILE_W-1);
+                    fifo_final[fifo_wr_ptr] <= (rd_pipe1_addr == TILE_PIXELS_LAST);
+                    fifo_wr_ptr <= (fifo_wr_ptr == STREAM_FIFO_DEPTH-1) ?
+                                   {FIFO_PTR_W{1'b0}} : fifo_wr_ptr + 1'b1;
                 end
-            end else if (accept_out) begin
-                if (last_pixel) begin
+
+                if (accept_out) begin
+                    fifo_rd_ptr <= (fifo_rd_ptr == STREAM_FIFO_DEPTH-1) ?
+                                   {FIFO_PTR_W{1'b0}} : fifo_rd_ptr + 1'b1;
+                end
+
+                case ({push_fifo, accept_out})
+                    2'b10: fifo_count <= fifo_count + {{(FIFO_COUNT_W-1){1'b0}}, 1'b1};
+                    2'b01: fifo_count <= fifo_count - {{(FIFO_COUNT_W-1){1'b0}}, 1'b1};
+                    default: fifo_count <= fifo_count;
+                endcase
+
+                if (pop_final) begin
                     stream_busy <= 1'b0;
                     stream_done <= 1'b1;
-                    m_valid <= 1'b0;
-                    m_pixel_valid <= 1'b0;
-                    m_user <= 1'b0;
-                    m_last <= 1'b0;
+                    rd_pipe0_valid <= 1'b0;
+                    rd_pipe1_valid <= 1'b0;
                 end else begin
-                    out_addr <= out_addr + ADDR_ONE;
-                    if (end_row) begin
-                        out_x <= {X_W{1'b0}};
-                        out_y <= out_y + {{(Y_W-1){1'b0}}, 1'b1};
+                    rd_pipe1_valid <= rd_pipe0_valid;
+                    rd_pipe1_x <= rd_pipe0_x;
+                    rd_pipe1_y <= rd_pipe0_y;
+                    rd_pipe1_addr <= rd_pipe0_addr;
+                    rd_pipe0_valid <= 1'b0;
+
+                    if (can_issue_read) begin
+                        rd_addr <= issue_addr;
+                        rd_pipe0_valid <= 1'b1;
+                        rd_pipe0_x <= issue_x;
+                        rd_pipe0_y <= issue_y;
+                        rd_pipe0_addr <= issue_addr;
+                        issue_addr <= issue_addr + ADDR_ONE;
+                        issue_count <= issue_count + {{(ISSUE_COUNT_W-1){1'b0}}, 1'b1};
+                        if (issue_end_row) begin
+                            issue_x <= {X_W{1'b0}};
+                            issue_y <= issue_y + {{(Y_W-1){1'b0}}, 1'b1};
+                        end else begin
+                            issue_x <= issue_x + {{(X_W-1){1'b0}}, 1'b1};
+                        end
                     end else begin
-                        out_x <= out_x + {{(X_W-1){1'b0}}, 1'b1};
+                        rd_pipe0_valid <= 1'b0;
                     end
-                    rd_addr <= out_addr + ADDR_ONE;
-                    read_wait <= 2'd2;
-                    m_valid <= 1'b0;
-                    m_pixel_valid <= 1'b0;
-                    m_user <= 1'b0;
-                    m_last <= 1'b0;
                 end
             end
         end

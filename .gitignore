@@ -35,6 +35,7 @@ train/logs/**/student_last.pt
 train/logs/**/student_latest.pt
 
 # Keep final evidence, but avoid oversized raw dumps by default
+/board_runs/
 artifacts/**/raw/
 artifacts/**/*.dcp
 artifacts/**/*.wdb

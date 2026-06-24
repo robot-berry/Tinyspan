@@ -1,6 +1,6 @@
 # TinySPAN 赛题完成状态
 
-更新时间：`2026-06-25T02:00:00`
+更新时间：`2026-06-25`
 
 当前硬件安全基线：`c32b4_30fps_frozen_20260613`
 Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`
@@ -18,16 +18,16 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 | E TinySPAN 实现与资源约束 | `PASS` | X4 320x180 Gate E bitstream/resource PASS；WNS 0.074ns，理论 31.0015fps | 继续接入完整帧板端 tile scheduler |
 | F TinySPAN 板卡冒烟测试 | `PASS` | X4 32x32 真实板卡 smoke PASS；fps 1831.14409883295，LUT 5943，DSP 78 | 扩展到 SD/DDR 完整帧板端切块和回写 |
 | G TinySPAN 图像一致性可视化验证 | `PASS` | X4 32x32 board-vs-fixed byte-exact；mismatch 0/49152，max diff 0 | 扩展到完整帧拼接可视化和 diff heatmap |
-| H TinySPAN 最终 720p30 验收 | `PARTIAL` | PS/DDR posted-write 中间版已跑完整 X4 60 tile，`22.1776304000312fps @150MHz`；仍缺完整帧读回一致性和 `>=30fps` | 优化 DDR read 为 AXI burst 或 Xilinx AXI DMA/DataMover，并补完整帧 board-vs-fixed |
-| X2 X2 独立证据包 | `PARTIAL` | X2 TinySPAN smoke PASS，正式训练运行中；epoch 3 step 9792 | 等待 X2 训练完成，再冻结、量化、导出 RTL、上板验证 |
+| H TinySPAN 最终 720p30 验收 | `PASS_X4` | PS/DDR tile64 FIFO f155 已跑完整 X4 15 tile，`30.4096394240767fps @155MHz`；A53 in-DDR compare `0/2764800` mismatch | X4 已闭合；继续补 X2 独立证据和可展示 board PNG/显示链路 |
+| X2 X2 独立证据包 | `PARTIAL` | X2 TinySPAN smoke PASS，正式训练运行中；epoch 20 step 75716 | 等待 X2 训练完成，再冻结、量化、导出 RTL、上板验证 |
 
 ## 当前硬阻塞
 
 - 32x32 LR tile 的真实 TinySPAN 板上输出已经 PASS。
-- TinySPAN PS/DDR X4 完整帧板端切块已经能跑完 `320x180 -> 1280x720` 的 60 个 tile，
-  但当前 SKIP-read 吞吐为 `22.1776304000312fps @150MHz`，仍未达到 `30fps`。
-- X4 `320x180 -> 1280x720` 的 hardware-tiled FixedPng 已生成，可作为后续真实板上输出比较的目标。
-- 还没有最终 `1280x720` 完整输出读回和 board-vs-fixed 逐字节一致证据。
+- TinySPAN PS/DDR X4 完整帧板端切块已经能跑完 `320x180 -> 1280x720`。当前 tile64 FIFO f155
+  SKIP-read 吞吐为 `30.4096394240767fps @155MHz`，已经达到 `30fps`。
+- X4 `320x180 -> 1280x720` 的 hardware-tiled FixedPng 已生成，并已由 A53 在板上 DDR 内部完成逐字节比较。
+- X4 `1280x720` 完整输出 DDR buffer 与 tile64 FixedPng 一致：mismatch `0 / 2764800`，max diff `0`。
 - 后续 DDR 继续直接调用板卡 PS DDR controller IP、HP/HPC 和 Xilinx 标准 AXI IP，不自研 DDR controller/PHY。
 - X2 已启动 TinySPAN 独立训练，但 X2 冻结、量化、RTL、bitstream、真实板上输出和 `>=30fps` 证据仍未补齐。
 
@@ -45,7 +45,7 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 - Student：`TinySPAN X2 c32 b4`
 - Smoke：`PASS`，checkpoint `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_reds_smoke_x2_c32_b4\student_last.pt`
 - Formal training：`RUNNING`，output `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`
-- Latest observed：epoch `3`，step `9792`，speed `1.526 step/s`
+- Latest observed：epoch `20`，step `75716`，speed `1.6039 step/s`
 - Acceptance boundary：`NOT_ACCEPTED`
 
 说明：X2 训练运行中只能证明路线已启动；不能替代 X2 frozen checkpoint、量化、RTL、bitstream、板上输出和吞吐验收。
@@ -88,5 +88,26 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 
 说明：该证据是 Gate H 中间证据，不是最终 PASS。最终仍必须读回完整 board output，与同一
 hardware-tiled fixed reference 逐字节一致，并达到 `>=30fps`。
+
+## Gate H X4 完整帧通过证据
+
+- Route：TinySPAN PS/DDR X4 via board PS DDR controller IP
+- Custom DDR controller/PHY：`no`
+- Throughput report：`sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md`
+- Correctness report：`sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_a53_compare_20260625.md`
+- Bitstream SHA256：`A94DC9B1417B35D05C9D57176109155BCBAFB5939C5E9EA9DC570C8184FD8232`
+- Timing：WNS `0.020ns`，TNS `0.000ns`，WHS `0.007ns`
+- Resource：CLB LUTs `6353`，CLB Registers `4647`，DSP `81`，BRAM Tile `27`
+- A53 DDR alias probe：PASS，mismatch `0`
+- X4 `320x180 -> 1280x720` SKIP-read：tile `64x64`，`tiles_done=15`，
+  `frame_cycles=5097068`，`30.4096394240767fps @155MHz`
+- X4 `1280x720` A53 in-DDR compare：mismatch `0 / 2764800`，max diff `0`
+- A53 compare run：
+  `board_runs/tinyspan_ps_ddr_x4_a53_compare/x4_320x180_tile64_fifo_f155_20260625_0559`
+- Tile64 FixedPng：
+  `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625/software_tiled_fixed_point_sr.png`
+
+说明：X4 Gate H 的吞吐和逐字节一致性证据已闭合。整赛题仍未完成，因为 X2 独立证据包仍缺；
+板上输出 PNG、显示或 SD 写回可继续作为展示材料补强。
 
 本文件由 `scripts/acceptance/update_workflow_status.py` 生成，不启动 Vivado、JTAG 或板卡流程。

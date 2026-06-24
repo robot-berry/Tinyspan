@@ -61,13 +61,13 @@ proc select_access_target {label} {
     if {[try_target {name =~ "DAP"} "${label}_DAP"]} {
         return 1
     }
-    if {[try_target {name =~ "PSU"} "${label}_PSU"]} {
-        return 1
-    }
     if {[try_target {name =~ "Cortex-A53 #0"} "${label}_A53_0"]} {
         return 1
     }
     if {[try_target {name =~ "*Cortex-A53*#0*"} "${label}_A53_0_GLOB"]} {
+        return 1
+    }
+    if {[try_target {name =~ "PSU"} "${label}_PSU"]} {
         return 1
     }
     return 0
@@ -258,6 +258,9 @@ puts "TINYSPAN_PS_DDR_X4_START_WRITE_BEGIN=1"
 flush stdout
 write32 $reg_control 0x1
 puts "TINYSPAN_PS_DDR_X4_START_WRITE_DONE=1"
+flush stdout
+after 200
+puts "TINYSPAN_PS_DDR_X4_POST_START_DELAY_MS=200"
 flush stdout
 
 set poll_start [clock milliseconds]

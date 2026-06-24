@@ -75,6 +75,29 @@ TinySPAN PS/DDR X4 Block Design 已接入板卡 PS DDR controller IP：
 该结果证明完整帧板端切块和 DDR 写回链路已能运行，但还不是最终验收：完整帧输出尚未读回做
 board-vs-fixed 一致性验证，吞吐也仍低于 `30fps`。
 
+2026-06-25 的 tile64 FIFO f155 版本结果：
+
+- bitstream SHA256：`A94DC9B1417B35D05C9D57176109155BCBAFB5939C5E9EA9DC570C8184FD8232`
+- A53 DDR alias probe：PASS，`A53_DDR_ALIAS_MISMATCHES=0`
+- Vivado endpoint simulation：`PASS sr_ddr_tinyspan_x4_endpoint_data pixels=16384 writes=16384`
+- timing：`WNS=0.020ns`，`TNS=0.000ns`，`WHS=0.007ns`，约束满足
+- resource：CLB LUTs `6353`，CLB Registers `4647`，DSP `81`，BRAM Tile `27`，URAM `0`
+- `320x180 -> 1280x720` SKIP-read：tile `64x64`，`tiles_done=15`，
+  `frame_cycles=5097068`，`30.4096394240767fps @155MHz`
+- 报告：`sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md`
+- A53 in-DDR 完整帧比较：
+  `sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_a53_compare_20260625.md`
+  - run：`board_runs/tinyspan_ps_ddr_x4_a53_compare/x4_320x180_tile64_fifo_f155_20260625_0559`
+  - 比较完整 `1280x720` SR frame，`921600` pixels，`2764800` bytes
+  - board-vs-fixed mismatch `0 / 2764800`，max diff `0`
+
+该结果已经证明 X4 完整帧吞吐在真实板卡上超过 `30fps`，且完整 SR frame 与 tile64
+hardware-tiled fixed reference 逐字节一致。board-output PNG、显示或 SD 写回仍可继续作为展示材料补强。
+
+后续 DDR/帧搬运继续只调用板卡/厂商 IP：`zynq_ultra_ps_e`、PS DDR controller、HP/HPC 端口、
+AXI DMA、VDMA、DataMover、SmartConnect。当前 `sr_ddr_pixel_axi_master` 只作为 AXI 用户逻辑和
+调试桥保留，不扩展成自研 DDR 控制器、DDR PHY、DDR 仲裁器或板级 DDR 时序模块。
+
 ## 资源门线
 
 最终资源按 ZC706 / XC7Z045 等效门限判断：
@@ -95,5 +118,5 @@ board-vs-fixed 一致性验证，吞吐也仍低于 `30fps`。
 - X4 `320x180 -> 1280x720` 完整帧真实板上输出
 - X2 `640x360 -> 1280x720` 独立证据
 - 硬件输出与同一软件定点参考逐字节一致
-- 实测完整帧 throughput `>=30fps`
+- 实测完整帧 throughput `>=30fps`，当前 X4 已有 tile64 FIFO f155 吞吐和 A53 in-DDR 一致性证据
 - Vivado utilization/timing/power 和资源门线 PASS

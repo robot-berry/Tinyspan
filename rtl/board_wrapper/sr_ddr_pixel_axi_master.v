@@ -6,7 +6,9 @@
 // DDR PHY, or board-level DDR timing. The external memory is the board PS DDR
 // controller IP exposed through the Vivado Block Design HP/HPC port.
 //
-// Reads are still blocking, matching the current tile fetch shell contract.
+// Reads and writes use posted single-beat AXI transactions with small
+// outstanding counters. This is still a debug/simple bridge; the final 720p30
+// route may replace it with Xilinx AXI DMA/DataMover burst transfers.
 // Writes are posted single-beat AXI transactions with a small outstanding
 // counter, so the TinySPAN output stream does not wait for every B response
 // before presenting the next pixel.
@@ -14,7 +16,8 @@ module sr_ddr_pixel_axi_master #(
     parameter integer ADDR_W = 32,
     parameter integer DATA_W = 24,
     parameter integer AXI_DATA_W = 32,
-    parameter integer MAX_WR_OUTSTANDING = 16
+    parameter integer MAX_WR_OUTSTANDING = 16,
+    parameter integer MAX_RD_OUTSTANDING = 16
 ) (
     input  wire                  clk,
     input  wire                  rst,
@@ -67,10 +70,6 @@ module sr_ddr_pixel_axi_master #(
     input  wire                  m_axi_rvalid,
     output reg                   m_axi_rready
 );
-    localparam [1:0] RD_IDLE = 2'd0;
-    localparam [1:0] RD_ADDR = 2'd1;
-    localparam [1:0] RD_DATA = 2'd2;
-
     localparam integer AXI_BYTES = AXI_DATA_W / 8;
     localparam [2:0] AXI_SIZE_32 = 3'd2;
     localparam [AXI_BYTES-1:0] WSTRB_RGB = {AXI_BYTES{1'b1}};
@@ -87,20 +86,28 @@ module sr_ddr_pixel_axi_master #(
 
     localparam integer WR_COUNT_W = clog2(MAX_WR_OUTSTANDING + 1);
     localparam [WR_COUNT_W-1:0] MAX_WR_OUTSTANDING_C = MAX_WR_OUTSTANDING;
+    localparam integer RD_COUNT_W = clog2(MAX_RD_OUTSTANDING + 1);
+    localparam [RD_COUNT_W-1:0] MAX_RD_OUTSTANDING_C = MAX_RD_OUTSTANDING;
 
-    reg [1:0] rd_state;
     reg pending_aw;
     reg pending_w;
+    reg pending_ar;
     reg [WR_COUNT_W-1:0] wr_outstanding;
+    reg [RD_COUNT_W-1:0] rd_outstanding;
 
     wire pending_write = pending_aw || pending_w;
     wire wr_capacity = (wr_outstanding < MAX_WR_OUTSTANDING_C);
     wire b_fire = m_axi_bvalid && m_axi_bready;
     wire write_accept = wr_valid && wr_ready;
+    wire rd_capacity = (rd_outstanding < MAX_RD_OUTSTANDING_C);
+    wire ar_fire = m_axi_arvalid && m_axi_arready;
+    wire read_accept = rd_req_valid && rd_req_ready;
+    wire r_fire = m_axi_rvalid && m_axi_rready;
 
-    assign rd_req_ready = (rd_state == RD_IDLE) && !pending_write && (wr_outstanding == 0);
-    assign wr_ready = (rd_state == RD_IDLE) && !pending_write && wr_capacity;
-    assign busy = (rd_state != RD_IDLE) || pending_write || (wr_outstanding != 0);
+    assign rd_req_ready = !pending_write && (wr_outstanding == 0) && rd_capacity &&
+                          (!pending_ar || ar_fire);
+    assign wr_ready = !rd_req_valid && !pending_ar && (rd_outstanding == 0) && !pending_write && wr_capacity;
+    assign busy = pending_ar || pending_write || (rd_outstanding != 0) || (wr_outstanding != 0);
 
     assign m_axi_awlen = 8'd0;
     assign m_axi_awsize = AXI_SIZE_32;
@@ -116,10 +123,11 @@ module sr_ddr_pixel_axi_master #(
 
     always @(posedge clk) begin
         if (rst) begin
-            rd_state <= RD_IDLE;
             pending_aw <= 1'b0;
             pending_w <= 1'b0;
+            pending_ar <= 1'b0;
             wr_outstanding <= {WR_COUNT_W{1'b0}};
+            rd_outstanding <= {RD_COUNT_W{1'b0}};
             error <= 1'b0;
             rd_resp_valid <= 1'b0;
             rd_resp_data <= {DATA_W{1'b0}};
@@ -136,6 +144,7 @@ module sr_ddr_pixel_axi_master #(
         end else begin
             rd_resp_valid <= 1'b0;
             m_axi_bready <= (wr_outstanding != 0) || write_accept;
+            m_axi_rready <= (rd_outstanding != 0) || read_accept;
 
             if (write_accept) begin
                 m_axi_awaddr <= {wr_addr[ADDR_W-1:2], 2'b00};
@@ -161,47 +170,36 @@ module sr_ddr_pixel_axi_master #(
             if (b_fire && m_axi_bresp != 2'b00)
                 error <= 1'b1;
 
+            if (read_accept) begin
+                m_axi_araddr <= {rd_req_addr[ADDR_W-1:2], 2'b00};
+                m_axi_arvalid <= 1'b1;
+                pending_ar <= 1'b1;
+            end else if (ar_fire) begin
+                m_axi_arvalid <= 1'b0;
+                pending_ar <= 1'b0;
+            end
+
+            if (r_fire) begin
+                rd_resp_valid <= 1'b1;
+                rd_resp_data <= m_axi_rdata[DATA_W-1:0];
+                if (m_axi_rresp != 2'b00 || !m_axi_rlast)
+                    error <= 1'b1;
+            end
+
             case ({write_accept, b_fire})
                 2'b10: wr_outstanding <= wr_outstanding + {{(WR_COUNT_W-1){1'b0}}, 1'b1};
                 2'b01: wr_outstanding <= wr_outstanding - {{(WR_COUNT_W-1){1'b0}}, 1'b1};
                 default: wr_outstanding <= wr_outstanding;
             endcase
 
-            case (rd_state)
-                RD_IDLE: begin
-                    m_axi_arvalid <= 1'b0;
-                    m_axi_rready <= 1'b0;
-                    if (rd_req_valid && rd_req_ready) begin
-                        m_axi_araddr <= {rd_req_addr[ADDR_W-1:2], 2'b00};
-                        m_axi_arvalid <= 1'b1;
-                        rd_state <= RD_ADDR;
-                    end
-                end
-
-                RD_ADDR: begin
-                    if (m_axi_arvalid && m_axi_arready) begin
-                        m_axi_arvalid <= 1'b0;
-                        m_axi_rready <= 1'b1;
-                        rd_state <= RD_DATA;
-                    end
-                end
-
-                RD_DATA: begin
-                    if (m_axi_rvalid && m_axi_rready) begin
-                        rd_resp_valid <= 1'b1;
-                        rd_resp_data <= m_axi_rdata[DATA_W-1:0];
-                        m_axi_rready <= 1'b0;
-                        if (m_axi_rresp != 2'b00 || !m_axi_rlast)
-                            error <= 1'b1;
-                        rd_state <= RD_IDLE;
-                    end
-                end
-
-                default: begin
-                    error <= 1'b1;
-                    rd_state <= RD_IDLE;
-                end
+            case ({read_accept, r_fire})
+                2'b10: rd_outstanding <= rd_outstanding + {{(RD_COUNT_W-1){1'b0}}, 1'b1};
+                2'b01: rd_outstanding <= rd_outstanding - {{(RD_COUNT_W-1){1'b0}}, 1'b1};
+                default: rd_outstanding <= rd_outstanding;
             endcase
+
+            if (r_fire && (rd_outstanding == {RD_COUNT_W{1'b0}}))
+                error <= 1'b1;
         end
     end
 endmodule
