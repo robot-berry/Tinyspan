@@ -1,9 +1,10 @@
 {
-  "generated_at": "2026-06-24T07:56:01",
-  "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
-  "gate_d_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_rtl_gate_summary.json",
-  "gate_e_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_e_bitstream_x4_320x180_f150_prew_20260620\\manifest.json",
-  "gate_f_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_f_board_x4_32x32_f150_tile32_20260621\\acceptance\\tinyspan_board_acceptance_summary.json",
+  "generated_at": "2026-06-24T15:48:58",
+  "artifact_dir": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
+  "gate_d_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_rtl_gate_summary.json",
+  "gate_e_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_e_bitstream_x4_320x180_f150_prew_20260620\\manifest.json",
+  "gate_f_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_f_board_x4_32x32_f150_tile32_20260621\\acceptance\\tinyspan_board_acceptance_summary.json",
+  "x4_tiled_reference_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile32_20260624\\tinyspan_tiled_fixed_reference_summary.json",
   "gates": [
     {
       "gate": "A0",
@@ -23,7 +24,7 @@
       "gate": "B",
       "name": "TinySPAN 量化与软件定点参考",
       "status": "PASS",
-      "evidence": "W8A8 quant plan + integer reference summary",
+      "evidence": "W8A8 quant plan + integer reference summary；X4 full-frame tiled FixedPng ready，tiles 60",
       "next_action": "后续 board 输出必须对齐同一软件定点参考"
     },
     {
@@ -65,7 +66,7 @@
       "gate": "H",
       "name": "TinySPAN 最终 720p30 验收",
       "status": "BLOCKED",
-      "evidence": "32x32 tile 已 PASS；缺 SD/DDR 完整帧调度、拼接输出和实测 720p30",
+      "evidence": "32x32 tile 已 PASS；X4 整帧 tiled FixedPng 已准备；缺真实完整帧板上输出和实测 720p30",
       "next_action": "完成完整帧 tile controller、bitstream、板上回读和吞吐验收"
     },
     {

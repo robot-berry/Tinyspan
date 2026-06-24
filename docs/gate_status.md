@@ -1,6 +1,6 @@
 # TinySPAN 赛题完成状态
 
-更新时间：`2026-06-24T07:56:01`
+更新时间：`2026-06-24T15:48:58`
 
 当前硬件安全基线：`c32b4_30fps_frozen_20260613`
 Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`
@@ -12,19 +12,20 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 | --- | --- | --- | --- |
 | A0 TinySPAN 硬件安全基线预检 | `PASS` | baseline_manifest.json / baseline_decision.md | 继续沿 c32b4_30fps_frozen_20260613 推进 |
 | A 冻结 TinySPAN 模型 | `PASS` | frozen checkpoint SHA256 已固定 | 禁止使用仍在变化的 checkpoint |
-| B TinySPAN 量化与软件定点参考 | `PASS` | W8A8 quant plan + integer reference summary | 后续 board 输出必须对齐同一软件定点参考 |
+| B TinySPAN 量化与软件定点参考 | `PASS` | W8A8 quant plan + integer reference summary；X4 full-frame tiled FixedPng ready，tiles 60 | 后续 board 输出必须对齐同一软件定点参考 |
 | C TinySPAN RTL 导出 | `PASS` | Gate C re-export + TinySPAN W8A8 RTL manifest | 进入 RTL 仿真与实现前检查 |
 | D TinySPAN RTL 仿真 | `PASS` | 当前 artifacts 中 Gate D RTL gate rerun PASS | 进入 Gate E bitstream 生成前检查 |
 | E TinySPAN 实现与资源约束 | `PASS` | X4 320x180 Gate E bitstream/resource PASS；WNS 0.074ns，理论 31.0015fps | 继续接入完整帧板端 tile scheduler |
 | F TinySPAN 板卡冒烟测试 | `PASS` | X4 32x32 真实板卡 smoke PASS；fps 1831.14409883295，LUT 5943，DSP 78 | 扩展到 SD/DDR 完整帧板端切块和回写 |
 | G TinySPAN 图像一致性可视化验证 | `PASS` | X4 32x32 board-vs-software byte-exact；mismatch 0/49152，max diff 0 | 扩展到完整帧拼接可视化和 diff heatmap |
-| H TinySPAN 最终 720p30 验收 | `BLOCKED` | 32x32 tile 已 PASS；缺 SD/DDR 完整帧调度、拼接输出和实测 720p30 | 完成完整帧 tile controller、bitstream、板上回读和吞吐验收 |
+| H TinySPAN 最终 720p30 验收 | `BLOCKED` | 32x32 tile 已 PASS；X4 整帧 tiled FixedPng 已准备；缺真实完整帧板上输出和实测 720p30 | 完成完整帧 tile controller、bitstream、板上回读和吞吐验收 |
 | X2 X2 独立证据包 | `BLOCKED` | 当前主证据为 X4，X2 需独立证据包 | 完成 X4 闭环后补齐 X2 量化/RTL/board 证据 |
 
 ## 当前硬阻塞
 
 - 32x32 LR tile 的真实 TinySPAN 板上输出已经 PASS，但还没有 SD/DDR 完整 LR 帧的板端 tile scheduler 闭环。
-- 还没有完整帧 tile 坐标生成、边缘 padding、动态有效区域裁剪、拼接写回和最终 `1280x720` 输出证据。
+- X4 `320x180 -> 1280x720` 的 hardware-tiled FixedPng 已生成，可作为后续真实板上输出比较的目标。
+- 还没有真实板上完整帧 tile 坐标生成、边缘 padding、动态有效区域裁剪、拼接写回和最终 `1280x720` 回读输出证据。
 - 还没有完整帧实测板上 `720p30` throughput。
 - X2 证据包尚未补齐。
 
@@ -35,6 +36,21 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 - Timing：WNS `0.074ns`，TNS `0.0ns`，frequency `142.857MHz`
 - Resource gate：`PASS`，LUT `7371`，Register `5437`，DSP `94`，BRAM Tile `330.5`
 - 理论 X4 720p throughput：`31.0015fps`
+
+## X4 完整帧 tiled FixedPng 证据
+
+- 状态：`PASS`
+- 输入：`320x180`
+- 输出：`1280x720`
+- Tile：`32x32`，数量 `60`
+- Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`
+- Quant plan SHA256：`EB6EEDDDE9360F61E6FC30141B2A1E6539E519CB226AC18B8C219B9E40092C9D`
+- FixedPng：`G:\UESTC\feitengspan1\Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\full_frame_tiled_reference_x4_320x180_tile32_20260624\software_tiled_fixed_point_sr.png`
+- Preview：`G:\UESTC\feitengspan1\Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\full_frame_tiled_reference_x4_320x180_tile32_20260624\comparison_preview.png`
+- Diff heatmap：`G:\UESTC\feitengspan1\Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\full_frame_tiled_reference_x4_320x180_tile32_20260624\diff_heatmap.png`
+- Full-integer vs tiled：mismatch `215682/2764800`，max diff `58`，PSNR `42.680956787380666 dB`
+
+说明：该证据是软件侧硬件同构参考，只证明后续板上比较目标已准备好；不能替代真实完整帧 bitstream、板上回读和实测吞吐。
 
 ## Gate F/G 32x32 上板证据
 

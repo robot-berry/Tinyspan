@@ -69,6 +69,7 @@ def status_from_inputs(
     gate_d_current: bool,
     gate_e: dict[str, Any] | None,
     gate_f: dict[str, Any] | None,
+    tiled_ref: dict[str, Any] | None,
 ) -> list[dict[str, str]]:
     baseline_locked = bool(baseline and baseline.get("status") == "baseline_locked_not_board_accepted")
     readiness_failed = failed_checks(readiness)
@@ -90,7 +91,13 @@ def status_from_inputs(
             next_action = "禁止使用仍在变化的 checkpoint"
         elif gate_id == "B":
             status = "PASS" if baseline and baseline.get("quant_reference_evidence") else "BLOCKED"
-            evidence = "W8A8 quant plan + integer reference summary"
+            if tiled_ref and tiled_ref.get("pass"):
+                evidence = (
+                    "W8A8 quant plan + integer reference summary；"
+                    f"X4 full-frame tiled FixedPng ready，tiles {number_text(tiled_ref.get('tile_count'))}"
+                )
+            else:
+                evidence = "W8A8 quant plan + integer reference summary"
             next_action = "后续 board 输出必须对齐同一软件定点参考"
         elif gate_id == "C":
             status = "PASS" if (gate_c or (baseline and baseline.get("rtl_evidence"))) else "BLOCKED"
@@ -163,7 +170,10 @@ def status_from_inputs(
                 next_action = "拿到真实 board output 后运行图像一致性验证"
         elif gate_id == "H":
             status = "BLOCKED"
-            evidence = "32x32 tile 已 PASS；缺 SD/DDR 完整帧调度、拼接输出和实测 720p30"
+            if tiled_ref and tiled_ref.get("pass"):
+                evidence = "32x32 tile 已 PASS；X4 整帧 tiled FixedPng 已准备；缺真实完整帧板上输出和实测 720p30"
+            else:
+                evidence = "32x32 tile 已 PASS；缺 SD/DDR 完整帧调度、拼接输出和实测 720p30"
             next_action = "完成完整帧 tile controller、bitstream、板上回读和吞吐验收"
         elif gate_id == "X2":
             status = "BLOCKED"
@@ -188,6 +198,7 @@ def write_markdown(
     baseline: dict[str, Any] | None,
     gate_e: dict[str, Any] | None,
     gate_f: dict[str, Any] | None,
+    tiled_ref: dict[str, Any] | None,
 ) -> None:
     baseline_id = ""
     checkpoint_sha = ""
@@ -223,7 +234,8 @@ def write_markdown(
             "## 当前硬阻塞",
             "",
             "- 32x32 LR tile 的真实 TinySPAN 板上输出已经 PASS，但还没有 SD/DDR 完整 LR 帧的板端 tile scheduler 闭环。",
-            "- 还没有完整帧 tile 坐标生成、边缘 padding、动态有效区域裁剪、拼接写回和最终 `1280x720` 输出证据。",
+            "- X4 `320x180 -> 1280x720` 的 hardware-tiled FixedPng 已生成，可作为后续真实板上输出比较的目标。",
+            "- 还没有真实板上完整帧 tile 坐标生成、边缘 padding、动态有效区域裁剪、拼接写回和最终 `1280x720` 回读输出证据。",
             "- 还没有完整帧实测板上 `720p30` throughput。",
             "- X2 证据包尚未补齐。",
             "",
@@ -244,6 +256,29 @@ def write_markdown(
                 f"- Timing：WNS `{number_text(timing.get('wns_ns'))}ns`，TNS `{number_text(timing.get('tns_ns'))}ns`，frequency `{number_text(timing.get('frequency_mhz'))}MHz`",
                 f"- Resource gate：`{number_text(resource.get('status'))}`，LUT `{number_text(metrics.get('lut'))}`，Register `{number_text(metrics.get('register'))}`，DSP `{number_text(metrics.get('dsp'))}`，BRAM Tile `{number_text(metrics.get('bram_tile'))}`",
                 f"- 理论 X4 720p throughput：`{number_text(throughput.get('fps_x4_1280x720'))}fps`",
+                "",
+            ]
+        )
+    if tiled_ref:
+        outputs = tiled_ref.get("outputs", {}) or {}
+        metrics = tiled_ref.get("metrics", {}) or {}
+        full_vs_tiled = metrics.get("full_integer_vs_tiled", {}) or {}
+        lines.extend(
+            [
+                "## X4 完整帧 tiled FixedPng 证据",
+                "",
+                f"- 状态：`{'PASS' if tiled_ref.get('pass') else 'FAIL'}`",
+                f"- 输入：`{number_text(tiled_ref.get('input_width'))}x{number_text(tiled_ref.get('input_height'))}`",
+                f"- 输出：`{number_text(tiled_ref.get('output_width'))}x{number_text(tiled_ref.get('output_height'))}`",
+                f"- Tile：`{number_text(tiled_ref.get('tile_width'))}x{number_text(tiled_ref.get('tile_height'))}`，数量 `{number_text(tiled_ref.get('tile_count'))}`",
+                f"- Checkpoint SHA256：`{number_text(tiled_ref.get('checkpoint_sha256'))}`",
+                f"- Quant plan SHA256：`{number_text(tiled_ref.get('quant_plan_sha256'))}`",
+                f"- FixedPng：`{number_text(outputs.get('software_tiled_fixed_point_sr'))}`",
+                f"- Preview：`{number_text(outputs.get('comparison_preview'))}`",
+                f"- Diff heatmap：`{number_text(outputs.get('diff_heatmap'))}`",
+                f"- Full-integer vs tiled：mismatch `{number_text(full_vs_tiled.get('mismatch_bytes'))}/{number_text(full_vs_tiled.get('total_bytes'))}`，max diff `{number_text(full_vs_tiled.get('max_channel_diff'))}`，PSNR `{number_text(full_vs_tiled.get('psnr_db'))} dB`",
+                "",
+                "说明：该证据是软件侧硬件同构参考，只证明后续板上比较目标已准备好；不能替代真实完整帧 bitstream、板上回读和实测吞吐。",
                 "",
             ]
         )
@@ -286,6 +321,7 @@ def main() -> int:
 
     gate_e = load_json(artifact_dir / "gate_e_bitstream_x4_320x180_f150_prew_20260620" / "manifest.json")
     gate_f = load_json(artifact_dir / "gate_f_board_x4_32x32_f150_tile32_20260621" / "acceptance" / "tinyspan_board_acceptance_summary.json")
+    tiled_ref, tiled_ref_path = load_latest_json(artifact_dir, "full_frame_tiled_reference_x4_320x180_tile32_*/tinyspan_tiled_fixed_reference_summary.json")
 
     rows = status_from_inputs(
         baseline,
@@ -296,8 +332,9 @@ def main() -> int:
         gate_d_current,
         gate_e,
         gate_f,
+        tiled_ref,
     )
-    write_markdown(args.docs_out, rows, baseline, gate_e, gate_f)
+    write_markdown(args.docs_out, rows, baseline, gate_e, gate_f, tiled_ref)
 
     json_out = args.json_out or artifact_dir / "contest_completion_status.json"
     json_out.parent.mkdir(parents=True, exist_ok=True)
@@ -309,6 +346,7 @@ def main() -> int:
                 "gate_d_summary": str(gate_d_path) if gate_d_path else "",
                 "gate_e_summary": str(artifact_dir / "gate_e_bitstream_x4_320x180_f150_prew_20260620" / "manifest.json") if gate_e else "",
                 "gate_f_summary": str(artifact_dir / "gate_f_board_x4_32x32_f150_tile32_20260621" / "acceptance" / "tinyspan_board_acceptance_summary.json") if gate_f else "",
+                "x4_tiled_reference_summary": str(tiled_ref_path) if tiled_ref_path else "",
                 "gates": rows,
             },
             ensure_ascii=False,
