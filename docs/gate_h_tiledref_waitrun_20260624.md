@@ -117,6 +117,17 @@ python G:\UESTC\feitengspan1\Tinyspan\scripts\acceptance\check_gate_h_tiledref_b
 当前 Gate H 还未完成时，该脚本应报告 `INCOMPLETE_OR_FAIL`；只有真实板上输出、summary、
 preview、diff heatmap 和资源 JSON 齐全，且 board-vs-fixed 与 fps 硬门禁通过后才会报告 `PASS`。
 
+也可以挂一个只读收尾 watcher，等 Gate H summary 出现后自动检查、打包并刷新状态/审计：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File G:\UESTC\feitengspan1\Tinyspan\scripts\acceptance\watch_gate_h_tiledref_postpack.ps1 `
+  -TinyspanRoot G:\UESTC\feitengspan1\Tinyspan `
+  -WorkspaceRoot G:\UESTC\feitengspan1
+```
+
+该 watcher 只等待和读取文件，不会启动 Vivado、JTAG 或板卡流程。
+
 ## 当前边界
 
 该等待任务尚未证明赛题完成。它只是把真实上板实测排队到当前 Vivado 之后。

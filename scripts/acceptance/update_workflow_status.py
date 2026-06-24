@@ -70,6 +70,7 @@ def status_from_inputs(
     gate_e: dict[str, Any] | None,
     gate_f: dict[str, Any] | None,
     tiled_ref: dict[str, Any] | None,
+    gate_h_board: dict[str, Any] | None,
     x2_training: dict[str, Any] | None,
 ) -> list[dict[str, str]]:
     baseline_locked = bool(baseline and baseline.get("status") == "baseline_locked_not_board_accepted")
@@ -170,12 +171,25 @@ def status_from_inputs(
                 evidence = "缺 board_sr.png / comparison_preview.png / diff_heatmap.png"
                 next_action = "拿到真实 board output 后运行图像一致性验证"
         elif gate_id == "H":
-            status = "BLOCKED"
-            if tiled_ref and tiled_ref.get("pass"):
-                evidence = "32x32 tile 已 PASS；X4 整帧 tiled FixedPng 已准备；缺真实完整帧板上输出和实测 720p30"
+            gate_h_acceptance = (gate_h_board or {}).get("acceptance_summary", {}) or {}
+            gate_h_pass = bool(gate_h_board and (gate_h_board.get("package_pass") or gate_h_board.get("pass")))
+            if gate_h_pass:
+                status = "PASS"
+                evidence = (
+                    "X4 full-frame board-vs-tiled-fixed PASS; "
+                    f"fps {number_text(gate_h_acceptance.get('measured_fps'))}; "
+                    f"mismatch {number_text(gate_h_acceptance.get('mismatch_bytes'))}/"
+                    f"{number_text(gate_h_acceptance.get('total_bytes'))}; "
+                    f"max diff {number_text(gate_h_acceptance.get('max_channel_diff'))}"
+                )
+                next_action = "归档 Gate H PPA/图像证据，并继续 X2 独立证据包"
             else:
-                evidence = "32x32 tile 已 PASS；缺 SD/DDR 完整帧调度、拼接输出和实测 720p30"
-            next_action = "完成完整帧 tile controller、bitstream、板上回读和吞吐验收"
+                status = "BLOCKED"
+                if tiled_ref and tiled_ref.get("pass"):
+                    evidence = "32x32 tile 已 PASS；X4 整帧 tiled FixedPng 已准备；缺真实完整帧板上输出和实测 720p30"
+                else:
+                    evidence = "32x32 tile 已 PASS；缺 SD/DDR 完整帧调度、拼接输出和实测 720p30"
+                next_action = "完成完整帧 tile controller、bitstream、板上回读和吞吐验收"
         elif gate_id == "X2":
             if x2_training and x2_training.get("status") == "training_running":
                 formal = x2_training.get("formal_training", {}) or {}
@@ -355,6 +369,9 @@ def main() -> int:
     gate_e = load_json(artifact_dir / "gate_e_bitstream_x4_320x180_f150_prew_20260620" / "manifest.json")
     gate_f = load_json(artifact_dir / "gate_f_board_x4_32x32_f150_tile32_20260621" / "acceptance" / "tinyspan_board_acceptance_summary.json")
     tiled_ref, tiled_ref_path = load_latest_json(artifact_dir, "full_frame_tiled_reference_x4_320x180_tile32_*/tinyspan_tiled_fixed_reference_summary.json")
+    gate_h_board, gate_h_board_path = load_latest_json(artifact_dir, "gate_h_board_x4_320x180_f150_tiledref_*/manifest.json")
+    if gate_h_board is None:
+        gate_h_board, gate_h_board_path = load_latest_json(artifact_dir, "gate_h_board_x4_320x180_f150_tiledref_*/gate_h_check.json")
     x2_training, x2_training_path = load_latest_json(artifact_dir, "x2_training_*/x2_training_status.json")
 
     rows = status_from_inputs(
@@ -367,6 +384,7 @@ def main() -> int:
         gate_e,
         gate_f,
         tiled_ref,
+        gate_h_board,
         x2_training,
     )
     write_markdown(args.docs_out, rows, baseline, gate_e, gate_f, tiled_ref, x2_training)
@@ -382,6 +400,7 @@ def main() -> int:
                 "gate_e_summary": str(artifact_dir / "gate_e_bitstream_x4_320x180_f150_prew_20260620" / "manifest.json") if gate_e else "",
                 "gate_f_summary": str(artifact_dir / "gate_f_board_x4_32x32_f150_tile32_20260621" / "acceptance" / "tinyspan_board_acceptance_summary.json") if gate_f else "",
                 "x4_tiled_reference_summary": str(tiled_ref_path) if tiled_ref_path else "",
+                "gate_h_board_summary": str(gate_h_board_path) if gate_h_board_path else "",
                 "x2_training_status": str(x2_training_path) if x2_training_path else "",
                 "gates": rows,
             },
