@@ -657,6 +657,12 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   `3E4EEFCD9225A6B7BB3B6CB413FB10A891249E87D2157D9EF3D553465AD6FF7C`。
   报告见 `sim/reports/ps_tinyspan_ddr_x4_bitstream_20260624.md`。
   该结果证明 PS/DDR IP 路线已具备可下载 bitstream；仍不代表真实板上输出或 720p30 已完成。
+- 2026-06-24 已新增 TinySPAN PS/DDR X4 上板 smoke 脚本：
+  `scripts/board/program_tinyspan_ps_ddr_bitstream.tcl`、
+  `scripts/board/run_xsct_ps_tinyspan_ddr_x4_smoke.tcl` 和
+  `scripts/board/run_ps_tinyspan_ddr_x4_smoke.ps1`。该脚本链路使用 Vivado 下载 bitstream，
+  XSCT/PS 写入 DDR 输入帧、配置 AXI-Lite 寄存器、启动 TinySPAN、轮询 done/error，并可从 DDR
+  读回 `FULL/SAMPLE/SKIP` 输出。该步骤只是上板执行入口准备，尚未产生真实板上输出一致性证据。
 - 2026-06-24 已主动停止 X4 `320x180 -> 1280x720` JTAG 全帧逐像素读回诊断 run：
   `board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullread_diag2`。
   停止前读到 `204800 / 921600` 个输出像素，`status=0x00000080`，说明输出端持续有效；
