@@ -1,6 +1,8 @@
 param(
   [string]$RunDir = "runs\tinyspan_distill\video_x4_c32_b4_reds_temporal",
   [string]$Tag = "",
+  [ValidateSet(2, 4)]
+  [int]$Scale = 4,
   [switch]$DryRun,
   [switch]$SkipRtlExport,
   [switch]$SkipReadiness
@@ -53,18 +55,25 @@ try {
   $safeTag = $Tag -replace "[^A-Za-z0-9_.-]", "_"
 
   $normalizedRunDir = ConvertTo-NormalizedPathText $RunDir
+  $normalizedRunDirLeaf = [System.IO.Path]::GetFileName($normalizedRunDir.TrimEnd("/"))
   $running = @(Get-CimInstance Win32_Process |
     Where-Object {
       $cmd = ConvertTo-NormalizedPathText ([string]$_.CommandLine)
-      ($_.Name -eq "python.exe" -or $_.Name -eq "powershell.exe") -and
-      ($cmd -match "distill_tinyspan_video|train_tinyspan_video_x4_c32_b4|tinyspan_distill") -and
-      ($cmd -match [regex]::Escape($normalizedRunDir))
+      $isTrainProcess = (
+        ($_.Name -eq "python.exe" -and $cmd -match "distill_tinyspan_video\.py") -or
+        ($_.Name -eq "powershell.exe" -and $cmd -match "train_tinyspan_video_x[24]_c32_b4\.ps1")
+      )
+      $matchesRunDir = ($cmd -match [regex]::Escape($normalizedRunDir)) -or
+        ($normalizedRunDirLeaf -ne "" -and $cmd -match [regex]::Escape($normalizedRunDirLeaf))
+      $isTrainProcess -and
+      $matchesRunDir
     } |
     Select-Object ProcessId, Name, CommandLine)
 
   Write-Host "RUN_DIR=$RunDir"
   Write-Host "CHECKPOINT=$checkpoint"
   Write-Host "TAG=$safeTag"
+  Write-Host "SCALE=$Scale"
   Write-Host "LATEST_EPOCH=$($latestMetric.epoch)"
   Write-Host "LATEST_STEP=$($latestMetric.step)"
   Write-Host "LATEST_STUDENT_PSNR=$($latestMetric.student_psnr)"
@@ -76,11 +85,13 @@ try {
     "-RunDir", $RunDir,
     "-Checkpoint", $checkpoint,
     "-Tag", $safeTag,
+    "-Scale", $Scale,
     "-RunHandoff"
   )
   $handoffSummary = "runs\tinyspan_realtime_handoff\c32b4_${safeTag}_summary.json"
-  $quantPlan = "runs\tinyspan_quant_plan\${safeTag}_x4_c32_b4_w8a8\tinyspan_w8a8_quant_plan.json"
-  $rtlOutDir = "rtl\generated\tinyspan_c32b4_${safeTag}_w8a8"
+  $scaleTag = "x${Scale}"
+  $quantPlan = "runs\tinyspan_quant_plan\${safeTag}_${scaleTag}_c32_b4_w8a8\tinyspan_w8a8_quant_plan.json"
+  $rtlOutDir = "rtl\generated\tinyspan_c32b4_${safeTag}_${scaleTag}_w8a8"
   $rtlManifest = Join-Path $rtlOutDir "tinyspan_w8a8_rtl_manifest.json"
   $rtlExportArgs = @(
     "-ExecutionPolicy", "Bypass",

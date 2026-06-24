@@ -4,6 +4,8 @@ param(
   [string]$Tag = "latest",
   [string]$PreviewInput = "external\SPAN\test_scripts\data\baboon.png",
   [string]$CalibrationInput = "G:\REDS\train_sharp",
+  [ValidateSet(2, 4)]
+  [int]$Scale = 4,
   [int]$Width = 32,
   [int]$Height = 32,
   [int]$CalibrationImages = 4,
@@ -32,6 +34,16 @@ function Convert-ToDoubleOrInfinity {
   return [double]$Value
 }
 
+function Get-FirstExistingPath {
+  param([string[]]$Candidates)
+  foreach ($candidate in $Candidates) {
+    if (Test-Path $candidate) {
+      return $candidate
+    }
+  }
+  throw "None of the candidate paths exist: $($Candidates -join ', ')"
+}
+
 $root = Resolve-Path (Join-Path $PSScriptRoot "..")
 Push-Location $root
 try {
@@ -52,21 +64,28 @@ try {
   }
 
   $safeTag = $Tag -replace '[^A-Za-z0-9_.-]', '_'
-  $fusionDir = "runs\tinyspan_fusion\${safeTag}_x4_c32_b4"
-  $handoffDir = "rtl\generated\tinyspan_x4_c32_b4_${safeTag}_fused"
-  $manifestRefDir = "runs\tinyspan_manifest_reference\${safeTag}_x4_c32_b4_${Width}x${Height}"
-  $calibDir = "runs\tinyspan_calibration\${safeTag}_x4_c32_b4_reds${CalibrationImages}_${Width}x${Height}"
-  $quantDir = "runs\tinyspan_quant_plan\${safeTag}_x4_c32_b4_w8a8"
-  $integerDir = "runs\tinyspan_integer_reference\${safeTag}_x4_c32_b4_${Width}x${Height}_w8a8"
+  $scaleTag = "x${Scale}"
+  $fusionDir = "runs\tinyspan_fusion\${safeTag}_${scaleTag}_c32_b4"
+  $handoffDir = "rtl\generated\tinyspan_${scaleTag}_c32_b4_${safeTag}_fused"
+  $manifestRefDir = "runs\tinyspan_manifest_reference\${safeTag}_${scaleTag}_c32_b4_${Width}x${Height}"
+  $calibDir = "runs\tinyspan_calibration\${safeTag}_${scaleTag}_c32_b4_reds${CalibrationImages}_${Width}x${Height}"
+  $quantDir = "runs\tinyspan_quant_plan\${safeTag}_${scaleTag}_c32_b4_w8a8"
+  $integerDir = "runs\tinyspan_integer_reference\${safeTag}_${scaleTag}_c32_b4_${Width}x${Height}_w8a8"
   $summaryDir = "runs\tinyspan_realtime_handoff"
   New-Item -ItemType Directory -Path $summaryDir -Force | Out-Null
+  $fuseTool = Get-FirstExistingPath @("tools\model_to_hardware\fuse_tinyspan_conv3xc.py", "tools\fuse_tinyspan_conv3xc.py")
+  $manifestRefTool = Get-FirstExistingPath @("tools\model_to_hardware\run_tinyspan_manifest_reference.py", "tools\run_tinyspan_manifest_reference.py")
+  $calibrateTool = Get-FirstExistingPath @("tools\model_to_hardware\calibrate_tinyspan_activation_scales.py", "tools\calibrate_tinyspan_activation_scales.py")
+  $checkQuantTool = Get-FirstExistingPath @("tools\model_to_hardware\check_tinyspan_w8a8_quant_plan.py", "tools\check_tinyspan_w8a8_quant_plan.py")
+  $hardwareHandoffScript = Get-FirstExistingPath @("scripts\prepare_tinyspan_hardware_handoff.ps1")
 
   Write-Host "C32B4_TAG=$safeTag"
   Write-Host "C32B4_CHECKPOINT=$Checkpoint"
+  Write-Host "C32B4_SCALE=$Scale"
 
-  python tools\fuse_tinyspan_conv3xc.py `
+  python $fuseTool `
     --checkpoint $Checkpoint `
-    --scale 4 `
+    --scale $Scale `
     --channels 32 `
     --num-blocks 4 `
     --width $Width `
@@ -79,9 +98,9 @@ try {
   $fusedCheckpoint = Join-Path $fusionDir "student_fused_conv3xc.pt"
   $fusionReport = Join-Path $fusionDir "fusion_check.md"
 
-  powershell -ExecutionPolicy Bypass -File scripts\prepare_tinyspan_hardware_handoff.ps1 `
+  powershell -ExecutionPolicy Bypass -File $hardwareHandoffScript `
     -Checkpoint $Checkpoint `
-    -Scale 4 `
+    -Scale $Scale `
     -Channels 32 `
     -Blocks 4 `
     -OutputDir $handoffDir `
@@ -91,7 +110,7 @@ try {
   }
   $manifest = Join-Path $handoffDir "tinyspan_manifest.json"
 
-  python tools\model_to_hardware\run_tinyspan_manifest_reference.py `
+  python $manifestRefTool `
     --manifest $manifest `
     --checkpoint $Checkpoint `
     --input $PreviewInput `
@@ -109,7 +128,7 @@ try {
   $manifestRefSummaryJson = Join-Path $manifestRefDir "tinyspan_manifest_reference_summary.json"
 
   $activationScales = Join-Path $calibDir "activation_scales.json"
-  python tools\model_to_hardware\calibrate_tinyspan_activation_scales.py `
+  python $calibrateTool `
     --manifest $manifest `
     --checkpoint $Checkpoint `
     --input $CalibrationInput `
@@ -134,7 +153,7 @@ try {
   }
   $quantPlan = Join-Path $quantDir "tinyspan_w8a8_quant_plan.json"
 
-  python tools\check_tinyspan_w8a8_quant_plan.py --quant-plan $quantPlan
+  python $checkQuantTool --quant-plan $quantPlan
   if ($LASTEXITCODE -ne 0) {
     throw "check_tinyspan_w8a8_quant_plan.py failed with exit code $LASTEXITCODE"
   }
@@ -189,6 +208,7 @@ try {
     branch = (git branch --show-current)
     width = $Width
     height = $Height
+    scale = $Scale
     preview_input = $PreviewInput
     calibration_input = $CalibrationInput
     calibration_images = $CalibrationImages
@@ -225,6 +245,7 @@ try {
     "Result: ``$result``",
     "",
     "Tag: ``$safeTag``",
+    "Scale: ``X$Scale``",
     "Checkpoint: ``$Checkpoint``",
     "Preview input: ``$PreviewInput``",
     "Calibration input: ``$CalibrationInput``",

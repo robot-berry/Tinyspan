@@ -3,6 +3,8 @@ param(
   [string]$Checkpoint = "",
   [string]$Tag = "",
   [string]$OutRoot = "runs\tinyspan_frozen_candidates",
+  [ValidateSet(2, 4)]
+  [int]$Scale = 4,
   [switch]$AllowRunning,
   [switch]$RunHandoff,
   [switch]$DryRun
@@ -61,12 +63,18 @@ try {
   $summaryMd = Join-Path $outDir "tinyspan_c32b4_frozen_checkpoint_summary.md"
 
   $normalizedRunDir = ConvertTo-NormalizedPathText $RunDir
+  $normalizedRunDirLeaf = [System.IO.Path]::GetFileName($normalizedRunDir.TrimEnd("/"))
   $running = @(Get-CimInstance Win32_Process |
     Where-Object {
       $cmd = ConvertTo-NormalizedPathText ([string]$_.CommandLine)
-      ($_.Name -eq "python.exe" -or $_.Name -eq "powershell.exe") -and
-      ($cmd -match "distill_tinyspan_video|train_tinyspan_video_x4_c32_b4|tinyspan_distill") -and
-      ($cmd -match [regex]::Escape($normalizedRunDir))
+      $isTrainProcess = (
+        ($_.Name -eq "python.exe" -and $cmd -match "distill_tinyspan_video\.py") -or
+        ($_.Name -eq "powershell.exe" -and $cmd -match "train_tinyspan_video_x[24]_c32_b4\.ps1")
+      )
+      $matchesRunDir = ($cmd -match [regex]::Escape($normalizedRunDir)) -or
+        ($normalizedRunDirLeaf -ne "" -and $cmd -match [regex]::Escape($normalizedRunDirLeaf))
+      $isTrainProcess -and
+      $matchesRunDir
     } |
     Select-Object ProcessId, Name, CommandLine)
 
@@ -106,6 +114,7 @@ try {
     latest_metric = $latestMetric
     training_processes = @($running)
     allow_running = [bool]$AllowRunning
+    scale = $Scale
     run_handoff = [bool]$RunHandoff
     handoff_summary = ""
   }
@@ -126,7 +135,8 @@ try {
     if ($RunHandoff) {
       powershell -ExecutionPolicy Bypass -File scripts\prepare_tinyspan_c32b4_realtime_handoff.ps1 `
         -Checkpoint $frozenCheckpoint `
-        -Tag $safeTag
+        -Tag $safeTag `
+        -Scale $Scale
       if ($LASTEXITCODE -ne 0) {
         throw "prepare_tinyspan_c32b4_realtime_handoff.ps1 failed with exit code $LASTEXITCODE"
       }
@@ -138,6 +148,8 @@ try {
       "# TinySPAN C32B4 Frozen Checkpoint",
       "",
       "Tag: ``$safeTag``",
+      "",
+      "Scale: ``X$Scale``",
       "",
       "Checkpoint: ``$frozenCheckpoint``",
       "",

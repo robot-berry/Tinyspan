@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T15:57:34",
+  "generated_at": "2026-06-24T16:11:47",
   "artifact_dir": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "gate_d_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_rtl_gate_summary.json",
   "gate_e_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_e_bitstream_x4_320x180_f150_prew_20260620\\manifest.json",
@@ -74,7 +74,7 @@
       "gate": "X2",
       "name": "X2 独立证据包",
       "status": "PARTIAL",
-      "evidence": "X2 TinySPAN smoke PASS，正式训练运行中；epoch 1 step 217",
+      "evidence": "X2 TinySPAN smoke PASS，正式训练运行中；epoch 1 step 1568",
       "next_action": "等待 X2 训练完成，再冻结、量化、导出 RTL、上板验证"
     }
   ]

@@ -11,12 +11,18 @@ $root = Resolve-Path (Join-Path $PSScriptRoot "..")
 Push-Location $root
 try {
   $normalizedOutput = ($Output -replace "\\", "/")
+  $normalizedOutputLeaf = [System.IO.Path]::GetFileName($normalizedOutput.TrimEnd("/"))
   $running = Get-CimInstance Win32_Process |
     Where-Object {
       $cmd = ($_.CommandLine -replace "\\", "/")
-      ($_.Name -eq "python.exe" -or $_.Name -eq "powershell.exe") -and
-      ($cmd -match "distill_tinyspan_video|train_tinyspan_video_x[24]_c32_b4|tinyspan_distill") -and
-      ($cmd -match [regex]::Escape($normalizedOutput))
+      $isTrainProcess = (
+        ($_.Name -eq "python.exe" -and $cmd -match "distill_tinyspan_video\.py") -or
+        ($_.Name -eq "powershell.exe" -and $cmd -match "train_tinyspan_video_x[24]_c32_b4\.ps1")
+      )
+      $matchesOutput = ($cmd -match [regex]::Escape($normalizedOutput)) -or
+        ($normalizedOutputLeaf -ne "" -and $cmd -match [regex]::Escape($normalizedOutputLeaf))
+      $isTrainProcess -and
+      $matchesOutput
     } |
     Select-Object ProcessId, Name, CommandLine
 
