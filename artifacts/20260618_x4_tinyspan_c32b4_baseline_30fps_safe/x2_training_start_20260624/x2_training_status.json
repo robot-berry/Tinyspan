@@ -43,7 +43,7 @@
     "stdout": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\train_stdout.log",
     "stderr": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\train_stderr.log",
     "observed_processes": {
-      "launcher_pid": 7260,
+      "launcher_pid": 30888,
       "python_pid": 34236,
       "processes": [
         {
@@ -57,27 +57,27 @@
           "CommandLine": "\"D:\\software\\anaconda\\python.exe\" train\\distill_tinyspan_video.py --train-frames G:\\REDS\\train_sharp --scale 2 --channels 32 --num-blocks 4 --patch-size 192 --batch-size 6 --epochs 50 --max-steps 0 --max-pairs 24000 --output runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal --save-every-steps 500 --amp"
         },
         {
-          "ProcessId": 7260,
+          "ProcessId": 30888,
           "Name": "powershell.exe",
           "CommandLine": "powershell -NoProfile -Command \"\n$ErrorActionPreference = 'SilentlyContinue'\nGet-CimInstance Win32_Process |\n  Where-Object {\n    $_.CommandLine -match 'distill_tinyspan_video.py|train_tinyspan_video_x2_c32_b4.ps1' -and\n    $_.CommandLine -match 'video_x2_c32_b4_reds_temporal'\n  } |\n  Select-Object ProcessId,Name,CommandLine |\n  ConvertTo-Json -Depth 3\n\""
         }
       ]
     },
     "latest_observed": {
-      "epoch": 2,
-      "step": 7682,
+      "epoch": 3,
+      "step": 8221,
       "total_steps": 198000,
-      "progress_percent": 3.8798,
-      "loss": 0.01251558,
-      "distill_loss": 0.00739029,
-      "hr_loss": 0.01061564,
-      "edge_loss": 0.04456527,
-      "temporal_loss": 0.01055429,
-      "teacher_psnr": 38.843032,
-      "student_psnr": 34.644021,
-      "seconds": 5081.239,
-      "steps_per_second": 1.5118,
-      "eta": "01.10:58:08",
+      "progress_percent": 4.152,
+      "loss": 0.02573317,
+      "distill_loss": 0.01517408,
+      "hr_loss": 0.02171018,
+      "edge_loss": 0.09280746,
+      "temporal_loss": 0.02180451,
+      "teacher_psnr": 32.941232,
+      "student_psnr": 29.295602,
+      "seconds": 5430.962,
+      "steps_per_second": 1.5137,
+      "eta": "01.10:49:34",
       "stderr_error_hints": "none"
     },
     "latest_artifacts": {
@@ -85,29 +85,29 @@
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\student_latest.pt",
         "exists": true,
         "bytes": 2156839,
-        "mtime": "2026-06-24T17:16:51",
-        "sha256": "57e004b6e150a30a7ef9e216888f50be1ad32255a00d34c0baa4b2c143d8f119"
+        "mtime": "2026-06-24T17:22:20",
+        "sha256": "414bd032dd0028cfcf4f95ae15f3ef5862fceaf08d04437497b506ee68d3bd8e"
       },
       "preview": {
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\video_distill_latest_preview.png",
         "exists": true,
-        "bytes": 279385,
-        "mtime": "2026-06-24T17:16:51",
-        "sha256": "e0ec9e217a6de469c4ccbf21014b745637d06812a1dd939ebc069442ddecaeda"
+        "bytes": 173564,
+        "mtime": "2026-06-24T17:22:20",
+        "sha256": "bd2d1033a01ba0ffa067cb53be56a1aa8c84b994441b0388991fe7c5cab87b18"
       },
       "metrics": {
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\metrics.csv",
         "exists": true,
-        "bytes": 758074,
-        "mtime": "2026-06-24T17:18:51",
-        "sha256": "321205e00dbac59dc036a5496d8df89309b74e54dfd9d6001b5afeb2756a8902"
+        "bytes": 811435,
+        "mtime": "2026-06-24T17:24:40",
+        "sha256": "f12d2fd332a3ca6469b2439d7ecad237f5e11267b4943c2de779baa6e3be48eb"
       },
       "stderr": {
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\train_stderr.log",
         "exists": true,
-        "bytes": 2227786,
-        "mtime": "2026-06-24T17:18:51",
-        "sha256": "60056a8922a04568d14a93f525d2785592ade2f326738e42177a004b8e56f236"
+        "bytes": 2383320,
+        "mtime": "2026-06-24T17:24:40",
+        "sha256": "22dee9b003a2ea5218d2ed7ff7f51ad67ad82102b2a2d7f3dceb5cbb293086ac"
       }
     }
   },
@@ -124,5 +124,5 @@
       "measured >=30fps throughput"
     ]
   },
-  "updated_at": "2026-06-24T17:18:50"
+  "updated_at": "2026-06-24T17:24:40"
 }

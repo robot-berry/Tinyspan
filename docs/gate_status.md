@@ -1,6 +1,6 @@
 # TinySPAN 赛题完成状态
 
-更新时间：`2026-06-24T17:18:51`
+更新时间：`2026-06-24T17:24:41`
 
 当前硬件安全基线：`c32b4_30fps_frozen_20260613`
 Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`
@@ -19,7 +19,7 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 | F TinySPAN 板卡冒烟测试 | `PASS` | X4 32x32 真实板卡 smoke PASS；fps 1831.14409883295，LUT 5943，DSP 78 | 扩展到 SD/DDR 完整帧板端切块和回写 |
 | G TinySPAN 图像一致性可视化验证 | `PASS` | X4 32x32 board-vs-fixed byte-exact；mismatch 0/49152，max diff 0 | 扩展到完整帧拼接可视化和 diff heatmap |
 | H TinySPAN 最终 720p30 验收 | `BLOCKED` | 32x32 tile 已 PASS；X4 整帧 tiled FixedPng 已准备；缺真实完整帧板上输出和实测 720p30 | 完成完整帧 tile controller、bitstream、板上回读和吞吐验收 |
-| X2 X2 独立证据包 | `PARTIAL` | X2 TinySPAN smoke PASS，正式训练运行中；epoch 2 step 7682 | 等待 X2 训练完成，再冻结、量化、导出 RTL、上板验证 |
+| X2 X2 独立证据包 | `PARTIAL` | X2 TinySPAN smoke PASS，正式训练运行中；epoch 3 step 8221 | 等待 X2 训练完成，再冻结、量化、导出 RTL、上板验证 |
 
 ## 当前硬阻塞
 
@@ -43,7 +43,7 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 - Student：`TinySPAN X2 c32 b4`
 - Smoke：`PASS`，checkpoint `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_reds_smoke_x2_c32_b4\student_last.pt`
 - Formal training：`RUNNING`，output `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`
-- Latest observed：epoch `2`，step `7682`，speed `1.5118 step/s`
+- Latest observed：epoch `3`，step `8221`，speed `1.5137 step/s`
 - Acceptance boundary：`NOT_ACCEPTED`
 
 说明：X2 训练运行中只能证明路线已启动；不能替代 X2 frozen checkpoint、量化、RTL、bitstream、板上输出和吞吐验收。

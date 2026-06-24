@@ -138,7 +138,7 @@ def main() -> int:
         acceptance_dir / "tinyspan_board_software_summary.json",
         acceptance_dir / "tinyspan_board_software_summary.md",
         acceptance_dir / "tinyspan_board_software_preview.png",
-        acceptance_dir / "tinyspan_board_software_diff_heatmap.png",
+        acceptance_dir / "diff_heatmap.png",
     ]
     optional_files = [
         wait_log_dir / "waitrun_stdout.log",

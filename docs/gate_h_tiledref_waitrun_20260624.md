@@ -74,7 +74,7 @@ acceptance_tiled_fixed\tinyspan_720p30_board_acceptance_summary.json
 acceptance_tiled_fixed\tinyspan_720p30_board_acceptance_summary.md
 acceptance_tiled_fixed\tinyspan_board_software_summary.json
 acceptance_tiled_fixed\tinyspan_board_software_preview.png
-acceptance_tiled_fixed\tinyspan_board_software_diff_heatmap.png
+acceptance_tiled_fixed\diff_heatmap.png
 ```
 
 只有 summary 同时满足：
