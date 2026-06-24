@@ -1,5 +1,7 @@
 # Vivado and simulator scratch
 .Xil/
+build/
+vivado/
 xsim.dir/
 *.jou
 *.pb
@@ -14,6 +16,9 @@ xsim.dir/
 *.gen/
 
 # Large crash and temporary files
+dfx_runtime.txt
+vivado.log
+vivado_*.backup.log
 hs_err_pid*.log
 hs_err_pid*.dmp
 .hdi.isWriteableTest*.tmp

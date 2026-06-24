@@ -284,15 +284,22 @@ board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullrea
 ```text
 SD 卡或 PS 侧文件
  -> DDR 输入帧 buffer
- -> PL TinySPAN tile scheduler 通过 AXI burst / AXI DMA 读取 LR tile 与 halo
+ -> 板卡 ZynqMP PS DDR controller IP
+ -> PL TinySPAN tile scheduler 通过标准 AXI / AXI DMA / HP-HPC 口读取 LR tile 与 halo
  -> TinySPAN W8A8/base-equiv 计算核心
- -> PL 通过 AXI burst / AXI DMA 写回 DDR 输出帧 buffer
+ -> PL 通过标准 AXI / AXI DMA / HP-HPC 口写回 DDR 输出帧 buffer
  -> PS 批量校验、保存图片，或 VDMA/显示通路输出
 ```
 
 预期收益是数量级变化：JTAG 逐像素寄存器访问通常只能用于调试；DDR burst / DMA 路线应把完整帧
 I/O 从“小时级”压到“秒级到亚秒级”，并为后续视频流/显示链路提供基础。最终是否达到 30fps 仍以
 板上实测 `frame_cycles`、DDR 读写带宽和端到端输出帧率为准。
+
+后续不得自研 DDR 控制器、DDR PHY 或板级 DDR 时序逻辑。DDR 只通过 Vivado Block Design 中的
+`zynq_ultra_ps_e` / 板卡 PS DDR controller IP 暴露给 PL；TinySPAN 侧只实现 AXI 用户逻辑或调用
+Xilinx 标准 AXI DMA / VDMA / SmartConnect 等 IP。现有 `sr_ddr_tinyspan_x4_tile_writer_endpoint`
+属于 TinySPAN AXI 用户逻辑，不替代板卡 DDR IP；后续性能优化优先把内部单像素 AXI 访问替换成
+AXI burst 或 AXI DMA，而不是实现自定义 DDR 控制器。
 
 注意：W8A12 当前仍有 mismatch 未闭环，不能作为 TinySPAN 正确性基线。后续最多复用 W8A12 路线里
 关于 PS/DDR/AXI/DMA 搬运的工程经验，不复用 W8A12 计算核心、输出图像或验收结论。
@@ -625,6 +632,22 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   `PASS sr_tile_tinyspan_x4_writer_shell tiles=4 writes=480 frame_cycles=17941`。
   该结果只证明 shell 级多 tile 仿真通过，不能替代完整 `320x180 -> 1280x720`
   bitstream、真实板上回读和 `>=30fps` 实测验收。
+- 2026-06-24 已新增 TinySPAN 专用 DDR/PS endpoint 骨架：
+  `rtl/board_wrapper/sr_ddr_tinyspan_x4_tile_writer_endpoint.v`。
+  该 endpoint 通过 AXI-Lite 暴露 `start/clear`、图像尺寸、DDR 输入/输出 base、
+  status、tiles_done、frame_cycles 和 error 寄存器，并把
+  `sr_tile_tinyspan_x4_writer_shell` 连接到 `sr_ddr_pixel_axi_master`。
+  轻量 RTL elaboration 已通过，报告见
+  `sim/reports/sr_ddr_tinyspan_x4_tile_writer_endpoint_elab_20260624.md`。
+  该结果证明 TinySPAN DDR endpoint 可展开，但还不是最终 burst/DMA I/O 性能证据。
+- 2026-06-24 已新增并验证 TinySPAN PS/DDR X4 Block Design 创建脚本：
+  `scripts/vivado/create_vivado_ps_tinyspan_ddr_x4_bd_project.tcl` 和
+  `scripts/vivado/run_vivado_create_ps_tinyspan_ddr_x4_bd.ps1`。
+  该 BD 直接调用板卡 `zynq_ultra_ps_e` / PS DDR controller IP，不自研 DDR 控制器或 DDR PHY；
+  控制路径为 `PS M_AXI_HPM0_FPD -> sr0/s_axi`，数据路径为
+  `sr0/m_axi -> PS S_AXI_HP0_FPD -> DDR`，控制基址 `0xA0000000`。
+  BD 创建验证已通过，报告见 `sim/reports/ps_tinyspan_ddr_x4_bd_create_20260624.md`。
+  该结果仍只是 BD 创建/验证，不代表综合、bitstream、上板输出或 720p30 已完成。
 - 2026-06-24 已主动停止 X4 `320x180 -> 1280x720` JTAG 全帧逐像素读回诊断 run：
   `board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullread_diag2`。
   停止前读到 `204800 / 921600` 个输出像素，`status=0x00000080`，说明输出端持续有效；
@@ -644,10 +667,11 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 1. 以 `c32b4_30fps_frozen_20260613` 作为 TinySPAN 上板安全基线，生成 `baseline_decision.md` 和 `baseline_manifest.json`。
 2. 把该基线的 checkpoint、quant plan、整数参考、RTL manifest 和 readiness 摘要迁移或归档到 `Tinyspan/artifacts/...`。
 3. 基于该基线继续 TinySPAN RTL/export 与 RTL 仿真，确保 manifest、定点参考、RTL 仿真来自同一个 checkpoint 和同一个 quant plan。
-4. 基于已通过的 `32x32` tile 上板证据，优先实现 TinySPAN 专用 DDR/PS/DMA 完整帧输入输出：
+4. 基于已通过的 `32x32` tile 上板证据和已通过 RTL elaboration 的
+   `sr_ddr_tinyspan_x4_tile_writer_endpoint`，继续创建 TinySPAN 专用 PS/DDR BD：
    PS/SD 准备完整 LR 帧，PL 端按 tile/halo 从 DDR 读取，TinySPAN 处理后写回 DDR 完整 HR 帧。
-5. 补齐 DDR buffer 地址规划、AXI burst / DMA 搬运、tile 坐标生成、halo/边界处理、有效区域裁剪、
-   拼接写回和最终 `1280x720` 输出验证。
+5. 补齐 DDR buffer 地址规划、BD 连接、PS 侧寄存器驱动、AXI burst / DMA 搬运优化、
+   tile 坐标生成、halo/边界处理、有效区域裁剪、拼接写回和最终 `1280x720` 输出验证。
 6. JTAG 后续只用于寄存器调试、小图 smoke 或应急 dump，不再作为完整帧输出读回主路径。
 7. 先用 `make_tinyspan_tiled_fixed_reference.ps1` 为完整帧生成硬件同构 FixedPng、
    `tile_manifest.json`、`comparison_preview.png` 和 `diff_heatmap.png`。
