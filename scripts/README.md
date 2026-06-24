@@ -16,6 +16,10 @@ Current folders:
 - `acceptance/`: workflow status, board-readiness checks, 32x32 smoke
   acceptance, 720p30 acceptance, preflight hashing, hardware-tiled fixed
   reference generation, and board/software image comparison wrappers.
+  - `acceptance/package_gate_h_tiledref_board_run.py`: copies completed Gate H
+    board evidence into `artifacts/`, writes `manifest.json` and
+    `run_summary.md`, and records raw frame SHA256 hashes without copying raw
+    RGB frames by default.
 - `run_tinyspan_c32b4_post_training_prep.ps1`: common X2/X4 post-training
   entrypoint. Use `-Scale 2` for the independent X2 route and `-Scale 4` for
   X4. It refuses to freeze a still-running training checkpoint unless only

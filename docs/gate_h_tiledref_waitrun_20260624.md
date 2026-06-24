@@ -87,6 +87,25 @@ acceptance_tiled_fixed\tinyspan_board_software_diff_heatmap.png
 
 才可以把 Gate H 记为通过。
 
+## 证据归档
+
+Gate H 真实上板验收完成后，用下面的脚本把结果整理到 Tinyspan artifact 目录：
+
+```powershell
+python G:\UESTC\feitengspan1\Tinyspan\scripts\acceptance\package_gate_h_tiledref_board_run.py `
+  --tinyspan-root G:\UESTC\feitengspan1\Tinyspan `
+  --workspace-root G:\UESTC\feitengspan1
+```
+
+默认输出：
+
+```text
+G:\UESTC\feitengspan1\Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_h_board_x4_320x180_f150_tiledref_20260624
+```
+
+该脚本默认不复制 `.rgb` 原始帧，只在 `manifest.json` 中记录输入 raw 和板上输出 raw 的 SHA256。
+如确实需要把 raw 帧一并归档，可显式添加 `--include-raw`。
+
 ## 当前边界
 
 该等待任务尚未证明赛题完成。它只是把真实上板实测排队到当前 Vivado 之后。
