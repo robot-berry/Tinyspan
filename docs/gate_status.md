@@ -1,6 +1,6 @@
 # TinySPAN 赛题完成状态
 
-更新时间：`2026-06-24T17:41:21`
+更新时间：`2026-06-25T02:00:00`
 
 当前硬件安全基线：`c32b4_30fps_frozen_20260613`
 Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`
@@ -18,15 +18,17 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 | E TinySPAN 实现与资源约束 | `PASS` | X4 320x180 Gate E bitstream/resource PASS；WNS 0.074ns，理论 31.0015fps | 继续接入完整帧板端 tile scheduler |
 | F TinySPAN 板卡冒烟测试 | `PASS` | X4 32x32 真实板卡 smoke PASS；fps 1831.14409883295，LUT 5943，DSP 78 | 扩展到 SD/DDR 完整帧板端切块和回写 |
 | G TinySPAN 图像一致性可视化验证 | `PASS` | X4 32x32 board-vs-fixed byte-exact；mismatch 0/49152，max diff 0 | 扩展到完整帧拼接可视化和 diff heatmap |
-| H TinySPAN 最终 720p30 验收 | `BLOCKED` | 32x32 tile 已 PASS；X4 整帧 tiled FixedPng 已准备；缺真实完整帧板上输出和实测 720p30 | 完成完整帧 tile controller、bitstream、板上回读和吞吐验收 |
+| H TinySPAN 最终 720p30 验收 | `PARTIAL` | PS/DDR posted-write 中间版已跑完整 X4 60 tile，`22.1776304000312fps @150MHz`；仍缺完整帧读回一致性和 `>=30fps` | 优化 DDR read 为 AXI burst 或 Xilinx AXI DMA/DataMover，并补完整帧 board-vs-fixed |
 | X2 X2 独立证据包 | `PARTIAL` | X2 TinySPAN smoke PASS，正式训练运行中；epoch 3 step 9792 | 等待 X2 训练完成，再冻结、量化、导出 RTL、上板验证 |
 
 ## 当前硬阻塞
 
-- 32x32 LR tile 的真实 TinySPAN 板上输出已经 PASS，但还没有 SD/DDR 完整 LR 帧的板端 tile scheduler 闭环。
+- 32x32 LR tile 的真实 TinySPAN 板上输出已经 PASS。
+- TinySPAN PS/DDR X4 完整帧板端切块已经能跑完 `320x180 -> 1280x720` 的 60 个 tile，
+  但当前 SKIP-read 吞吐为 `22.1776304000312fps @150MHz`，仍未达到 `30fps`。
 - X4 `320x180 -> 1280x720` 的 hardware-tiled FixedPng 已生成，可作为后续真实板上输出比较的目标。
-- 还没有真实板上完整帧 tile 坐标生成、边缘 padding、动态有效区域裁剪、拼接写回和最终 `1280x720` 回读输出证据。
-- 还没有完整帧实测板上 `720p30` throughput。
+- 还没有最终 `1280x720` 完整输出读回和 board-vs-fixed 逐字节一致证据。
+- 后续 DDR 继续直接调用板卡 PS DDR controller IP、HP/HPC 和 Xilinx 标准 AXI IP，不自研 DDR controller/PHY。
 - X2 已启动 TinySPAN 独立训练，但 X2 冻结、量化、RTL、bitstream、真实板上输出和 `>=30fps` 证据仍未补齐。
 
 ## Gate E 证据
@@ -70,5 +72,21 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 - Resource：LUT `5943`，Register `5232`，DSP `78`，BRAM Tile `10.5`
 - Timing：WNS `0.091ns`，WHS `0.004ns`
 - Preview：`board_runs\tinyspan_w8a8_base_equiv_jtag\gate_f_x4_32x32_f150_20260621_tile32\acceptance\tinyspan_board_software_preview.png`
+
+## Gate H 中间证据
+
+- Route：TinySPAN PS/DDR X4 via board PS DDR controller IP
+- Custom DDR controller/PHY：`no`
+- Report：`sim/reports/ps_tinyspan_ddr_x4_posted_write_full_frame_20260625.md`
+- Bitstream SHA256：`3B7C4EEF6E2F0428ED442E06A2D5910A4156C8AAAF3F5534D605E5C15CDCCFC0`
+- Timing：WNS `0.075ns`，TNS `0.000ns`
+- Resource：CLB LUTs `6169`，CLB Registers `4667`，DSP `81`，BRAM Tile `9`
+- A53 DDR alias probe：PASS
+- X4 `32x32 -> 128x128` FULL readback：board-vs-fixed `0/49152`，max diff `0`
+- X4 `320x180 -> 1280x720` SKIP-read：`tiles_done=60`，`frame_cycles=6763572`，
+  `22.1776304000312fps @150MHz`
+
+说明：该证据是 Gate H 中间证据，不是最终 PASS。最终仍必须读回完整 board output，与同一
+hardware-tiled fixed reference 逐字节一致，并达到 `>=30fps`。
 
 本文件由 `scripts/acceptance/update_workflow_status.py` 生成，不启动 Vivado、JTAG 或板卡流程。

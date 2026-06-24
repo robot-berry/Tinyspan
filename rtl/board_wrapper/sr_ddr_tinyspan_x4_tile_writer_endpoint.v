@@ -141,8 +141,10 @@ module sr_ddr_tinyspan_x4_tile_writer_endpoint #(
     reg shell_start;
     reg soft_reset_pulse;
     reg frame_active;
+    reg shell_done_pending;
     reg frame_done;
     reg sw_error;
+    reg [63:0] frame_cycles_counter;
     reg [63:0] frame_cycles_latched;
 
     wire shell_busy;
@@ -347,12 +349,17 @@ module sr_ddr_tinyspan_x4_tile_writer_endpoint #(
             shell_start <= 1'b0;
             soft_reset_pulse <= 1'b0;
             frame_active <= 1'b0;
+            shell_done_pending <= 1'b0;
             frame_done <= 1'b0;
             sw_error <= 1'b0;
+            frame_cycles_counter <= 64'd0;
             frame_cycles_latched <= 64'd0;
         end else begin
             shell_start <= 1'b0;
             soft_reset_pulse <= 1'b0;
+
+            if (frame_active)
+                frame_cycles_counter <= frame_cycles_counter + 64'd1;
 
             if (write_fire) begin
                 case (aw_hold_addr)
@@ -360,16 +367,20 @@ module sr_ddr_tinyspan_x4_tile_writer_endpoint #(
                         if (w_hold_data[1]) begin
                             soft_reset_pulse <= 1'b1;
                             frame_active <= 1'b0;
+                            shell_done_pending <= 1'b0;
                             frame_done <= 1'b0;
                             sw_error <= 1'b0;
+                            frame_cycles_counter <= 64'd0;
                             frame_cycles_latched <= 64'd0;
                         end
                         if (w_hold_data[0]) begin
                             if (start_allowed) begin
                                 shell_start <= 1'b1;
                                 frame_active <= 1'b1;
+                                shell_done_pending <= 1'b0;
                                 frame_done <= 1'b0;
                                 sw_error <= 1'b0;
+                                frame_cycles_counter <= 64'd0;
                                 frame_cycles_latched <= 64'd0;
                             end else begin
                                 sw_error <= 1'b1;
@@ -397,13 +408,17 @@ module sr_ddr_tinyspan_x4_tile_writer_endpoint #(
             end
 
             if (shell_done && frame_active) begin
+                shell_done_pending <= 1'b1;
+            end
+            if (shell_done_pending && frame_active && !ddr_busy) begin
                 frame_active <= 1'b0;
+                shell_done_pending <= 1'b0;
                 frame_done <= 1'b1;
-                frame_cycles_latched <= shell_frame_cycles;
+                frame_cycles_latched <= frame_cycles_counter;
             end
         end
     end
 
     wire unused_inputs = |s_axi_awprot | |s_axi_arprot | |w_hold_strb |
-                         m_axi_aclk | m_axi_aresetn;
+                         |shell_frame_cycles | m_axi_aclk | m_axi_aresetn;
 endmodule

@@ -21,7 +21,7 @@ board output == software fixed-point reference
 | E | X4 320x180 bitstream、资源和理论吞吐 | PASS |
 | F | X4 32x32 真实板卡 smoke | PASS |
 | G | X4 32x32 图像一致性可视化 | PASS |
-| H | X4 完整帧 720p30 上板验收 | BLOCKED |
+| H | X4 完整帧 720p30 上板验收 | PARTIAL |
 | X2 | X2 独立证据包 | BLOCKED |
 
 ## 已有验证用例
@@ -37,6 +37,14 @@ board output == software fixed-point reference
 3. X4 32x32 tile 真实板卡 smoke
    - 位置：`artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_f_board_x4_32x32_f150_tile32_20260621`
    - 结果：board-vs-fixed `0/49152` mismatch，perf-only `1831.144098832951fps`
+
+4. TinySPAN PS/DDR X4 posted-write board smoke
+   - 位置：`sim/reports/ps_tinyspan_ddr_x4_posted_write_full_frame_20260625.md`
+   - DDR 路线：直接调用板卡 `zynq_ultra_ps_e` / PS DDR controller IP，不自研 DDR controller/PHY
+   - A53 DDR alias probe：PASS
+   - `32x32 -> 128x128` FULL readback：board-vs-fixed `0/49152` mismatch，max diff `0`
+   - `320x180 -> 1280x720` SKIP-read：`tiles_done=60`，`22.1776304000312fps @150MHz`
+   - 结论：完整帧切块和 DDR 写回能跑通，但尚未完成完整帧读回一致性和 `>=30fps`
 
 ## 下一批验证用例
 
@@ -57,7 +65,7 @@ board output == software fixed-point reference
    - 当前小帧用例：`6x5 -> 24x20`，tile `4x4`，覆盖右边缘和底边缘非整 tile。
    - 已新增运行入口：`scripts/vivado/run_vivado_sim_sr_tile_tinyspan_x4_writer_shell.ps1`
    - 可用总入口：`scripts/vivado/run_tinyspan_full_frame_tiling_sims.ps1`
-   - 状态：待 Vivado 空闲后运行。2026-06-24 最近一次尝试被 W8A12 DDR tile-writer bitstream 进程占用，未启动 TinySPAN full-frame xsim。
+   - 状态：已通过，报告见 `sim/reports/sr_tile_tinyspan_x4_writer_shell_sim_20260624.md`。
 
 3. X4 `320x180 -> 1280x720` hardware-tiled fixed reference
    - 位置：`artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile32_20260624`
@@ -77,6 +85,8 @@ board output == software fixed-point reference
    - PS/PL 配置启动
    - DDR 回读完整 SR 帧
    - `run_tinyspan_720p30_board_acceptance.ps1` 生成 summary、preview 和 diff
+   - 每次 PS/DDR/BD/AXI 修改后先跑 A53 DDR alias probe
+   - 继续使用板卡 PS DDR controller IP、HP/HPC 端口和 Xilinx 标准 AXI IP，不新增自研 DDR 控制器
 
 6. X2 独立证据
    - 独立 X2 量化/RTL/bitstream/board output

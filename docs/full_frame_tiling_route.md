@@ -1,6 +1,6 @@
 # TinySPAN Full-Frame Tiling Route
 
-更新时间：`2026-06-21T02:30:00+08:00`
+更新时间：`2026-06-25T02:00:00+08:00`
 
 ## 路线决定
 
@@ -17,6 +17,10 @@ SD/DDR 完整 LR 帧
  -> DDR 完整 SR 帧
  -> PS 回读 / 显示 / SD 写回
 ```
+
+DDR 访问约束：后续不自研 DDR 控制器、DDR PHY 或板级 DDR 时序逻辑。完整帧输入输出必须复用板卡
+`zynq_ultra_ps_e` / PS DDR controller IP、HP/HPC 端口，以及 Xilinx AXI DMA/VDMA/DataMover/
+SmartConnect 等标准 IP。TinySPAN 侧只保留 AXI 用户逻辑、tile scheduler、计算核心和必要调试桥。
 
 最终 X4 验收尺寸：
 
@@ -72,12 +76,20 @@ SD/DDR 完整 LR 帧
 6. 等当前 tile 读入、推理、裁剪和写回都完成后再取下一 tile。
 7. 最后给出 frame done、tile count、cycle counter、error flags。
 
+当前完成状态：
+
+- `sr_stream_dynamic_cropper` Vivado/xsim 已通过。
+- `sr_tile_tinyspan_x4_writer_shell` 小帧 Vivado/xsim 已通过。
+- TinySPAN PS/DDR X4 Block Design 已接入板卡 `zynq_ultra_ps_e` / PS DDR controller IP。
+- FACE-ZUSSD 参考 PS DDR 配置已应用，A53 DDR alias probe 已通过。
+- `32x32 -> 128x128` FULL readback smoke 已通过，board-vs-fixed mismatch `0 / 49152`。
+- `320x180 -> 1280x720` SKIP-read smoke 已跑完 60 个 tile，`22.1776304000312fps @150MHz`。
+
 仍未完成的工作：
 
-- 运行新增 shell 的 Vivado/xsim testbench。
-- 用小完整帧验证边缘 tile padding、动态裁剪和写回地址。
-- 接入 PS/DDR 或 SD 输入输出 wrapper。
-- 生成 full-frame bitstream 并进行真实板卡完整帧回读。
+- `320x180 -> 1280x720` 完整输出读回和 board-vs-fixed byte-exact 验证。
+- 完整帧实测吞吐达到 `>=30fps`。
+- 把剩余阻塞式逐像素 DDR read 改成 AXI burst 或 Xilinx AXI DMA/DataMover 路线。
 
 已准备的仿真入口：
 
@@ -105,8 +117,15 @@ powershell -ExecutionPolicy Bypass -File scripts\run_tinyspan_full_frame_tiling_
 - `sr_tile_tinyspan_x4_writer_shell` 小帧 Vivado/xsim 已运行通过，报告见
   `sim/reports/sr_tile_tinyspan_x4_writer_shell_sim_20260624.md`。
   结果：`PASS sr_tile_tinyspan_x4_writer_shell tiles=4 writes=480 frame_cycles=17941`。
-  这证明整帧切块 shell 的小规模多 tile 场景可以通过仿真；完整 `320x180 -> 1280x720`
-  bitstream、真实板上回读和 `>=30fps` 实测仍待完成。
+  这证明整帧切块 shell 的小规模多 tile 场景可以通过仿真；后续 posted-write bitstream 和
+  SKIP-read 上板证据已补齐，但完整输出读回、board-vs-fixed 和 `>=30fps` 实测仍待完成。
+- TinySPAN PS/DDR X4 posted-write 中间版本已上板：
+  - `32x32 -> 128x128` FULL readback：board-vs-fixed `0 / 49152`，max diff `0`，
+    `1313.14015582597fps @150MHz`。
+  - `320x180 -> 1280x720` SKIP-read：`tiles_done=60`，`frame_cycles=6763572`，
+    `22.1776304000312fps @150MHz`。
+  - 报告见 `sim/reports/ps_tinyspan_ddr_x4_posted_write_full_frame_20260625.md`。
+  - 该版本仍低于 30fps，且完整帧没有读回做 board-vs-fixed，因此不是最终 Gate H PASS。
 
 ## 验收顺序
 
@@ -114,7 +133,9 @@ powershell -ExecutionPolicy Bypass -File scripts\run_tinyspan_full_frame_tiling_
 2. RTL 仿真先做小完整帧：`64x64 -> 256x256` 或 `160x90 -> 640x360`，验证 tile 坐标、边缘 tile、写回地址和拼接。
 3. RTL 仿真再做最终 X4：`320x180 -> 1280x720`，输出与软件 tiled reference 逐字节一致。
 4. 生成 full-frame tiled bitstream，记录 timing/resource/power。
-5. 用软件生成同构完整帧参考：
+5. 保持 A53 DDR alias probe 作为 PS/DDR/BD 回归门禁；后续仍直接调用板卡 PS DDR IP，
+   不新增自研 DDR 控制器。
+6. 用软件生成同构完整帧参考：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\acceptance\make_tinyspan_tiled_fixed_reference.ps1 `
@@ -127,8 +148,8 @@ powershell -ExecutionPolicy Bypass -File scripts\acceptance\make_tinyspan_tiled_
 `comparison_preview.png` 和 `diff_heatmap.png`。最终板上比较的 FixedPng 必须来自这个
 tile 同构参考，而不是一次性整帧 TinySPAN 软件输出。
 
-6. 真实板卡运行完整 `320x180 -> 1280x720`，回读 DDR SR frame。
-7. 用 `run_tinyspan_720p30_board_acceptance.ps1` 验证：
+7. 真实板卡运行完整 `320x180 -> 1280x720`，回读 DDR SR frame。
+8. 用 `run_tinyspan_720p30_board_acceptance.ps1` 验证：
    - board output == software fixed-point tiled reference，逐字节一致
    - `comparison_preview.png` 可查看
    - `diff_heatmap.png` 可查看

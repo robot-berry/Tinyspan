@@ -15,6 +15,11 @@ SD/DDR 完整 LR 帧
  -> PS 回读 / 显示 / SD 写回
 ```
 
+DDR 不作为自研模块实现。正式路线直接调用板卡 `zynq_ultra_ps_e` / PS DDR controller IP，
+通过 HP/HPC 端口和 AXI/AXI DMA/VDMA/DataMover/SmartConnect 等标准 IP 访问帧 buffer。
+TinySPAN RTL 侧只实现 AXI 用户逻辑、tile scheduler、TinySPAN compute 和调试 bridge，不实现 DDR
+controller、DDR PHY 或板级 DDR 时序。
+
 ## 已通过硬件基线
 
 已通过真实板卡的 X4 32x32 tile 证据：
@@ -48,7 +53,27 @@ SD/DDR 完整 LR 帧
 - `sr_stream_dynamic_cropper`
 - `sr_tile_output_writer`
 
-该 shell 是完整帧 SD/DDR 路线的 RTL 集成起点，后续需要补 Vivado testbench、PS/DDR wrapper 和 bitstream。
+该 shell 是完整帧 SD/DDR 路线的 RTL 集成起点。
+
+## PS/DDR 集成状态
+
+TinySPAN PS/DDR X4 Block Design 已接入板卡 PS DDR controller IP：
+
+- 控制路径：`PS M_AXI_HPM0_FPD -> sr0/s_axi`
+- 数据路径：`sr0/m_axi -> PS S_AXI_HP0_FPD -> DDR`
+- 控制基址：`0xA0000000`
+- PS DDR 配置：从 FACE-ZUSSD 参考工程抽取并应用到 `zynq_ultra_ps_e`
+
+2026-06-25 的 posted-write 中间版本结果：
+
+- bitstream SHA256：`3B7C4EEF6E2F0428ED442E06A2D5910A4156C8AAAF3F5534D605E5C15CDCCFC0`
+- A53 DDR alias probe：PASS
+- `32x32 -> 128x128` FULL readback：board-vs-fixed mismatch `0 / 49152`，max diff `0`
+- `320x180 -> 1280x720` SKIP-read：`tiles_done=60`，`22.1776304000312fps @150MHz`
+- 报告：`sim/reports/ps_tinyspan_ddr_x4_posted_write_full_frame_20260625.md`
+
+该结果证明完整帧板端切块和 DDR 写回链路已能运行，但还不是最终验收：完整帧输出尚未读回做
+board-vs-fixed 一致性验证，吞吐也仍低于 `30fps`。
 
 ## 资源门线
 

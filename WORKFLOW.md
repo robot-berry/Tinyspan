@@ -322,6 +322,9 @@ probe；只有 DDR 地址别名消失后，才继续 TinySPAN board-vs-fixed 图
 - `160x90 -> 640x360` 只作为完整帧切块调度 smoke，不作为最终赛题验收尺寸。
 - 具体执行说明见 `docs/full_frame_tiling_route.md`。
 - 2026-06-24：停止 TinySPAN X4 JTAG 全帧逐像素读回，正式转向 TinySPAN 专用 DDR/PS/DMA 输入输出路线。
+- 2026-06-25：后续 DDR 访问继续直接调用板卡 `zynq_ultra_ps_e` / PS DDR controller IP、
+  HP/HPC 端口和 Xilinx AXI DMA/VDMA/DataMover/SmartConnect 等标准 IP；不得新增自研 DDR 控制器、
+  DDR PHY 或板级 DDR 时序逻辑。TinySPAN 侧只允许实现 AXI 用户逻辑、tile scheduler、计算核心和调试桥。
 
 ## 7. 工程产物放置规则
 
@@ -642,8 +645,8 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 - `sr_tile_tinyspan_x4_writer_shell` 小帧 xsim 已通过，报告见
   `sim/reports/sr_tile_tinyspan_x4_writer_shell_sim_20260624.md`：
   `PASS sr_tile_tinyspan_x4_writer_shell tiles=4 writes=480 frame_cycles=17941`。
-  该结果只证明 shell 级多 tile 仿真通过，不能替代完整 `320x180 -> 1280x720`
-  bitstream、真实板上回读和 `>=30fps` 实测验收。
+  该结果只证明 shell 级多 tile 仿真通过；后续 posted-write bitstream 和 SKIP-read 上板证据已补齐，
+  但仍不能替代完整输出读回、board-vs-fixed 和 `>=30fps` 实测验收。
 - 2026-06-24 已新增 TinySPAN 专用 DDR/PS endpoint 骨架：
   `rtl/board_wrapper/sr_ddr_tinyspan_x4_tile_writer_endpoint.v`。
   该 endpoint 通过 AXI-Lite 暴露 `start/clear`、图像尺寸、DDR 输入/输出 base、
@@ -706,12 +709,30 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   board-vs-fixed mismatch bytes `0 / 49152`、max channel diff `0`，小图单 tile 折算
   `381.809573747792fps @ 150MHz`。报告见
   `sim/reports/ps_tinyspan_ddr_x4_refddr_board_smoke_32x32_20260625.md`。
+- 2026-06-25 已完成 TinySPAN PS/DDR X4 posted-write AXI 用户逻辑优化：
+  `sr_ddr_pixel_axi_master` 的输出写路径改为 posted single-beat AXI write，并让 endpoint 等待写响应 drain
+  后再上报 frame done。该改动仍直接调用板卡 PS DDR controller IP，不实现 DDR 控制器、PHY 或时序逻辑。
+  行为级仿真通过：`PASS sr_ddr_tinyspan_x4_endpoint_data pixels=16384 writes=16384`。
+  新 bitstream SHA256 为
+  `3B7C4EEF6E2F0428ED442E06A2D5910A4156C8AAAF3F5534D605E5C15CDCCFC0`，
+  timing 通过：`WNS=0.075ns`、`TNS=0.000ns`、`WHS=0.019ns`、`THS=0.000ns`；
+  资源为 `CLB LUTs 6169`、`CLB Registers 4667`、`Block RAM Tile 9`、`DSP 81`。
+- 2026-06-25 posted-write bitstream 的 A53 DDR alias probe 已通过；随后
+  TinySPAN PS/DDR X4 `32x32 -> 128x128` 真实板上 FULL readback smoke 再次通过：
+  board-vs-fixed mismatch bytes `0 / 49152`、max channel diff `0`，frame cycles `114230`，
+  小图单 tile 折算 `1313.14015582597fps @ 150MHz`。
+- 2026-06-25 posted-write bitstream 的完整帧 SKIP-read board smoke 已通过：
+  `320x180 -> 1280x720`、tile `32x32`、`tiles_done=60`、`frame_cycles=6763572`，
+  折算 `22.1776304000312fps @ 150MHz`。该结果证明板端完整帧切块与 DDR 写回能跑通，
+  但因为没有读回完整输出并做 board-vs-fixed 比较，且吞吐仍低于 `30fps`，不能宣告 Gate H 完成。
+  报告见 `sim/reports/ps_tinyspan_ddr_x4_posted_write_full_frame_20260625.md`。
 - 2026-06-24 已主动停止 X4 `320x180 -> 1280x720` JTAG 全帧逐像素读回诊断 run：
   `board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullread_diag2`。
   停止前读到 `204800 / 921600` 个输出像素，`status=0x00000080`，说明输出端持续有效；
   但未生成完整 `board_output.rgb`，不能作为最终整帧一致性验收。该 run 证明 JTAG 全量读回耗时过高，
   后续完整帧输入输出必须改走 TinySPAN 专用 DDR/PS/DMA 路线。
-- 该基线目前仍缺完整 SD/DDR frame tile scheduler、完整帧拼接输出、完整帧 throughput 和 X2 独立证据，不能宣告最终上板验收完成。
+- 当前仍缺完整帧输出读回、board-vs-fixed 一致性、`>=30fps` 完整帧吞吐和 X2 独立证据，
+  不能宣告最终上板验收完成。
 - W8A12 DDR tile writer 相关结果仅作为历史参考，不再作为本工作流主线。
 - 2026-06-18 曾启动的 W8A12 `wf18d/wf18e` Vivado 已按路线修正停止，不能作为 TinySPAN 验收结果。
 - 2026-06-18 Gate E bitstream 重试已修复 TinySPAN source-list 问题；旧 fast base 的 16 读口全帧 RAM 在 `320x180` 综合时无法推断为 BRAM。
@@ -725,20 +746,23 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 1. 以 `c32b4_30fps_frozen_20260613` 作为 TinySPAN 上板安全基线，生成 `baseline_decision.md` 和 `baseline_manifest.json`。
 2. 把该基线的 checkpoint、quant plan、整数参考、RTL manifest 和 readiness 摘要迁移或归档到 `Tinyspan/artifacts/...`。
 3. 基于该基线继续 TinySPAN RTL/export 与 RTL 仿真，确保 manifest、定点参考、RTL 仿真来自同一个 checkpoint 和同一个 quant plan。
-4. 基于已通过的 `32x32` tile 上板证据和已通过 RTL elaboration 的
-   `sr_ddr_tinyspan_x4_tile_writer_endpoint`，继续创建 TinySPAN 专用 PS/DDR BD：
-   PS/SD 准备完整 LR 帧，PL 端按 tile/halo 从 DDR 读取，TinySPAN 处理后写回 DDR 完整 HR 帧。
+4. 基于已通过的 `32x32` tile 上板证据和 TinySPAN PS/DDR X4 wrapper，继续优化 TinySPAN 专用
+   PS/DDR BD：PS/SD 准备完整 LR 帧，PL 端按 tile/halo 从 DDR 读取，TinySPAN 处理后写回 DDR
+   完整 HR 帧。
 5. FACE-ZUSSD 参考 PS DDR 配置 bitstream、A53 DDR alias probe 和 X4 `32x32 -> 128x128`
    board-vs-fixed smoke 已通过；后续每次修改 PS/DDR/BD 后仍需把 alias probe 作为回归门禁。
-6. 补齐 DDR buffer 地址规划、BD 连接、PS 侧寄存器驱动、AXI burst / DMA 搬运优化、
-   tile 坐标生成、halo/边界处理、有效区域裁剪、拼接写回和最终 `1280x720` 输出验证。
-7. JTAG 后续只用于寄存器调试、小图 smoke 或应急 dump，不再作为完整帧输出读回主路径。
-8. 先用 `make_tinyspan_tiled_fixed_reference.ps1` 为完整帧生成硬件同构 FixedPng、
+6. 在不自研 DDR 控制器的前提下继续优化 I/O：保留板卡 PS DDR controller IP、HP/HPC 端口和
+   SmartConnect，优先把剩余阻塞式逐像素 DDR read 改成 AXI burst 或 Xilinx AXI DMA/DataMover
+   读 tile/halo；posted-write 单 beat 仅作为中间过渡，不作为最终 720p30 I/O 方案。
+7. 补齐最终 `1280x720` 输出读回与 board-vs-fixed 比较；posted-write SKIP-read 的
+   `22.1776304000312fps @150MHz` 只能作为吞吐中间证据。
+8. JTAG 后续只用于寄存器调试、小图 smoke 或应急 dump，不再作为完整帧输出读回主路径。
+9. 先用 `make_tinyspan_tiled_fixed_reference.ps1` 为完整帧生成硬件同构 FixedPng、
    `tile_manifest.json`、`comparison_preview.png` 和 `diff_heatmap.png`。
-9. 对 DDR 输出完整帧运行图像一致性验证，生成最终板上 `comparison_preview.png` 和 `diff_heatmap.png`。
-10. 记录完整帧实测板上 throughput，并与理论吞吐、32x32 tile throughput 分开标注。
-11. 完成 X4 完整帧闭环后补齐 X2 的独立证据包。
-12. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
+10. 对 DDR 输出完整帧运行图像一致性验证，生成最终板上 `comparison_preview.png` 和 `diff_heatmap.png`。
+11. 记录完整帧实测板上 throughput，并与理论吞吐、32x32 tile throughput 分开标注。
+12. 完成 X4 完整帧闭环后补齐 X2 的独立证据包。
+13. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
 
 ### 10.1 训练完成后的固定入口
 

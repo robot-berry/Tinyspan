@@ -1,5 +1,11 @@
 # Gate H X4 整帧 tiled-reference 等待实测记录
 
+状态更新：`2026-06-25` 起，本记录中的 JTAG 全帧等待任务已作为历史路线保留，不再作为 TinySPAN
+最终 Gate H 主线。正式路线改为 TinySPAN PS/DDR X4：直接调用板卡 `zynq_ultra_ps_e` / PS DDR
+controller IP、HP/HPC 端口和 Xilinx 标准 AXI/DMA IP，不自研 DDR controller/PHY。当前 PS/DDR
+posted-write 中间版本已跑通 `320x180 -> 1280x720` SKIP-read，吞吐 `22.1776304000312fps @150MHz`；
+最终仍需完整输出读回、board-vs-fixed 一致性和 `>=30fps`。
+
 ## 目标
 
 本记录对应 TinySPAN X4 Gate H 最终 720p30 验收的当前等待任务。
@@ -25,7 +31,8 @@ Run dir: G:\UESTC\feitengspan1\board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x
 Wait log dir: G:\UESTC\feitengspan1\board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_tiledref_waitrun
 ```
 
-该任务当前只等待 Vivado 空闲。等正在运行的 Vivado 进程结束并稳定空闲后，才会自动启动 TinySPAN JTAG 上板和 720p30 验收。
+该任务当时只等待 Vivado 空闲，原计划在 Vivado 进程结束并稳定空闲后自动启动 TinySPAN JTAG 上板和
+720p30 验收。该计划现已被 PS/DDR 主线取代，不再作为当前正式执行入口。
 
 ## 可复现实测入口
 
