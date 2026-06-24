@@ -19,7 +19,7 @@ $ErrorActionPreference = "Stop"
 Set-Location (Split-Path -Parent $PSScriptRoot)
 
 $argsList = @(
-    "tools\run_tinyspan_manifest_reference.py",
+    "tools\model_to_hardware\run_tinyspan_manifest_reference.py",
     "--manifest", $Manifest,
     "--input", $InputPath,
     "--width", $Width,

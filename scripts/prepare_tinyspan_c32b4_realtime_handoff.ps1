@@ -91,7 +91,7 @@ try {
   }
   $manifest = Join-Path $handoffDir "tinyspan_manifest.json"
 
-  python tools\run_tinyspan_manifest_reference.py `
+  python tools\model_to_hardware\run_tinyspan_manifest_reference.py `
     --manifest $manifest `
     --checkpoint $Checkpoint `
     --input $PreviewInput `
@@ -109,7 +109,7 @@ try {
   $manifestRefSummaryJson = Join-Path $manifestRefDir "tinyspan_manifest_reference_summary.json"
 
   $activationScales = Join-Path $calibDir "activation_scales.json"
-  python tools\calibrate_tinyspan_activation_scales.py `
+  python tools\model_to_hardware\calibrate_tinyspan_activation_scales.py `
     --manifest $manifest `
     --checkpoint $Checkpoint `
     --input $CalibrationInput `

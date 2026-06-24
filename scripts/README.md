@@ -10,8 +10,8 @@ Current folders:
   entry scripts for the TinySPAN W8A8 base-equivalent route.
 - `board/`: JTAG board smoke and output-capture wrapper.
 - `acceptance/`: workflow status, board-readiness checks, 32x32 smoke
-  acceptance, 720p30 acceptance, preflight hashing, and board/software image
-  comparison wrappers.
+  acceptance, 720p30 acceptance, preflight hashing, hardware-tiled fixed
+  reference generation, and board/software image comparison wrappers.
 
 Until the standalone project layout is finalized, execute the live scripts from
 the main workspace root `G:\UESTC\feitengspan1`, not directly from this mirror.

@@ -62,6 +62,9 @@ board output == software fixed-point reference
 3. X4 最终完整帧仿真
    - `320x180 -> 1280x720`
    - 输出与软件 tiled fixed-point reference 逐字节一致
+   - tiled fixed-point reference 由
+     `scripts/acceptance/make_tinyspan_tiled_fixed_reference.ps1` 生成
+   - 参考合同：LR edge tile 补零到固定 tile，SR 输出裁剪左上角有效区域后拼接
 
 4. X4 完整帧上板
    - SD/DDR 输入完整 LR 帧
@@ -82,6 +85,10 @@ board output == software fixed-point reference
 - `tinyspan_720p30_board_acceptance_summary.json`
 - `tinyspan_720p30_board_acceptance_summary.md`
 - `software_fixed_point_sr.png`
+- `software_tiled_fixed_point_sr.png`
+- `tile_manifest.json`
+- `tinyspan_tiled_fixed_reference_summary.json`
+- `tinyspan_tiled_fixed_reference_summary.md`
 - `board_sr.png`
 - `comparison_preview.png`
 - `diff_heatmap.png`

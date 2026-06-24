@@ -1,7 +1,7 @@
 name: tinyspan_720p30_acceptance
 name_zh: TinySPAN 720p30 X2/X4 上板验收
-version: 6
-updated: 2026-06-18
+version: 7
+updated: 2026-06-24
 
 project_paths:
   description_zh: 当前工程与 TinySPAN 工作流文件的固定存放位置。
@@ -244,7 +244,7 @@ run_directory_pattern: "{date}_{scale}_tinyspan_{model}_{tile}_{freq}_{tag}"
 run_directory_pattern_zh: 每次运行使用一个独立目录，例如 20260618_x4_tinyspan_c32b4_tile32_h21_f50_origboard。
 
 current_status_zh:
-  date: 2026-06-21
+  date: 2026-06-24
   training: TinySPAN 训练已完成。
   active_baseline: c32b4_30fps_frozen_20260613 已提升为当前 TinySPAN 硬件安全基线。
   software_best: c32b4_final_20260615 软件质量更好，已通过 320x180 到 1280x720 的 30fps 软件验收。
@@ -254,6 +254,9 @@ current_status_zh:
   gate_f_g_x4_32x32: X4 32x32 tile 真实板卡 smoke 与 board-vs-software 已通过，证据位于 artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_f_board_x4_32x32_f150_tile32_20260621。
   gate_f_g_x4_32x32_metrics: mismatch 0/49152，max channel diff 0，perf-only 1831.144098832951 fps，WNS 0.091ns，LUT 5943，Register 5232，DSP 78，BRAM Tile 10.5，Total On-Chip Power 3.469W。
   board_side_tile_route: 最终 SD/DDR 大图或视频帧必须由板端按 32x32 LR tile 优先、64x64 LR tile 备选进行切块、halo、推理、裁剪和拼接。
+  gate_full_frame_cropper_sim: sr_stream_dynamic_cropper 基础 Vivado/xsim 已通过，报告位于 sim/reports/sr_stream_dynamic_cropper_sim_20260624.md。
+  tiled_fixed_reference_tool: 已新增 tools/image_validation/make_tinyspan_tiled_fixed_reference.py 和 scripts/acceptance/make_tinyspan_tiled_fixed_reference.ps1，可生成 hardware-tiled FixedPng、tile_manifest、comparison_preview 和 diff_heatmap；8x6 小图 smoke 已通过。
+  gate_full_frame_shell_sim: sr_tile_tinyspan_x4_writer_shell 小帧 xsim 待 Vivado 空闲后运行，尚未作为 PASS 证据。
   board_acceptance_boundary: 当前基线已有 32x32 tile 真实板上输出、逐字节一致性和 tile throughput；仍缺完整 SD/DDR frame tile scheduler、完整帧拼接输出、完整帧 throughput 和 X2 独立证据，不能宣告最终赛题完成。
   stopped_route: W8A12 wf18d/wf18e Vivado 已停止；其结果不作为 TinySPAN 验收证据。
 
@@ -272,9 +275,13 @@ required_artifacts:
   - throughput.json
   - training_sr.png
   - software_fixed_point_sr.png
+  - software_tiled_fixed_point_sr.png
   - board_sr.png
   - diff_heatmap.png
   - comparison_preview.png
+  - tile_manifest.json
+  - tinyspan_tiled_fixed_reference_summary.json
+  - tinyspan_tiled_fixed_reference_summary.md
   - image_validation.json
   - image_validation.md
   - model_design.md
@@ -295,6 +302,7 @@ image_validation:
   required_images:
     training_sr: training_sr.png
     software_fixed_point_sr: software_fixed_point_sr.png
+    software_tiled_fixed_point_sr: software_tiled_fixed_point_sr.png
     board_sr: board_sr.png
     diff_heatmap: diff_heatmap.png
     comparison_preview: comparison_preview.png
@@ -303,6 +311,7 @@ image_validation:
     markdown: image_validation.md
   hard_gate_zh:
     - board_sr 对应的原始 RGB 数据必须与 software_fixed_point_sr 逐字节一致。
+    - 完整帧板端切块路线的 software_fixed_point_sr 必须来自 hardware-tiled fixed-point reference，不得用一次性整帧软件输出替代。
     - comparison_preview.png 必须可直接打开查看。
     - diff_heatmap.png 必须可直接打开查看。
   visual_metric_defaults:
@@ -360,10 +369,12 @@ workflow:
     outputs_zh:
       - TinySPAN 量化方案
       - TinySPAN 整数或定点软件参考
+      - TinySPAN hardware-tiled full-frame fixed reference
       - 参考输出图片或帧
     pass_when_zh:
       - 量化方案来自同一个冻结 TinySPAN checkpoint
       - 软件定点参考已生成
+      - 完整帧板端切块路线已生成 software_tiled_fixed_point_sr.png 和 tile_manifest.json
       - 参考输出哈希已记录
       - fused/export 不存在边界漂移或其它交接不一致
       - 量化方法、量化指标和性能影响已写入交付文档
@@ -446,9 +457,11 @@ workflow:
     outputs_zh:
       - training_sr.png
       - software_fixed_point_sr.png
+      - software_tiled_fixed_point_sr.png
       - board_sr.png
       - diff_heatmap.png
       - comparison_preview.png
+      - tile_manifest.json
       - image_validation.json
       - image_validation.md
     pass_when_zh:
@@ -469,6 +482,7 @@ workflow:
     pass_when_zh:
       - 板上输出分辨率为 1280x720
       - 板上输出 SHA256 等于 TinySPAN 软件定点参考 SHA256
+      - 软件定点参考是同一 checkpoint、同一 quant plan 和同一 tile contract 生成的 hardware-tiled reference
       - TinySPAN 图像一致性可视化验证通过
       - 实测吞吐大于等于 30fps
       - 资源门限通过

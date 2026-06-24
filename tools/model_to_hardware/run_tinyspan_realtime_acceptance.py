@@ -19,7 +19,10 @@ from typing import Any
 
 
 def repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "train" / "span_model.py").exists():
+            return parent
+    return Path(__file__).resolve().parents[2]
 
 
 def run_command(cmd: list[str], cwd: Path) -> None:

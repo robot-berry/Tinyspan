@@ -13,7 +13,7 @@ $ErrorActionPreference = "Stop"
 $root = Resolve-Path (Join-Path $PSScriptRoot "..")
 Push-Location $root
 try {
-  python tools\estimate_tinyspan_candidates.py `
+  python tools\model_to_hardware\estimate_tinyspan_candidates.py `
     --scale $Scale `
     --channels $Channels `
     --blocks $Blocks `

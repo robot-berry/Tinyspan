@@ -106,10 +106,24 @@ powershell -ExecutionPolicy Bypass -File scripts\run_tinyspan_full_frame_tiling_
 2. RTL 仿真先做小完整帧：`64x64 -> 256x256` 或 `160x90 -> 640x360`，验证 tile 坐标、边缘 tile、写回地址和拼接。
 3. RTL 仿真再做最终 X4：`320x180 -> 1280x720`，输出与软件 tiled reference 逐字节一致。
 4. 生成 full-frame tiled bitstream，记录 timing/resource/power。
-5. 真实板卡运行完整 `320x180 -> 1280x720`，回读 DDR SR frame。
-6. 用 `run_tinyspan_720p30_board_acceptance.ps1` 验证：
+5. 用软件生成同构完整帧参考：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\acceptance\make_tinyspan_tiled_fixed_reference.ps1 `
+  -InputPng <完整LR输入图> `
+  -InputWidth 320 -InputHeight 180 `
+  -TileWidth 32 -TileHeight 32
+```
+
+该步骤输出 `software_tiled_fixed_point_sr.png`、`tile_manifest.json`、
+`comparison_preview.png` 和 `diff_heatmap.png`。最终板上比较的 FixedPng 必须来自这个
+tile 同构参考，而不是一次性整帧 TinySPAN 软件输出。
+
+6. 真实板卡运行完整 `320x180 -> 1280x720`，回读 DDR SR frame。
+7. 用 `run_tinyspan_720p30_board_acceptance.ps1` 验证：
    - board output == software fixed-point tiled reference，逐字节一致
    - `comparison_preview.png` 可查看
+   - `diff_heatmap.png` 可查看
    - 实测完整帧 throughput `>= 30fps`
    - 资源不超过 XC7Z045 / ZC706 等效门限
 

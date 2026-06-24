@@ -16,7 +16,7 @@ $ErrorActionPreference = "Stop"
 Set-Location (Split-Path -Parent $PSScriptRoot)
 
 $argsList = @(
-    "tools\calibrate_tinyspan_activation_scales.py",
+    "tools\model_to_hardware\calibrate_tinyspan_activation_scales.py",
     "--manifest", $Manifest,
     "--input", $InputPath,
     "--width", $Width,

@@ -23,7 +23,14 @@ os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 import torch
 from torch import nn
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+def find_repo_root() -> Path:
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "train" / "span_model.py").exists():
+            return parent
+    return Path(__file__).resolve().parents[2]
+
+
+REPO_ROOT = find_repo_root()
 TRAIN_DIR = REPO_ROOT / "train"
 if str(TRAIN_DIR) not in sys.path:
     sys.path.insert(0, str(TRAIN_DIR))

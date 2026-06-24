@@ -12,7 +12,7 @@ try {
   if (-not (Test-Path $QuantPlan)) {
     throw "QuantPlan not found: $QuantPlan"
   }
-  python tools\export_tinyspan_w8a8_to_rtl.py `
+  python tools\model_to_hardware\export_tinyspan_w8a8_to_rtl.py `
     --quant-plan $QuantPlan `
     --out-dir $OutDir `
     --out-lanes $OutLanes `

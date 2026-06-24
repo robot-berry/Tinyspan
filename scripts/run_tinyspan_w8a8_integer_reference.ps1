@@ -15,7 +15,7 @@ $ErrorActionPreference = "Stop"
 Set-Location (Split-Path -Parent $PSScriptRoot)
 
 $argsList = @(
-    "tools\run_tinyspan_w8a8_integer_reference.py",
+    "tools\model_to_hardware\run_tinyspan_w8a8_integer_reference.py",
     "--quant-plan", $QuantPlan,
     "--input", $InputPath,
     "--width", $Width,

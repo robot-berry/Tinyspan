@@ -13,6 +13,8 @@ def main() -> None:
     parser.add_argument("--fixed", type=Path, required=True)
     parser.add_argument("--board", type=Path, required=True)
     parser.add_argument("--preview", type=Path, required=True)
+    parser.add_argument("--diff-heatmap", type=Path)
+    parser.add_argument("--diff-gain", type=int, default=8)
     parser.add_argument("--summary-json", type=Path, required=True)
     parser.add_argument("--summary-md", type=Path, required=True)
     parser.add_argument("--max-allowed-diff", type=int, default=0)
@@ -30,6 +32,7 @@ def main() -> None:
     else:
         max_diff = 255
         mismatch_bytes = software.width * software.height * 3
+        diff = ImageChops.difference(software, board.resize(software.size, Image.Resampling.BICUBIC))
     total_bytes = software.width * software.height * 3
     passed = (
         size_match
@@ -37,11 +40,19 @@ def main() -> None:
         and max_diff <= args.max_allowed_diff
     )
 
+    diff_heatmap = ""
+    if args.diff_heatmap:
+        args.diff_heatmap.parent.mkdir(parents=True, exist_ok=True)
+        heatmap = diff.point(lambda value: min(255, value * args.diff_gain))
+        heatmap.save(args.diff_heatmap)
+        diff_heatmap = str(args.diff_heatmap)
+
     summary = {
         "software": str(args.software),
         "fixed": str(args.fixed),
         "board": str(args.board),
         "preview": str(args.preview),
+        "diff_heatmap": diff_heatmap,
         "mismatch_bytes": mismatch_bytes,
         "total_bytes": total_bytes,
         "max_channel_diff": max_diff,
@@ -68,7 +79,8 @@ def main() -> None:
         f"- software: {args.software}\n"
         f"- fixed: {args.fixed}\n"
         f"- board: {args.board}\n"
-        f"- preview: {args.preview}\n",
+        f"- preview: {args.preview}\n"
+        + (f"- diff heatmap: {diff_heatmap}\n" if diff_heatmap else ""),
         encoding="utf-8",
     )
     print(json.dumps(summary, indent=2))

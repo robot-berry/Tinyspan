@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference = "Stop"
 Set-Location (Split-Path -Parent $PSScriptRoot)
 
-python tools\export_tinyspan_w8a8_quant_plan.py `
+python tools\model_to_hardware\export_tinyspan_w8a8_quant_plan.py `
     --manifest $Manifest `
     --activation-scales $ActivationScales `
     --out-dir $OutDir `

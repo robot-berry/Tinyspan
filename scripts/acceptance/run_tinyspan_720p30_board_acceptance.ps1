@@ -206,6 +206,7 @@ try {
   Write-Host "PASS run_tinyspan_720p30_board_acceptance"
   Write-Host "SUMMARY=$summaryMd"
   Write-Host "PREVIEW=$(Join-Path $OutDir 'tinyspan_board_software_preview.png')"
+  Write-Host "DIFF_HEATMAP=$(Join-Path $OutDir 'diff_heatmap.png')"
 } finally {
   Pop-Location
 }

@@ -54,11 +54,14 @@ try {
 
   $metricsJson = Join-Path $OutDir "tinyspan_board_software_summary.json"
   $metricsMd = Join-Path $OutDir "tinyspan_board_software_summary.md"
+  $diffHeatmap = Join-Path $OutDir "diff_heatmap.png"
   python tools\compare_tinyspan_board_software.py `
     --software $SoftwarePng `
     --fixed $FixedPng `
     --board $boardPngPath `
     --preview $preview `
+    --diff-heatmap $diffHeatmap `
+    --diff-gain $DiffGain `
     --summary-json $metricsJson `
     --summary-md $metricsMd `
     --max-allowed-diff $MaxAllowedDiff `
@@ -73,6 +76,7 @@ try {
   Write-Host "PASS compare_tinyspan_board_software_output"
   Write-Host "SUMMARY=$metricsMd"
   Write-Host "PREVIEW=$preview"
+  Write-Host "DIFF_HEATMAP=$diffHeatmap"
 } finally {
   Pop-Location
 }

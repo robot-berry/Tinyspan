@@ -42,3 +42,10 @@ Main documents:
   machine-readable workflow checklist.
 - [artifacts/README.md](artifacts/README.md): where future generated outputs
   should be placed before upload.
+
+Useful full-frame reference entry:
+
+- `scripts/acceptance/make_tinyspan_tiled_fixed_reference.ps1` generates the
+  hardware-tiled fixed-point reference for final board comparison:
+  `software_tiled_fixed_point_sr.png`, `tile_manifest.json`,
+  `comparison_preview.png`, and `diff_heatmap.png`.
