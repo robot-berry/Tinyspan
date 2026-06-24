@@ -20,6 +20,9 @@ Current folders:
     board evidence into `artifacts/`, writes `manifest.json` and
     `run_summary.md`, and records raw frame SHA256 hashes without copying raw
     RGB frames by default.
+  - `acceptance/refresh_x2_training_status.py`: refreshes the X2 training
+    status artifact from live `metrics.csv`, process state, checkpoints, and
+    stderr log tails without touching the running training job.
 - `run_tinyspan_c32b4_post_training_prep.ps1`: common X2/X4 post-training
   entrypoint. Use `-Scale 2` for the independent X2 route and `-Scale 4` for
   X4. It refuses to freeze a still-running training checkpoint unless only
