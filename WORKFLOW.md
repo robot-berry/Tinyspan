@@ -647,7 +647,16 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   控制路径为 `PS M_AXI_HPM0_FPD -> sr0/s_axi`，数据路径为
   `sr0/m_axi -> PS S_AXI_HP0_FPD -> DDR`，控制基址 `0xA0000000`。
   BD 创建验证已通过，报告见 `sim/reports/ps_tinyspan_ddr_x4_bd_create_20260624.md`。
-  该结果仍只是 BD 创建/验证，不代表综合、bitstream、上板输出或 720p30 已完成。
+- 2026-06-24 已新增并跑通 TinySPAN PS/DDR X4 bitstream 生成脚本：
+  `scripts/vivado/run_vivado_bitstream_ps_tinyspan_ddr_x4.tcl` 和
+  `scripts/vivado/run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1`。bitstream 路线仍直接调用
+  `zynq_ultra_ps_e` / PS DDR controller IP，不自研 DDR 控制器或 DDR PHY。
+  本次实现 `WNS=0.224ns`、`TNS=0.000ns`、`WHS=0.015ns`、`THS=0.000ns`；
+  资源为 `CLB LUTs 6665 (1.28%)`、`CLB Registers 4673 (0.45%)`、
+  `Block RAM Tile 9 (0.91%)`、`DSP 81 (4.12%)`；bitstream SHA256 为
+  `3E4EEFCD9225A6B7BB3B6CB413FB10A891249E87D2157D9EF3D553465AD6FF7C`。
+  报告见 `sim/reports/ps_tinyspan_ddr_x4_bitstream_20260624.md`。
+  该结果证明 PS/DDR IP 路线已具备可下载 bitstream；仍不代表真实板上输出或 720p30 已完成。
 - 2026-06-24 已主动停止 X4 `320x180 -> 1280x720` JTAG 全帧逐像素读回诊断 run：
   `board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullread_diag2`。
   停止前读到 `204800 / 921600` 个输出像素，`status=0x00000080`，说明输出端持续有效；

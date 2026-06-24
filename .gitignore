@@ -19,6 +19,7 @@ xsim.dir/
 dfx_runtime.txt
 vivado.log
 vivado_*.backup.log
+clockInfo.txt
 hs_err_pid*.log
 hs_err_pid*.dmp
 .hdi.isWriteableTest*.tmp
