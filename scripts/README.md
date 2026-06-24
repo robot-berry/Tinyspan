@@ -20,6 +20,9 @@ Current folders:
     board evidence into `artifacts/`, writes `manifest.json` and
     `run_summary.md`, and records raw frame SHA256 hashes without copying raw
     RGB frames by default.
+  - `acceptance/check_gate_h_tiledref_board_run.py`: read-only post-run checker
+    for Gate H. It verifies required files, board-vs-fixed byte equality, and
+    measured fps without starting hardware flows.
   - `acceptance/refresh_x2_training_status.py`: refreshes the X2 training
     status artifact from live `metrics.csv`, process state, checkpoints, and
     stderr log tails without touching the running training job.

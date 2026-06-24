@@ -106,6 +106,17 @@ G:\UESTC\feitengspan1\Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30f
 该脚本默认不复制 `.rgb` 原始帧，只在 `manifest.json` 中记录输入 raw 和板上输出 raw 的 SHA256。
 如确实需要把 raw 帧一并归档，可显式添加 `--include-raw`。
 
+归档前可先做只读硬门禁检查：
+
+```powershell
+python G:\UESTC\feitengspan1\Tinyspan\scripts\acceptance\check_gate_h_tiledref_board_run.py `
+  --tinyspan-root G:\UESTC\feitengspan1\Tinyspan `
+  --workspace-root G:\UESTC\feitengspan1
+```
+
+当前 Gate H 还未完成时，该脚本应报告 `INCOMPLETE_OR_FAIL`；只有真实板上输出、summary、
+preview、diff heatmap 和资源 JSON 齐全，且 board-vs-fixed 与 fps 硬门禁通过后才会报告 `PASS`。
+
 ## 当前边界
 
 该等待任务尚未证明赛题完成。它只是把真实上板实测排队到当前 Vivado 之后。

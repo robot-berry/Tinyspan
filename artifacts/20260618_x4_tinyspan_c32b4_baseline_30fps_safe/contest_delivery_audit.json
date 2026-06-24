@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T17:24:41",
+  "generated_at": "2026-06-24T17:28:33",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "accepted": false,
@@ -269,7 +269,7 @@
     "gate": "X2",
     "name": "X2 独立证据包",
     "status": "PARTIAL",
-    "evidence": "X2 TinySPAN smoke PASS，正式训练运行中；epoch 3 step 8221",
+    "evidence": "X2 TinySPAN smoke PASS，正式训练运行中；epoch 3 step 8592",
     "next_action": "等待 X2 训练完成，再冻结、量化、导出 RTL、上板验证"
   },
   "blockers": [
