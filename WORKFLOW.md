@@ -697,6 +697,15 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   以 `0x4000` 为间隔写入 DDR 时，读回呈现 `[1,1,3,3,5,5,7,7]` 型覆盖，说明 bit14 附近地址未正确区分。
   旧 bitstream 的 TinySPAN board-vs-fixed mismatch 与该 DDR 别名一致；后续必须先用参考 PS DDR
   配置重建 bitstream，并让 A53 alias probe 通过，再继续图像验收。
+- 2026-06-25 已用 FACE-ZUSSD 参考 PS DDR 配置重建 TinySPAN PS/DDR X4 bitstream：
+  SHA256 `54787AF743B84741B53C2CAF69AB52081284735F905B6A0AB379E4D0183F3F45`；
+  timing 通过，`WNS=0.224ns`、`TNS=0.000ns`、`WHS=0.015ns`、`THS=0.000ns`。
+- 2026-06-25 新 bitstream 的 A53 DDR alias probe 已通过：
+  `A53_DDR_ALIAS_MISMATCHES=0`，`A53_DDR_ALIAS_PASS=1`。
+- 2026-06-25 新 bitstream 的 TinySPAN PS/DDR X4 `32x32 -> 128x128` 真实板上 smoke 已通过：
+  board-vs-fixed mismatch bytes `0 / 49152`、max channel diff `0`，小图单 tile 折算
+  `381.809573747792fps @ 150MHz`。报告见
+  `sim/reports/ps_tinyspan_ddr_x4_refddr_board_smoke_32x32_20260625.md`。
 - 2026-06-24 已主动停止 X4 `320x180 -> 1280x720` JTAG 全帧逐像素读回诊断 run：
   `board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullread_diag2`。
   停止前读到 `204800 / 921600` 个输出像素，`status=0x00000080`，说明输出端持续有效；
@@ -719,8 +728,8 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 4. 基于已通过的 `32x32` tile 上板证据和已通过 RTL elaboration 的
    `sr_ddr_tinyspan_x4_tile_writer_endpoint`，继续创建 TinySPAN 专用 PS/DDR BD：
    PS/SD 准备完整 LR 帧，PL 端按 tile/halo 从 DDR 读取，TinySPAN 处理后写回 DDR 完整 HR 帧。
-5. 使用 FACE-ZUSSD 参考 PS DDR 配置重建 TinySPAN PS/DDR bitstream，先运行 A53 DDR alias probe；
-   只有 DDR `0x4000` 间隔别名消失后，才进入 TinySPAN 图像一致性上板验收。
+5. FACE-ZUSSD 参考 PS DDR 配置 bitstream、A53 DDR alias probe 和 X4 `32x32 -> 128x128`
+   board-vs-fixed smoke 已通过；后续每次修改 PS/DDR/BD 后仍需把 alias probe 作为回归门禁。
 6. 补齐 DDR buffer 地址规划、BD 连接、PS 侧寄存器驱动、AXI burst / DMA 搬运优化、
    tile 坐标生成、halo/边界处理、有效区域裁剪、拼接写回和最终 `1280x720` 输出验证。
 7. JTAG 后续只用于寄存器调试、小图 smoke 或应急 dump，不再作为完整帧输出读回主路径。
