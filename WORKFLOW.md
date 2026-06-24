@@ -264,11 +264,45 @@ SR tile，`64x64` LR tile 对应 `256x256` SR tile。
 软件可以准备原始完整输入帧，也可以验证最终输出，但最终验收跑板时不能由 PC 端预先把图像切成
 推理小块后再送板卡。
 
+### 6.1 输入输出加速决策
+
+从 2026-06-24 起，完整帧输入输出不再把 JTAG 逐像素寄存器读写作为正式验收路线。JTAG 只保留为
+小图一致性、寄存器调试、状态诊断和应急 dump 手段；它不能代表赛题需要的实时图像/视频 I/O 能力。
+
+当前 TinySPAN X4 `320x180 -> 1280x720` JTAG 全帧读回诊断 run：
+
+```text
+board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullread_diag2
+```
+
+已在 `204800 / 921600` 个输出像素处主动停止，未生成完整 `board_output.rgb`。该日志只证明输出端持续有
+有效像素产生，不作为最终整帧图像一致性验收证据。按该 run 的日志时间粗算，JTAG 逐像素读完整个
+`1280x720` RGB 输出帧需要数小时量级，因此对赛题评分和真实视频路线没有实用价值。
+
+正式 I/O 加速路线改为：
+
+```text
+SD 卡或 PS 侧文件
+ -> DDR 输入帧 buffer
+ -> PL TinySPAN tile scheduler 通过 AXI burst / AXI DMA 读取 LR tile 与 halo
+ -> TinySPAN W8A8/base-equiv 计算核心
+ -> PL 通过 AXI burst / AXI DMA 写回 DDR 输出帧 buffer
+ -> PS 批量校验、保存图片，或 VDMA/显示通路输出
+```
+
+预期收益是数量级变化：JTAG 逐像素寄存器访问通常只能用于调试；DDR burst / DMA 路线应把完整帧
+I/O 从“小时级”压到“秒级到亚秒级”，并为后续视频流/显示链路提供基础。最终是否达到 30fps 仍以
+板上实测 `frame_cycles`、DDR 读写带宽和端到端输出帧率为准。
+
+注意：W8A12 当前仍有 mismatch 未闭环，不能作为 TinySPAN 正确性基线。后续最多复用 W8A12 路线里
+关于 PS/DDR/AXI/DMA 搬运的工程经验，不复用 W8A12 计算核心、输出图像或验收结论。
+
 路线决策记录：
 
 - 2026-06-21：主线确认采用完整 LR 帧板端切块拼接，最终 X4 目标为 `320x180 -> 1280x720`。
 - `160x90 -> 640x360` 只作为完整帧切块调度 smoke，不作为最终赛题验收尺寸。
 - 具体执行说明见 `docs/full_frame_tiling_route.md`。
+- 2026-06-24：停止 TinySPAN X4 JTAG 全帧逐像素读回，正式转向 TinySPAN 专用 DDR/PS/DMA 输入输出路线。
 
 ## 7. 工程产物放置规则
 
@@ -591,6 +625,11 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   `PASS sr_tile_tinyspan_x4_writer_shell tiles=4 writes=480 frame_cycles=17941`。
   该结果只证明 shell 级多 tile 仿真通过，不能替代完整 `320x180 -> 1280x720`
   bitstream、真实板上回读和 `>=30fps` 实测验收。
+- 2026-06-24 已主动停止 X4 `320x180 -> 1280x720` JTAG 全帧逐像素读回诊断 run：
+  `board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullread_diag2`。
+  停止前读到 `204800 / 921600` 个输出像素，`status=0x00000080`，说明输出端持续有效；
+  但未生成完整 `board_output.rgb`，不能作为最终整帧一致性验收。该 run 证明 JTAG 全量读回耗时过高，
+  后续完整帧输入输出必须改走 TinySPAN 专用 DDR/PS/DMA 路线。
 - 该基线目前仍缺完整 SD/DDR frame tile scheduler、完整帧拼接输出、完整帧 throughput 和 X2 独立证据，不能宣告最终上板验收完成。
 - W8A12 DDR tile writer 相关结果仅作为历史参考，不再作为本工作流主线。
 - 2026-06-18 曾启动的 W8A12 `wf18d/wf18e` Vivado 已按路线修正停止，不能作为 TinySPAN 验收结果。
@@ -605,14 +644,17 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 1. 以 `c32b4_30fps_frozen_20260613` 作为 TinySPAN 上板安全基线，生成 `baseline_decision.md` 和 `baseline_manifest.json`。
 2. 把该基线的 checkpoint、quant plan、整数参考、RTL manifest 和 readiness 摘要迁移或归档到 `Tinyspan/artifacts/...`。
 3. 基于该基线继续 TinySPAN RTL/export 与 RTL 仿真，确保 manifest、定点参考、RTL 仿真来自同一个 checkpoint 和同一个 quant plan。
-4. 基于已通过的 `32x32` tile 上板证据，继续实现 SD/DDR 完整帧 board-side tile scheduler。
-5. 补齐 tile 坐标生成、halo/边界处理、有效区域裁剪、拼接写回和最终 `1280x720` 输出验证。
-6. 先用 `make_tinyspan_tiled_fixed_reference.ps1` 为完整帧生成硬件同构 FixedPng、
+4. 基于已通过的 `32x32` tile 上板证据，优先实现 TinySPAN 专用 DDR/PS/DMA 完整帧输入输出：
+   PS/SD 准备完整 LR 帧，PL 端按 tile/halo 从 DDR 读取，TinySPAN 处理后写回 DDR 完整 HR 帧。
+5. 补齐 DDR buffer 地址规划、AXI burst / DMA 搬运、tile 坐标生成、halo/边界处理、有效区域裁剪、
+   拼接写回和最终 `1280x720` 输出验证。
+6. JTAG 后续只用于寄存器调试、小图 smoke 或应急 dump，不再作为完整帧输出读回主路径。
+7. 先用 `make_tinyspan_tiled_fixed_reference.ps1` 为完整帧生成硬件同构 FixedPng、
    `tile_manifest.json`、`comparison_preview.png` 和 `diff_heatmap.png`。
-7. 对完整帧运行图像一致性验证，生成最终板上 `comparison_preview.png` 和 `diff_heatmap.png`。
-8. 记录完整帧实测板上 throughput，并与理论吞吐、32x32 tile throughput 分开标注。
-9. 完成 X4 完整帧闭环后补齐 X2 的独立证据包。
-10. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
+8. 对 DDR 输出完整帧运行图像一致性验证，生成最终板上 `comparison_preview.png` 和 `diff_heatmap.png`。
+9. 记录完整帧实测板上 throughput，并与理论吞吐、32x32 tile throughput 分开标注。
+10. 完成 X4 完整帧闭环后补齐 X2 的独立证据包。
+11. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
 
 ### 10.1 训练完成后的固定入口
 
