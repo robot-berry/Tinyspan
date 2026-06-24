@@ -47,6 +47,7 @@ board output == software fixed-point reference
    - 已新增基础 testbench：`sim/testbench/tb_sr_stream_dynamic_cropper.sv`
    - 已新增运行入口：`scripts/vivado/run_vivado_sim_sr_stream_dynamic_cropper.ps1`
    - 可用总入口：`scripts/vivado/run_tinyspan_full_frame_tiling_sims.ps1`
+   - 当前基础用例已通过：`sim/reports/sr_stream_dynamic_cropper_sim_20260624.md`
 
 2. `sr_tile_tinyspan_x4_writer_shell` 小帧仿真
    - `64x64 -> 256x256`
@@ -56,7 +57,7 @@ board output == software fixed-point reference
    - 当前小帧用例：`6x5 -> 24x20`，tile `4x4`，覆盖右边缘和底边缘非整 tile。
    - 已新增运行入口：`scripts/vivado/run_vivado_sim_sr_tile_tinyspan_x4_writer_shell.ps1`
    - 可用总入口：`scripts/vivado/run_tinyspan_full_frame_tiling_sims.ps1`
-   - 状态：待 Vivado 空闲后运行。
+   - 状态：待 Vivado 空闲后运行。2026-06-24 最近一次尝试被 W8A12 DDR tile-writer bitstream 进程占用，未启动 TinySPAN full-frame xsim。
 
 3. X4 最终完整帧仿真
    - `320x180 -> 1280x720`

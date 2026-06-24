@@ -26,8 +26,8 @@ try {
     }
   }
 
-  $projDir = Join-Path $root "build\vivado_sr_tile_tinyspan_x4_writer_shell_sim"
-  $simLog = Join-Path $projDir "sr_tile_tinyspan_x4_writer_shell_sim.sim\sim_1\behav\xsim\simulate.log"
+  $projDir = Join-Path $root "build\ttx4_sim"
+  $simLog = Join-Path $projDir "ttx4_sim.sim\sim_1\behav\xsim\simulate.log"
   $tcl = Join-Path $scriptDir "run_vivado_sim_sr_tile_tinyspan_x4_writer_shell.tcl"
   $runStarted = Get-Date
   & $VivadoBat -mode batch -source $tcl

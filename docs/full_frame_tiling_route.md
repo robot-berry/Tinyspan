@@ -95,7 +95,10 @@ powershell -ExecutionPolicy Bypass -File scripts\run_vivado_sim_sr_tile_tinyspan
 powershell -ExecutionPolicy Bypass -File scripts\run_tinyspan_full_frame_tiling_sims.ps1 -WaitForVivadoIdleSeconds 7200
 ```
 
-当前状态：仿真脚本和 testbench 已准备；最近一次继续推进时 Vivado 仍被 `PID 22068` 占用，因此尚未启动新增 xsim。
+当前状态：
+
+- `sr_stream_dynamic_cropper` 基础 Vivado/xsim 已通过，报告见 `sim/reports/sr_stream_dynamic_cropper_sim_20260624.md`。
+- `sr_tile_tinyspan_x4_writer_shell` 小帧 Vivado/xsim 尚未运行通过；最近一次继续推进时 Vivado 被 W8A12 DDR tile-writer bitstream 进程占用，因此没有并发启动 TinySPAN full-frame xsim。
 
 ## 验收顺序
 

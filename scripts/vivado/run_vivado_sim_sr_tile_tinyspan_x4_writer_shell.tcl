@@ -4,7 +4,8 @@ if {[file tail $script_dir] eq "vivado"} {
 } else {
     set origin_dir [file normalize [file join $script_dir ..]]
 }
-set proj_dir   [file join $origin_dir build vivado_sr_tile_tinyspan_x4_writer_shell_sim]
+set proj_name  ttx4_sim
+set proj_dir   [file join $origin_dir build ttx4_sim]
 set span_dir   [file join $origin_dir rtl span]
 if {![file exists [file join $span_dir span_tinyspan_w8a8_full_streamed_rgb888_base_equiv.v]]} {
     set span_dir [file join $origin_dir rtl tinyspan_core]
@@ -20,7 +21,7 @@ if {![file exists $tb_file]} {
 
 file delete -force $proj_dir
 file mkdir $proj_dir
-create_project sr_tile_tinyspan_x4_writer_shell_sim $proj_dir -part xczu19eg-ffvc1760-2-i -force
+create_project $proj_name $proj_dir -part xczu19eg-ffvc1760-2-i -force
 set_property target_language Verilog [current_project]
 set_property simulator_language Mixed [current_project]
 set_property xpm_libraries {XPM_MEMORY} [current_project]
