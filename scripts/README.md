@@ -12,6 +12,17 @@ Current folders:
 - `acceptance/`: workflow status, board-readiness checks, 32x32 smoke
   acceptance, 720p30 acceptance, preflight hashing, hardware-tiled fixed
   reference generation, and board/software image comparison wrappers.
+- `run_tinyspan_c32b4_post_training_prep.ps1`: common X2/X4 post-training
+  entrypoint. Use `-Scale 2` for the independent X2 route and `-Scale 4` for
+  X4. It refuses to freeze a still-running training checkpoint unless only
+  `-DryRun` is requested.
+- `prepare_tinyspan_c32b4_realtime_handoff.ps1`: common C32/B4 handoff chain
+  for Conv3XC fusion, manifest reference, activation calibration, W8A8 quant
+  plan export, and integer reference generation.
+- `prepare_tinyspan_hardware_handoff.ps1`: generic TinySPAN checkpoint-to-RTL
+  manifest exporter used by the C32/B4 handoff chain.
 
 Until the standalone project layout is finalized, execute the live scripts from
 the main workspace root `G:\UESTC\feitengspan1`, not directly from this mirror.
+When testing mirror-side scripts, pass absolute paths for artifacts that still
+live in the main workspace, such as `G:\UESTC\feitengspan1\runs\...`.

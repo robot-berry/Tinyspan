@@ -611,6 +611,27 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 9. 完成 X4 完整帧闭环后补齐 X2 的独立证据包。
 10. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
 
+### 10.1 训练完成后的固定入口
+
+X2/X4 训练完成后，统一使用 `run_tinyspan_c32b4_post_training_prep.ps1` 推进冻结、handoff、量化计划导出、
+RTL 常量导出和 readiness 预检。该脚本默认拒绝冻结仍在运行的训练 checkpoint；需要先预览命令时使用 `-DryRun`。
+
+X2 正式训练完成后的主工程入口：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_tinyspan_c32b4_post_training_prep.ps1 `
+  -RunDir runs\tinyspan_distill\video_x2_c32_b4_reds_temporal `
+  -Scale 2 `
+  -Tag c32b4_x2_frozen_YYYYMMDD
+```
+
+X4 路线使用同一个入口，只把 `-Scale` 改为 `4`，并使用对应的 X4 训练输出目录。若从
+`G:\UESTC\feitengspan1\Tinyspan` 镜像仓库内执行脚本，`-RunDir` 应使用主工程中的绝对训练目录，
+例如 `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`。
+
+训练完成后仍不能直接宣告通过；post-training prep 只补齐冻结、量化和 RTL 导出入口。后续仍需完成对应倍率的
+RTL 仿真、bitstream、真实板上输出、board-vs-software 逐字节一致性、可视化预览和 `>=30fps` 实测吞吐。
+
 ## 11. 完成定义
 
 只有当 X2 和 X4 所需模式都具备完整 TinySPAN 证据包，并满足以下条件时，任务才算完成：
