@@ -306,6 +306,13 @@ AXI burst 或 AXI DMA，而不是实现自定义 DDR 控制器。
 当前 `sr_ddr_pixel_axi_master` 仅作为小图 smoke 与 mismatch 调试桥保留，不能作为 720p30 最终
 I/O 性能实现。
 
+从 2026-06-25 起，TinySPAN PS/DDR Block Design 必须默认应用 FACE-ZUSSD 参考工程中的 PS DDR
+板卡配置。实现方式是在 `scripts/vivado/create_vivado_ps_tinyspan_ddr_x4_bd_project.tcl` 中创建
+`zynq_ultra_ps_e` 后，从 `G:\UESTC\feitengspan1\docs\reference_face_zussd\zcu106_hpc0_dual_bd.tcl`
+抽取 `PSU__DDRC__*`、`PSU__DDR*`、DDR 时钟和 `SUBPRESET1` 参数并应用到板卡 PS DDR controller IP。
+该步骤仍然是调用板卡/厂商 IP，不是自研 DDR 控制器。生成新 bitstream 后，必须先运行 A53 DDR alias
+probe；只有 DDR 地址别名消失后，才继续 TinySPAN board-vs-fixed 图像一致性验收。
+
 注意：W8A12 当前仍有 mismatch 未闭环，不能作为 TinySPAN 正确性基线。后续最多复用 W8A12 路线里
 关于 PS/DDR/AXI/DMA 搬运的工程经验，不复用 W8A12 计算核心、输出图像或验收结论。
 
@@ -652,6 +659,11 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   控制路径为 `PS M_AXI_HPM0_FPD -> sr0/s_axi`，数据路径为
   `sr0/m_axi -> PS S_AXI_HP0_FPD -> DDR`，控制基址 `0xA0000000`。
   BD 创建验证已通过，报告见 `sim/reports/ps_tinyspan_ddr_x4_bd_create_20260624.md`。
+- 2026-06-25 已将 TinySPAN PS/DDR X4 BD 脚本改为默认应用 FACE-ZUSSD 参考工程的 PS DDR 配置。
+  临时 BD 创建验证已通过，Vivado 日志显示 `PS_TINYSPAN_DDR_X4_DDR_REF_STATUS=applied`，
+  共应用 109 对 DDR 相关属性；报告见
+  `sim/reports/ps_tinyspan_ddr_x4_ddr_reference_bd_20260625.md`。该修改仍然只调用
+  `zynq_ultra_ps_e` / PS DDR controller IP，不新增自研 DDR 控制器。
 - 2026-06-24 已新增并跑通 TinySPAN PS/DDR X4 bitstream 生成脚本：
   `scripts/vivado/run_vivado_bitstream_ps_tinyspan_ddr_x4.tcl` 和
   `scripts/vivado/run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1`。bitstream 路线仍直接调用
@@ -681,6 +693,10 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   `tb_sr_ddr_tinyspan_x4_endpoint_data`。这些结果说明 TinySPAN parallel core、tile shell、
   AXI-Lite endpoint 与单 beat AXI debug bridge 在行为级模型中均可逐像素对齐；下一步应重建
   当前 RTL 对应 bitstream，并复测实际 PS HP0/DDR 集成链路。
+- 2026-06-25 通过 A53 baremetal DDR alias probe 证明当前旧 PS DDR 配置存在真实地址别名：
+  以 `0x4000` 为间隔写入 DDR 时，读回呈现 `[1,1,3,3,5,5,7,7]` 型覆盖，说明 bit14 附近地址未正确区分。
+  旧 bitstream 的 TinySPAN board-vs-fixed mismatch 与该 DDR 别名一致；后续必须先用参考 PS DDR
+  配置重建 bitstream，并让 A53 alias probe 通过，再继续图像验收。
 - 2026-06-24 已主动停止 X4 `320x180 -> 1280x720` JTAG 全帧逐像素读回诊断 run：
   `board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullread_diag2`。
   停止前读到 `204800 / 921600` 个输出像素，`status=0x00000080`，说明输出端持续有效；
@@ -703,15 +719,17 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 4. 基于已通过的 `32x32` tile 上板证据和已通过 RTL elaboration 的
    `sr_ddr_tinyspan_x4_tile_writer_endpoint`，继续创建 TinySPAN 专用 PS/DDR BD：
    PS/SD 准备完整 LR 帧，PL 端按 tile/halo 从 DDR 读取，TinySPAN 处理后写回 DDR 完整 HR 帧。
-5. 补齐 DDR buffer 地址规划、BD 连接、PS 侧寄存器驱动、AXI burst / DMA 搬运优化、
+5. 使用 FACE-ZUSSD 参考 PS DDR 配置重建 TinySPAN PS/DDR bitstream，先运行 A53 DDR alias probe；
+   只有 DDR `0x4000` 间隔别名消失后，才进入 TinySPAN 图像一致性上板验收。
+6. 补齐 DDR buffer 地址规划、BD 连接、PS 侧寄存器驱动、AXI burst / DMA 搬运优化、
    tile 坐标生成、halo/边界处理、有效区域裁剪、拼接写回和最终 `1280x720` 输出验证。
-6. JTAG 后续只用于寄存器调试、小图 smoke 或应急 dump，不再作为完整帧输出读回主路径。
-7. 先用 `make_tinyspan_tiled_fixed_reference.ps1` 为完整帧生成硬件同构 FixedPng、
+7. JTAG 后续只用于寄存器调试、小图 smoke 或应急 dump，不再作为完整帧输出读回主路径。
+8. 先用 `make_tinyspan_tiled_fixed_reference.ps1` 为完整帧生成硬件同构 FixedPng、
    `tile_manifest.json`、`comparison_preview.png` 和 `diff_heatmap.png`。
-8. 对 DDR 输出完整帧运行图像一致性验证，生成最终板上 `comparison_preview.png` 和 `diff_heatmap.png`。
-9. 记录完整帧实测板上 throughput，并与理论吞吐、32x32 tile throughput 分开标注。
-10. 完成 X4 完整帧闭环后补齐 X2 的独立证据包。
-11. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
+9. 对 DDR 输出完整帧运行图像一致性验证，生成最终板上 `comparison_preview.png` 和 `diff_heatmap.png`。
+10. 记录完整帧实测板上 throughput，并与理论吞吐、32x32 tile throughput 分开标注。
+11. 完成 X4 完整帧闭环后补齐 X2 的独立证据包。
+12. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
 
 ### 10.1 训练完成后的固定入口
 

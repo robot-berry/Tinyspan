@@ -84,6 +84,49 @@ foreach src $rtl_sources {
 }
 update_compile_order -fileset sources_1
 
+proc apply_ps_ddr_reference_config {ps_cell ref_tcl} {
+    if {![file exists $ref_tcl]} {
+        puts "PS_TINYSPAN_DDR_X4_DDR_REF_STATUS=missing $ref_tcl"
+        return 0
+    }
+
+    set fp [open $ref_tcl r]
+    set lines [split [read $fp] "\n"]
+    close $fp
+
+    set in_ps_dict 0
+    set props [list]
+    foreach line $lines {
+        if {[regexp {set_property -dict \[ list} $line]} {
+            set in_ps_dict 1
+            continue
+        }
+        if {!$in_ps_dict} {
+            continue
+        }
+        if {[regexp {\] \$zynq_ultra_ps_e_0} $line]} {
+            break
+        }
+
+        set key ""
+        set value ""
+        if {[regexp {^\s*(CONFIG\.(PSU__DDRC__|PSU__DDR|PSU__CRF_APB__DDR|PSU__USE__DDR)[^ ]*)\s+\{(.*)\}\s*\\?\s*$} $line -> key _ value] ||
+            [regexp {^\s*(CONFIG\.SUBPRESET1)\s+\{(.*)\}\s*\\?\s*$} $line -> key value]} {
+            lappend props $key $value
+        }
+    }
+
+    if {[llength $props] == 0} {
+        error "No PS DDR reference properties extracted from $ref_tcl"
+    }
+
+    set_property -dict $props $ps_cell
+    puts "PS_TINYSPAN_DDR_X4_DDR_REF_STATUS=applied"
+    puts "PS_TINYSPAN_DDR_X4_DDR_REF_TCL=$ref_tcl"
+    puts "PS_TINYSPAN_DDR_X4_DDR_REF_PROPERTY_PAIRS=[expr {[llength $props] / 2}]"
+    return 1
+}
+
 create_bd_design $bd_name
 current_bd_design $bd_name
 
@@ -117,6 +160,20 @@ set_property -dict [list \
   CONFIG.PSU_SD1_INTERNAL_BUS_WIDTH {4} \
   CONFIG.SD1_BOARD_INTERFACE {custom} \
 ] $ps
+
+set ps_ref_bd_tcl [file normalize [file join $origin_dir .. docs reference_face_zussd zcu106_hpc0_dual_bd.tcl]]
+if {[info exists ::env(PS_TINYSPAN_DDR_X4_PS_REF_BD_TCL)]} {
+    set ps_ref_bd_tcl [file normalize $::env(PS_TINYSPAN_DDR_X4_PS_REF_BD_TCL)]
+}
+set apply_ps_ref_ddr 1
+if {[info exists ::env(PS_TINYSPAN_DDR_X4_APPLY_PS_REF_DDR)]} {
+    set apply_ps_ref_ddr $::env(PS_TINYSPAN_DDR_X4_APPLY_PS_REF_DDR)
+}
+if {$apply_ps_ref_ddr ne "0"} {
+    apply_ps_ddr_reference_config $ps $ps_ref_bd_tcl
+} else {
+    puts "PS_TINYSPAN_DDR_X4_DDR_REF_STATUS=disabled"
+}
 
 set ctrl_ic [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:* ctrl_ic]
 set_property -dict [list CONFIG.NUM_SI {1} CONFIG.NUM_MI {1}] $ctrl_ic
