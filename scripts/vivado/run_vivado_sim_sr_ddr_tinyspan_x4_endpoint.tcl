@@ -4,37 +4,29 @@ if {[file tail $script_dir] eq "vivado"} {
 } else {
     set origin_dir [file normalize [file join $script_dir ..]]
 }
-set proj_name  ttx4_sim
-if {[info exists ::env(TINYSPAN_TILE_WRITER_SIM_PROJ)]} {
-    set proj_name $::env(TINYSPAN_TILE_WRITER_SIM_PROJ)
+
+set proj_name ddr_ttx4_endpoint_sim
+if {[info exists ::env(TINYSPAN_DDR_ENDPOINT_SIM_PROJ)]} {
+    set proj_name $::env(TINYSPAN_DDR_ENDPOINT_SIM_PROJ)
 }
-set proj_dir   [file join $origin_dir build ttx4_sim]
-if {[info exists ::env(TINYSPAN_TILE_WRITER_SIM_PROJ)]} {
-    set proj_dir [file join $origin_dir build $::env(TINYSPAN_TILE_WRITER_SIM_PROJ)]
+set proj_dir [file join $origin_dir build $proj_name]
+set span_dir [file join $origin_dir rtl tinyspan_core]
+set board_dir [file join $origin_dir rtl board_wrapper]
+set top_name tb_sr_ddr_tinyspan_x4_endpoint_data
+if {[info exists ::env(TINYSPAN_DDR_ENDPOINT_SIM_TOP)]} {
+    set top_name $::env(TINYSPAN_DDR_ENDPOINT_SIM_TOP)
 }
-set span_dir   [file join $origin_dir rtl span]
-if {![file exists [file join $span_dir span_tinyspan_w8a8_full_streamed_rgb888_base_equiv.v]]} {
-    set span_dir [file join $origin_dir rtl tinyspan_core]
-}
-set board_dir  [file join $origin_dir rtl board]
-if {![file exists [file join $board_dir sr_tile_tinyspan_x4_writer_shell.v]]} {
-    set board_dir [file join $origin_dir rtl board_wrapper]
-}
-set top_name tb_sr_tile_tinyspan_x4_writer_shell
-if {[info exists ::env(TINYSPAN_TILE_WRITER_SIM_TOP)]} {
-    set top_name $::env(TINYSPAN_TILE_WRITER_SIM_TOP)
-}
-set sim_runtime 20ms
-if {[info exists ::env(TINYSPAN_TILE_WRITER_SIM_RUNTIME)]} {
-    set sim_runtime $::env(TINYSPAN_TILE_WRITER_SIM_RUNTIME)
+set sim_runtime 40ms
+if {[info exists ::env(TINYSPAN_DDR_ENDPOINT_SIM_RUNTIME)]} {
+    set sim_runtime $::env(TINYSPAN_DDR_ENDPOINT_SIM_RUNTIME)
 }
 
-set tb_file [file join $origin_dir sim ${top_name}.sv]
+set tb_file [file join $origin_dir sim testbench ${top_name}.sv]
 if {![file exists $tb_file]} {
-    set tb_file [file join $origin_dir sim testbench ${top_name}.sv]
+    set tb_file [file join $origin_dir sim ${top_name}.sv]
 }
 if {![file exists $tb_file]} {
-    set tb_file [file join $origin_dir sim testbench tb_sr_tile_tinyspan_x4_writer_shell.sv]
+    error "Endpoint simulation testbench not found: $tb_file"
 }
 
 file delete -force $proj_dir
@@ -51,6 +43,8 @@ set rtl_sources [list \
     [file join $board_dir sr_tile_output_writer.v] \
     [file join $board_dir sr_stream_dynamic_cropper.v] \
     [file join $board_dir sr_tile_tinyspan_x4_writer_shell.v] \
+    [file join $board_dir sr_ddr_pixel_axi_master.v] \
+    [file join $board_dir sr_ddr_tinyspan_x4_tile_writer_endpoint.v] \
     [file join $span_dir span_tinyspan_w8a8_bicubic_base_x4_streamed.v] \
     [file join $span_dir span_tinyspan_w8a8_bicubic_base_x4_streamed_serial.v] \
     [file join $span_dir span_tinyspan_w8a8_scale_q31_symmetric.v] \
@@ -59,6 +53,12 @@ set rtl_sources [list \
     [file join $span_dir span_tinyspan_w8a8_full_streamed_rgb_base_equiv.v] \
     [file join $span_dir span_tinyspan_w8a8_full_streamed_rgb888_base_equiv.v] \
 ]
+
+foreach src $rtl_sources {
+    if {![file exists $src]} {
+        error "Required RTL file not found: $src"
+    }
+}
 
 add_files -fileset sources_1 $rtl_sources
 add_files -fileset sim_1 $rtl_sources

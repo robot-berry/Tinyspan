@@ -11,11 +11,17 @@ if {![info exists ::env(TINYSPAN_FAST_BASE_PROJ)]} {
 if {![info exists ::env(TINYSPAN_FAST_BASE_TOP)]} {
     set ::env(TINYSPAN_FAST_BASE_TOP) "tb_span_tinyspan_w8a8_bicubic_base_x4_fast_vs_serial"
 }
+if {![info exists ::env(TINYSPAN_FAST_BASE_RUNTIME)]} {
+    set ::env(TINYSPAN_FAST_BASE_RUNTIME) "200us"
+}
 
 set top_name $::env(TINYSPAN_FAST_BASE_TOP)
 set proj_dir [file join $origin_dir build $::env(TINYSPAN_FAST_BASE_PROJ)]
 set span_dir [file join $origin_dir rtl span]
-set tb_file [file join $origin_dir sim tb_span_tinyspan_w8a8_bicubic_base_x4_fast_vs_serial.sv]
+set tb_file [file join $origin_dir sim ${top_name}.sv]
+if {![file exists $tb_file]} {
+    set tb_file [file join $origin_dir sim testbench ${top_name}.sv]
+}
 if {![file exists $tb_file]} {
     set tb_file [file join $origin_dir sim testbench tb_span_tinyspan_w8a8_bicubic_base_x4_fast_vs_serial.sv]
 }
@@ -39,7 +45,7 @@ add_files -fileset sources_1 $rtl_sources
 add_files -fileset sim_1 $rtl_sources
 add_files -fileset sim_1 $tb_file
 set_property top $top_name [get_filesets sim_1]
-set_property xsim.simulate.runtime 200us [get_filesets sim_1]
+set_property xsim.simulate.runtime $::env(TINYSPAN_FAST_BASE_RUNTIME) [get_filesets sim_1]
 
 update_compile_order -fileset sources_1
 update_compile_order -fileset sim_1

@@ -301,6 +301,11 @@ Xilinx 标准 AXI DMA / VDMA / SmartConnect 等 IP。现有 `sr_ddr_tinyspan_x4_
 属于 TinySPAN AXI 用户逻辑，不替代板卡 DDR IP；后续性能优化优先把内部单像素 AXI 访问替换成
 AXI burst 或 AXI DMA，而不是实现自定义 DDR 控制器。
 
+执行约束：正式交付路线不得新增自研 DDR 控制器、DDR 仲裁器或 DDR 时序模块；帧输入/输出必须复用
+板卡 PS DDR controller、HP/HPC 端口、AXI DMA/VDMA/DataMover/SmartConnect 等 AMD Xilinx IP。
+当前 `sr_ddr_pixel_axi_master` 仅作为小图 smoke 与 mismatch 调试桥保留，不能作为 720p30 最终
+I/O 性能实现。
+
 注意：W8A12 当前仍有 mismatch 未闭环，不能作为 TinySPAN 正确性基线。后续最多复用 W8A12 路线里
 关于 PS/DDR/AXI/DMA 搬运的工程经验，不复用 W8A12 计算核心、输出图像或验收结论。
 
@@ -662,7 +667,20 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   `scripts/board/run_xsct_ps_tinyspan_ddr_x4_smoke.tcl` 和
   `scripts/board/run_ps_tinyspan_ddr_x4_smoke.ps1`。该脚本链路使用 Vivado 下载 bitstream，
   XSCT/PS 写入 DDR 输入帧、配置 AXI-Lite 寄存器、启动 TinySPAN、轮询 done/error，并可从 DDR
-  读回 `FULL/SAMPLE/SKIP` 输出。该步骤只是上板执行入口准备，尚未产生真实板上输出一致性证据。
+  读回 `FULL/SAMPLE/SKIP` 输出。
+- 2026-06-24 已完成 TinySPAN PS/DDR X4 `32x32 -> 128x128` 真实上板 smoke：
+  `board_runs/tinyspan_ps_ddr_x4_smoke/x4_32x32_20260624_230920`。该 run 证明 bitstream 可下载、
+  PS 可写入 DDR 输入、PL 可启动 TinySPAN 并写回 DDR 输出、PS/XSCT 可读回真实板上图片；
+  `status=0x00000009`、`error=0x00000000`、`tiles_done=1`、`frame_cycles=430346`，
+  小图单 tile 折算 `348.56fps @ 150MHz`。但 board-vs-fixed 仍失败：
+  `24138 / 49152` bytes mismatch、最大通道差 `215`，观察到 32 行块重复/错位。因此它是
+  上板 smoke 证据，不是正确性验收通过证据。报告见
+  `sim/reports/ps_tinyspan_ddr_x4_board_smoke_32x32_20260624.md`。
+- 2026-06-24 已新增并通过三层 mismatch 隔离仿真：
+  `tb_span_tinyspan_w8a8_fast_backpressure`、`tb_sr_tile_tinyspan_x4_writer_shell_data`、
+  `tb_sr_ddr_tinyspan_x4_endpoint_data`。这些结果说明 TinySPAN parallel core、tile shell、
+  AXI-Lite endpoint 与单 beat AXI debug bridge 在行为级模型中均可逐像素对齐；下一步应重建
+  当前 RTL 对应 bitstream，并复测实际 PS HP0/DDR 集成链路。
 - 2026-06-24 已主动停止 X4 `320x180 -> 1280x720` JTAG 全帧逐像素读回诊断 run：
   `board_runs\tinyspan_w8a8_base_equiv_jtag\gate_h_x4_320x180_f150_20260624_fullread_diag2`。
   停止前读到 `204800 / 921600` 个输出像素，`status=0x00000080`，说明输出端持续有效；

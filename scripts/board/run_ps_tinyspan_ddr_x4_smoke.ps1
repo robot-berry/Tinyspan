@@ -223,11 +223,15 @@ try {
   if ($xsctTimedOut) {
     throw "TinySPAN PS DDR XSCT smoke timed out after $xsctWallTimeoutEffective seconds. See $xsctLog"
   }
-  if ($xsctProc.ExitCode -ne 0) {
-    throw "TinySPAN PS DDR XSCT smoke failed with exit code $($xsctProc.ExitCode). See $xsctLog"
-  }
 
   $xsctText = Get-Content -Path $xsctLog -Raw
+  $xsctExitCode = $xsctProc.ExitCode
+  if ($null -eq $xsctExitCode) {
+    $xsctExitCode = if ($xsctText -match "TINYSPAN_PS_DDR_X4_XSCT_PASS=1") { 0 } else { -1 }
+  }
+  if ($xsctExitCode -ne 0) {
+    throw "TinySPAN PS DDR XSCT smoke failed with exit code $xsctExitCode. See $xsctLog"
+  }
   if ($xsctText -notmatch "TINYSPAN_PS_DDR_X4_XSCT_PASS=1") {
     throw "TinySPAN PS DDR XSCT did not report pass. See $xsctLog"
   }
