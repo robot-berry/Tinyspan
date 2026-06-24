@@ -102,7 +102,11 @@ powershell -ExecutionPolicy Bypass -File scripts\run_tinyspan_full_frame_tiling_
   `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile32_20260624`。
   该目录中的 `software_tiled_fixed_point_sr.png` 是后续完整帧板上回读比较的 FixedPng 候选，
   `tile_manifest.json` 记录 60 个 tile 的输入/输出坐标与 byte offset。
-- `sr_tile_tinyspan_x4_writer_shell` 小帧 Vivado/xsim 尚未运行通过；最近一次继续推进时 Vivado 被 W8A12 DDR tile-writer bitstream 进程占用，因此没有并发启动 TinySPAN full-frame xsim。
+- `sr_tile_tinyspan_x4_writer_shell` 小帧 Vivado/xsim 已运行通过，报告见
+  `sim/reports/sr_tile_tinyspan_x4_writer_shell_sim_20260624.md`。
+  结果：`PASS sr_tile_tinyspan_x4_writer_shell tiles=4 writes=480 frame_cycles=17941`。
+  这证明整帧切块 shell 的小规模多 tile 场景可以通过仿真；完整 `320x180 -> 1280x720`
+  bitstream、真实板上回读和 `>=30fps` 实测仍待完成。
 
 ## 验收顺序
 
