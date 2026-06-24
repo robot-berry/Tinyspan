@@ -580,6 +580,12 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
   `tools/image_validation/make_tinyspan_tiled_fixed_reference.py`，用于生成
   `software_tiled_fixed_point_sr.png`、`tile_manifest.json`、`comparison_preview.png`
   和 `diff_heatmap.png`；`8x6` 小图 smoke 已通过。
+- 已生成 X4 `320x180 -> 1280x720`、tile `32x32` 的 hardware-tiled fixed reference：
+  `Tinyspan\artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\full_frame_tiled_reference_x4_320x180_tile32_20260624`。
+  该 run 包含 `60` 个 tile，checkpoint SHA256 为
+  `6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`，
+  quant-plan SHA256 为 `EB6EEDDDE9360F61E6FC30141B2A1E6539E519CB226AC18B8C219B9E40092C9D`。
+  其中 `software_tiled_fixed_point_sr.png` 是后续 X4 完整帧上板验收的 FixedPng 候选。
 - `sr_tile_tinyspan_x4_writer_shell` 小帧 xsim 仍待 Vivado 空闲后运行；当前不能把
   full-frame shell 宣告为通过。
 - 该基线目前仍缺完整 SD/DDR frame tile scheduler、完整帧拼接输出、完整帧 throughput 和 X2 独立证据，不能宣告最终上板验收完成。

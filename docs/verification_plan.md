@@ -59,20 +59,26 @@ board output == software fixed-point reference
    - 可用总入口：`scripts/vivado/run_tinyspan_full_frame_tiling_sims.ps1`
    - 状态：待 Vivado 空闲后运行。2026-06-24 最近一次尝试被 W8A12 DDR tile-writer bitstream 进程占用，未启动 TinySPAN full-frame xsim。
 
-3. X4 最终完整帧仿真
+3. X4 `320x180 -> 1280x720` hardware-tiled fixed reference
+   - 位置：`artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile32_20260624`
+   - tile：`32x32` LR，`60` 个 tile
+   - 输出：`software_tiled_fixed_point_sr.png`、`tile_manifest.json`、`comparison_preview.png`、`diff_heatmap.png`
+   - 结果：PASS，作为后续完整帧上板验收的 FixedPng 候选；它本身不代表真实板上完成
+
+4. X4 最终完整帧仿真
    - `320x180 -> 1280x720`
    - 输出与软件 tiled fixed-point reference 逐字节一致
    - tiled fixed-point reference 由
      `scripts/acceptance/make_tinyspan_tiled_fixed_reference.ps1` 生成
    - 参考合同：LR edge tile 补零到固定 tile，SR 输出裁剪左上角有效区域后拼接
 
-4. X4 完整帧上板
+5. X4 完整帧上板
    - SD/DDR 输入完整 LR 帧
    - PS/PL 配置启动
    - DDR 回读完整 SR 帧
    - `run_tinyspan_720p30_board_acceptance.ps1` 生成 summary、preview 和 diff
 
-5. X2 独立证据
+6. X2 独立证据
    - 独立 X2 量化/RTL/bitstream/board output
    - `640x360 -> 1280x720`
 

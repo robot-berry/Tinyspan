@@ -98,6 +98,10 @@ powershell -ExecutionPolicy Bypass -File scripts\run_tinyspan_full_frame_tiling_
 当前状态：
 
 - `sr_stream_dynamic_cropper` 基础 Vivado/xsim 已通过，报告见 `sim/reports/sr_stream_dynamic_cropper_sim_20260624.md`。
+- 已生成 X4 `320x180 -> 1280x720` tile `32x32` 的 software hardware-tiled fixed reference：
+  `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile32_20260624`。
+  该目录中的 `software_tiled_fixed_point_sr.png` 是后续完整帧板上回读比较的 FixedPng 候选，
+  `tile_manifest.json` 记录 60 个 tile 的输入/输出坐标与 byte offset。
 - `sr_tile_tinyspan_x4_writer_shell` 小帧 Vivado/xsim 尚未运行通过；最近一次继续推进时 Vivado 被 W8A12 DDR tile-writer bitstream 进程占用，因此没有并发启动 TinySPAN full-frame xsim。
 
 ## 验收顺序

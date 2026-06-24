@@ -256,6 +256,8 @@ current_status_zh:
   board_side_tile_route: 最终 SD/DDR 大图或视频帧必须由板端按 32x32 LR tile 优先、64x64 LR tile 备选进行切块、halo、推理、裁剪和拼接。
   gate_full_frame_cropper_sim: sr_stream_dynamic_cropper 基础 Vivado/xsim 已通过，报告位于 sim/reports/sr_stream_dynamic_cropper_sim_20260624.md。
   tiled_fixed_reference_tool: 已新增 tools/image_validation/make_tinyspan_tiled_fixed_reference.py 和 scripts/acceptance/make_tinyspan_tiled_fixed_reference.ps1，可生成 hardware-tiled FixedPng、tile_manifest、comparison_preview 和 diff_heatmap；8x6 小图 smoke 已通过。
+  x4_full_frame_tiled_reference: 已生成 X4 320x180 到 1280x720、tile 32x32、60 tile 的 hardware-tiled fixed reference，路径为 artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile32_20260624。
+  x4_full_frame_tiled_reference_hashes: checkpoint SHA256 6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938，quant-plan SHA256 EB6EEDDDE9360F61E6FC30141B2A1E6539E519CB226AC18B8C219B9E40092C9D。
   gate_full_frame_shell_sim: sr_tile_tinyspan_x4_writer_shell 小帧 xsim 待 Vivado 空闲后运行，尚未作为 PASS 证据。
   board_acceptance_boundary: 当前基线已有 32x32 tile 真实板上输出、逐字节一致性和 tile throughput；仍缺完整 SD/DDR frame tile scheduler、完整帧拼接输出、完整帧 throughput 和 X2 独立证据，不能宣告最终赛题完成。
   stopped_route: W8A12 wf18d/wf18e Vivado 已停止；其结果不作为 TinySPAN 验收证据。
