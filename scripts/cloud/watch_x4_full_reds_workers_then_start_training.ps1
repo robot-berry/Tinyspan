@@ -1,5 +1,5 @@
 param(
-    [int[]]$WorkerPids = @(),
+    [string]$WorkerPids = "",
     [string]$HostName = "connect.westc.seetacloud.com",
     [int]$Port = 48335,
     [string]$User = "root",
@@ -18,11 +18,15 @@ $syncScript = Join-Path $PSScriptRoot "sync_reds_and_start_x4_quality_training.p
 Set-Location $repoRoot
 
 Write-Output ("WATCH_X4_FINAL_START={0}" -f (Get-Date -Format o))
-Write-Output ("WORKER_PIDS={0}" -f ($WorkerPids -join ","))
+$workerPidValues = @()
+if (-not [string]::IsNullOrWhiteSpace($WorkerPids)) {
+    $workerPidValues = @($WorkerPids -split "[,\s]+" | Where-Object { $_ } | ForEach-Object { [int]$_ })
+}
+Write-Output ("WORKER_PIDS={0}" -f ($workerPidValues -join ","))
 
 while ($true) {
     $alive = @()
-    foreach ($workerPid in $WorkerPids) {
+    foreach ($workerPid in $workerPidValues) {
         $proc = Get-Process -Id $workerPid -ErrorAction SilentlyContinue
         if ($proc) {
             $alive += $workerPid
