@@ -83,6 +83,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cloud/run_x4_full_re
 Remove-Item Env:\SEETA_PASS
 ```
 
+If single-stream upload is too slow, use the parallel range wrapper. It splits the 240 REDS train sequences
+across independent workers, then runs one final full verification pass, uploads `val_sharp`, and starts training:
+
+```powershell
+$env:SEETA_PASS = "<server password>"
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cloud/run_x4_full_reds_parallel_sequence_tar_sync.ps1 `
+  -Workers 4
+Remove-Item Env:\SEETA_PASS
+```
+
 For a quick smoke test before a full run:
 
 ```bash

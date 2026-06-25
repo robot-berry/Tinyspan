@@ -49,6 +49,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sync-mode", choices=("files", "sequence-tar"), default="files")
     parser.add_argument("--local-temp-dir", type=Path, default=None)
     parser.add_argument("--max-train-sequences", type=int, default=0, help="0 means all train_sharp sequences")
+    parser.add_argument("--sequence-start", type=int, default=1, help="1-based sequence start after sorting")
+    parser.add_argument("--sequence-end", type=int, default=0, help="1-based inclusive sequence end; 0 means all")
     parser.add_argument("--include-val", action="store_true", help="Also sync val_sharp")
     parser.add_argument("--start-training", action="store_true")
     parser.add_argument("--train-max-pairs", type=int, default=24000)
@@ -146,6 +148,16 @@ def selected_sequences(local_root: Path, split: str, max_train_sequences: int) -
     return sequences
 
 
+def apply_sequence_range(sequences: list[Path], start: int, end: int) -> list[Path]:
+    if start < 1:
+        raise ValueError("--sequence-start must be >= 1")
+    if end and end < start:
+        raise ValueError("--sequence-end must be 0 or >= --sequence-start")
+    begin = start - 1
+    finish = end if end else len(sequences)
+    return sequences[begin:finish]
+
+
 def sequence_size_and_count(sequence_dir: Path) -> tuple[int, int]:
     files = [p for p in sequence_dir.rglob("*") if p.is_file()]
     return len(files), sum(p.stat().st_size for p in files)
@@ -195,9 +207,13 @@ def upload_split_sequence_tars(
     dry_run: bool,
     progress_every: int,
     local_temp_dir: Path,
+    sequence_start: int,
+    sequence_end: int,
 ) -> UploadStats:
     stats = UploadStats(started_at=time.time())
     sequences = selected_sequences(local_reds_root, split, max_train_sequences)
+    if split == "train_sharp":
+        sequences = apply_sequence_range(sequences, sequence_start, sequence_end)
     totals = [sequence_size_and_count(seq) for seq in sequences]
     total_files = sum(count for count, _bytes in totals)
     total_bytes = sum(_bytes for _count, _bytes in totals)
@@ -345,6 +361,8 @@ def main() -> int:
                     args.dry_run,
                     args.progress_every,
                     local_temp_dir,
+                    args.sequence_start,
+                    args.sequence_end,
                 )
             else:
                 upload_fn = lambda split, max_sequences: upload_split(
