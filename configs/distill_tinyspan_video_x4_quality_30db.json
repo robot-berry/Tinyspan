@@ -30,7 +30,8 @@
     "num_workers": 4,
     "amp": true
   },
-  "start_command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_tinyspan_c32b4_x4_quality_training.ps1 -TrainFrames G:/REDS/train_sharp",
+  "start_command_windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_tinyspan_c32b4_x4_quality_training.ps1 -TrainFrames G:/REDS/train_sharp",
+  "start_command_linux": "TRAIN_FRAMES=/data/REDS/train_sharp bash scripts/start_tinyspan_c32b4_x4_quality_training.sh",
   "stage_gates": [
     "Student-vs-HR REDS validation average PSNR must exceed the current X4 fixed-vs-HR sample trend and bicubic baseline.",
     "If claiming 30dB, report multi-image REDS val average PSNR/SSIM, not a single-image or PyTorch-vs-fixed number.",

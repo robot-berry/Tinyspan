@@ -43,12 +43,24 @@ This makes the model care more about REDS HR reconstruction and edge detail whil
 
 After the Tinyspan repo and REDS data are available on the server:
 
+```bash
+TRAIN_FRAMES=/data/REDS/train_sharp bash scripts/start_tinyspan_c32b4_x4_quality_training.sh
+```
+
+For a quick smoke test before a full run:
+
+```bash
+TRAIN_FRAMES=/data/REDS/train_sharp MAX_STEPS=20 bash scripts/start_tinyspan_c32b4_x4_quality_training.sh
+```
+
+Windows/PowerShell equivalent:
+
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\start_tinyspan_c32b4_x4_quality_training.ps1 `
   -TrainFrames G:\REDS\train_sharp
 ```
 
-If the server uses Linux paths, run the Python command directly:
+The Linux shell script expands to this Python command:
 
 ```bash
 python train/distill_tinyspan_video.py \
