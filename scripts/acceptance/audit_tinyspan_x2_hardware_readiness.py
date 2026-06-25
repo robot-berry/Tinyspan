@@ -136,20 +136,28 @@ def main() -> int:
     checks.append(
         contains_check(
             repo,
-            "full_stream_top_not_x4_only",
+            "full_stream_top_selects_x2_scale",
             "rtl/tinyspan_core/span_tinyspan_w8a8_full_streamed_rgb_base_equiv.v",
-            "bicubic_base_x4",
+            "SCALE == 2",
             True,
-            invert=True,
         )
     )
     checks.append(
         contains_check(
             repo,
-            "integer_reference_supports_x2_fallback",
+            "full_stream_top_instantiates_x2_base",
+            "rtl/tinyspan_core/span_tinyspan_w8a8_full_streamed_rgb_base_equiv.v",
+            "span_tinyspan_w8a8_bicubic_base_x2_streamed",
+            True,
+        )
+    )
+    checks.append(
+        contains_check(
+            repo,
+            "integer_reference_uses_q14_x2",
             "tools/model_to_hardware/run_tinyspan_w8a8_integer_reference.py",
-            "pytorch_bicubic_fallback",
-            False,
+            "rtl_fixed_q14_bicubic_x2",
+            True,
         )
     )
     checks.append(

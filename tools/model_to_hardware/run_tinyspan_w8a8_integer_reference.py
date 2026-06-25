@@ -29,6 +29,14 @@ COEFF_Q14 = np.array(
     dtype=np.int64,
 )
 
+COEFF_Q14_X2 = np.array(
+    [
+        [-576, 4288, 14400, -1728],
+        [-1728, 14400, 4288, -576],
+    ],
+    dtype=np.int64,
+)
+
 
 def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -139,6 +147,32 @@ def rtl_bicubic_qbase_x4(rgb: np.ndarray) -> np.ndarray:
     return out
 
 
+def rtl_bicubic_qbase_x2(rgb: np.ndarray) -> np.ndarray:
+    h, w, _ = rgb.shape
+    out = np.zeros((h * 2, w * 2, 3), dtype=np.int64)
+    den = 255 * (1 << 28)
+    for oy in range(h * 2):
+        py_phase = oy & 1
+        src_y_floor = (oy >> 1) + (-1 if py_phase < 1 else 0)
+        wy = COEFF_Q14_X2[py_phase]
+        for ox in range(w * 2):
+            px_phase = ox & 1
+            src_x_floor = (ox >> 1) + (-1 if px_phase < 1 else 0)
+            wx = COEFF_Q14_X2[px_phase]
+            acc = np.zeros((3,), dtype=np.int64)
+            for ty in range(4):
+                sy = min(max(src_y_floor - 1 + ty, 0), h - 1)
+                for tx in range(4):
+                    sx = min(max(src_x_floor - 1 + tx, 0), w - 1)
+                    acc += rgb[sy, sx, :].astype(np.int64) * wy[ty] * wx[tx]
+            num = acc * 127
+            abs_num = np.abs(num)
+            q = (abs_num + den // 2) // den
+            q = np.where(num < 0, -q, q)
+            out[oy, ox, :] = np.clip(q, -128, 127)
+    return out
+
+
 def quantized_bicubic_base(tensor: torch.Tensor, scales: dict[str, float], plan: dict) -> tuple[torch.Tensor, str]:
     scale = int(plan["scale"])
     if scale == 4:
@@ -146,6 +180,11 @@ def quantized_bicubic_base(tensor: torch.Tensor, scales: dict[str, float], plan:
         q_base = rtl_bicubic_qbase_x4(rgb)
         q_tensor = torch.from_numpy(q_base).permute(2, 0, 1).unsqueeze(0).to(device=tensor.device).float()
         return q_tensor, "rtl_fixed_q14_bicubic_x4"
+    if scale == 2:
+        rgb = tensor_to_rgb_u8(tensor)
+        q_base = rtl_bicubic_qbase_x2(rgb)
+        q_tensor = torch.from_numpy(q_base).permute(2, 0, 1).unsqueeze(0).to(device=tensor.device).float()
+        return q_tensor, "rtl_fixed_q14_bicubic_x2"
 
     base = F.interpolate(tensor, scale_factor=scale, mode="bicubic", align_corners=False)
     return quantize_float(base, scales["input"], plan), "pytorch_bicubic_fallback"

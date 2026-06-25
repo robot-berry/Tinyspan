@@ -1,17 +1,17 @@
 # TinySPAN X2 Training Status
 
 - status: `training_running`
-- updated at: `2026-06-25T11:03:22`
+- updated at: `2026-06-25T11:12:31`
 - output: `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`
 - launcher PID: `27940`
 - python PID: `34236`
 - latest epoch: `30`
-- latest step: `116699 / 198000`
-- progress: `58.9389`%
-- speed: `1.6924` steps/s
-- ETA: `00.13:20:38`
-- loss: `0.02033576`
-- student PSNR: `30.737462`
+- latest step: `117593 / 198000`
+- progress: `59.3904`%
+- speed: `1.6919` steps/s
+- ETA: `00.13:12:04`
+- loss: `0.02070054`
+- student PSNR: `30.299363`
 - recent error hints: `none`
 
 ## Boundary

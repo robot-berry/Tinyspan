@@ -300,6 +300,7 @@ module sr_sd_axi_lite_accel #(
                 .DATA_W(DATA_W),
                 .IMG_W (IMG_W),
                 .IMG_H (IMG_H),
+                .SCALE (SCALE),
                 .USE_SERIAL_BASE(USE_TINYSPAN_W8A8_BASE_EQUIV_SERIAL)
             ) u_tinyspan_base_equiv (
                 .clk     (s_axi_aclk),

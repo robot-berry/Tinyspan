@@ -6,6 +6,7 @@ module span_tinyspan_w8a8_full_streamed_rgb888_base_equiv #(
     parameter integer ACT_W = 8,
     parameter integer IMG_W = 4,
     parameter integer IMG_H = 4,
+    parameter integer SCALE = 4,
     parameter integer USE_SERIAL_BASE = 1
 ) (
     input  wire               clk,
@@ -30,6 +31,7 @@ module span_tinyspan_w8a8_full_streamed_rgb888_base_equiv #(
         .ACT_W(ACT_W),
         .IMG_W(IMG_W),
         .IMG_H(IMG_H),
+        .SCALE(SCALE),
         .USE_SERIAL_BASE(USE_SERIAL_BASE)
     ) u_q_base_equiv (
         .clk(clk),

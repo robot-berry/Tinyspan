@@ -188,6 +188,7 @@ module sr_tile_tinyspan_x4_writer_shell #(
         .DATA_W(DATA_W),
         .IMG_W(TILE_W),
         .IMG_H(TILE_H),
+        .SCALE(SCALE),
         .USE_SERIAL_BASE(USE_SERIAL_BASE)
     ) u_tinyspan (
         .clk(clk),

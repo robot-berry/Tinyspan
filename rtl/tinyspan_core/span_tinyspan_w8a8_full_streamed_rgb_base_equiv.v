@@ -10,6 +10,7 @@ module span_tinyspan_w8a8_full_streamed_rgb_base_equiv #(
     parameter integer ACT_W = 8,
     parameter integer IMG_W = 4,
     parameter integer IMG_H = 4,
+    parameter integer SCALE = 4,
     parameter integer USE_SERIAL_BASE = 1
 ) (
     input  wire                       clk,
@@ -34,7 +35,27 @@ module span_tinyspan_w8a8_full_streamed_rgb_base_equiv #(
     wire base_last;
 
     generate
-        if (USE_SERIAL_BASE != 0) begin : g_serial_base
+        if (SCALE == 2) begin : g_x2_base
+            span_tinyspan_w8a8_bicubic_base_x2_streamed #(
+                .DATA_W(DATA_W),
+                .ACT_W(ACT_W),
+                .IMG_W(IMG_W),
+                .IMG_H(IMG_H)
+            ) u_base (
+                .clk(clk),
+                .rst(rst),
+                .s_valid(s_valid),
+                .s_ready(s_ready),
+                .s_data(s_data),
+                .s_user(s_user),
+                .s_last(s_last),
+                .m_valid(base_valid),
+                .m_ready(base_ready),
+                .m_rgb(base_rgb),
+                .m_user(base_user),
+                .m_last(base_last)
+            );
+        end else if (USE_SERIAL_BASE != 0) begin : g_x4_serial_base
             span_tinyspan_w8a8_bicubic_base_x4_streamed_serial #(
                 .DATA_W(DATA_W),
                 .ACT_W(ACT_W),
@@ -54,7 +75,7 @@ module span_tinyspan_w8a8_full_streamed_rgb_base_equiv #(
                 .m_user(base_user),
                 .m_last(base_last)
             );
-        end else begin : g_parallel_base
+        end else begin : g_x4_parallel_base
             span_tinyspan_w8a8_bicubic_base_x4_streamed #(
                 .DATA_W(DATA_W),
                 .ACT_W(ACT_W),

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T11:03:23",
+  "generated_at": "2026-06-25T11:12:50",
   "status": "PARTIAL",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "x2_training_status": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json",
@@ -7,9 +7,7 @@
   "x2_rtl_manifest": "",
   "blockers": [
     "x2_quant_plan_exists",
-    "x2_rtl_manifest_exists",
-    "x2_bicubic_base_rtl_exists",
-    "full_stream_top_not_x4_only"
+    "x2_rtl_manifest_exists"
   ],
   "checks": [
     {
@@ -32,7 +30,7 @@
     },
     {
       "id": "x2_bicubic_base_rtl_exists",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": "rtl/tinyspan_core/span_tinyspan_w8a8_bicubic_base_x2_streamed.v",
       "required": true
     },
@@ -67,16 +65,22 @@
       "required": true
     },
     {
-      "id": "full_stream_top_not_x4_only",
-      "status": "FAIL",
-      "detail": "rtl/tinyspan_core/span_tinyspan_w8a8_full_streamed_rgb_base_equiv.v does not contain 'bicubic_base_x4'",
+      "id": "full_stream_top_selects_x2_scale",
+      "status": "PASS",
+      "detail": "rtl/tinyspan_core/span_tinyspan_w8a8_full_streamed_rgb_base_equiv.v contains 'SCALE == 2'",
       "required": true
     },
     {
-      "id": "integer_reference_supports_x2_fallback",
+      "id": "full_stream_top_instantiates_x2_base",
       "status": "PASS",
-      "detail": "tools/model_to_hardware/run_tinyspan_w8a8_integer_reference.py contains 'pytorch_bicubic_fallback'",
-      "required": false
+      "detail": "rtl/tinyspan_core/span_tinyspan_w8a8_full_streamed_rgb_base_equiv.v contains 'span_tinyspan_w8a8_bicubic_base_x2_streamed'",
+      "required": true
+    },
+    {
+      "id": "integer_reference_uses_q14_x2",
+      "status": "PASS",
+      "detail": "tools/model_to_hardware/run_tinyspan_w8a8_integer_reference.py contains 'rtl_fixed_q14_bicubic_x2'",
+      "required": true
     },
     {
       "id": "acceptance_preflight_supports_scale",

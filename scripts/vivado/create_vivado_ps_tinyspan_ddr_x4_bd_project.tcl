@@ -72,6 +72,7 @@ set rtl_sources [list \
     [file join $board_dir sr_tile_tinyspan_x4_writer_shell.v] \
     [file join $board_dir sr_ddr_pixel_axi_master.v] \
     [file join $board_dir sr_ddr_tinyspan_x4_tile_writer_endpoint.v] \
+    [file join $span_dir span_tinyspan_w8a8_bicubic_base_x2_streamed.v] \
     [file join $span_dir span_tinyspan_w8a8_bicubic_base_x4_streamed.v] \
     [file join $span_dir span_tinyspan_w8a8_bicubic_base_x4_streamed_serial.v] \
     [file join $span_dir span_tinyspan_w8a8_scale_q31_symmetric.v] \
