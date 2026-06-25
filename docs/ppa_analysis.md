@@ -132,6 +132,24 @@ TinySPAN 的优势是模型小、DSP 需求低、bit-exact 闭合难度低。在
 闭合。下一步应在不自研 DDR 的前提下，把过渡性的 AXI 调试桥收敛到 Xilinx AXI DMA/DataMover/VDMA
 等标准 IP 路线，并补 X2 独立证据。
 
+## 可提升方向
+
+当前方法可以继续提升，重点不是扩大 TinySPAN compute core，而是提高整帧 I/O 与 tile 调度余量。
+X4 tile64 FIFO f155 已经达到 `30.4096394240767fps`，但相对 `30fps` 的余量不大，因此后续优化应按
+风险从低到高推进：
+
+| 优先级 | 提升方向 | 验收条件 |
+| --- | --- | --- |
+| P0 | X2 训练完成后补齐独立 X2 证据包 | X2 checkpoint、quant plan、RTL、bitstream、真实板上输出、逐字节一致性和 `>=30fps` 全部闭合 |
+| P1 | 将单像素 AXI 调试桥收敛为 AXI burst、DataMover、DMA 或 VDMA | X4 仍保持 A53 DDR alias PASS、mismatch `0`、`>=30fps` |
+| P1 | 加入 LR 读、TinySPAN 计算、SR 写回的 ping-pong buffer | frame cycles 下降，且完整帧 byte-exact 不变 |
+| P2 | 补充 DDR 导出的 `board_sr.png`、`comparison_preview.png` 和 `diff_heatmap.png` | 图片可查看，哈希与 manifest 对齐，不走 JTAG 全帧读回 |
+| P3 | 尝试更大 tile 或更高频率 | 必须重新通过 BRAM、时序、边缘裁剪、完整帧吞吐和逐字节一致性 |
+
+所有提升都继续调用板卡/厂商 DDR 与 AXI IP，不新增自研 DDR controller、DDR PHY 或板级 DDR 时序逻辑。
+任一优化如果导致 X4 Gate H 证据失效，应立即回退到当前 tile64 FIFO f155 安全基线，并把该优化只作为
+实验分支记录。
+
 ## 最终 PPA 有效条件
 
 只有完整帧真实板上输出正确、Vivado bitstream 有效、资源门线 PASS 且实测 `>=30fps` 后，PPA 才能作为最终赛题得分证据。当前 Gate E/F 是强基线，但仍不能替代最终 Gate H。

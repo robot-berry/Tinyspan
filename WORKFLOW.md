@@ -316,6 +316,28 @@ probe；只有 DDR 地址别名消失后，才继续 TinySPAN board-vs-fixed 图
 注意：W8A12 当前仍有 mismatch 未闭环，不能作为 TinySPAN 正确性基线。后续最多复用 W8A12 路线里
 关于 PS/DDR/AXI/DMA 搬运的工程经验，不复用 W8A12 计算核心、输出图像或验收结论。
 
+### 6.2 方法提升路线
+
+这个整帧切块方法可以继续提升，但提升顺序必须围绕赛题交付证据来排，不能破坏已经闭合的
+X4 `0 mismatch` 和 `>=30fps` 证据。每一次优化都必须重新经过 A53 DDR alias probe、完整帧
+throughput、A53 in-DDR board-vs-fixed 比较和图像预览回归。
+
+当前最值得优先提升的是 I/O 与调度余量，而不是盲目放大 TinySPAN compute core。X4 tile64 FIFO f155
+已经在真实板上达到 `30.4096394240767fps`，但帧率余量只有约 `1.37%`，仍然偏紧；如果后续加入
+显示、SD 写回、视频帧队列或 X2 独立链路，应该先把下面几项做成可回归的工程优化：
+
+1. 把过渡性的单像素 AXI 调试桥逐步收敛为 AXI burst、AXI DataMover、AXI DMA 或 VDMA 路线。
+2. 为 LR tile 读取、TinySPAN 计算和 SR tile 写回加入 ping-pong buffer，让读、算、写可以重叠。
+3. 保持 `64x64` LR tile 作为 X4 当前吞吐候选；如果尝试更大 tile，必须先证明 BRAM、时序和边缘裁剪仍通过。
+4. 对边缘 tile 的 padding/crop、地址映射和 tile manifest 做自动化回归，避免整帧拼接出现肉眼不明显但逐字节不一致的问题。
+5. 用 PS/A53 从 DDR 批量导出 `board_sr.png`、`comparison_preview.png` 和 `diff_heatmap.png`，展示材料走 DDR/文件路径，不再走 JTAG 全帧读回。
+
+X2 的提升路线不应复用 X4 结果直接宣告通过。训练完成后必须独立冻结 X2 checkpoint、导出 X2 quant plan、
+生成 X2 RTL manifest 和 X2 hardware-tiled fixed reference，再按 X2 `640x360 -> 1280x720` 完整帧重新跑
+bitstream、真实板上输出、逐字节一致性和 `>=30fps`。X2 若吞吐不足，优先复用 X4 已验证的 PS/DDR/tile64
+调度经验；若画质不足，再考虑 `c32b4_final_20260615` 或新训练 checkpoint，但必须先通过
+`baseline_upgrade_report.md` 修复 fused/export 漂移并重新做量化、定点参考、RTL 和图像一致性预检。
+
 路线决策记录：
 
 - 2026-06-21：主线确认采用完整 LR 帧板端切块拼接，最终 X4 目标为 `320x180 -> 1280x720`。
@@ -371,6 +393,8 @@ artifacts/20260618_x4_tinyspan_c32b4_tile32_h21_f50_origboard/
 - `tinyspan_tiled_fixed_reference_summary.md`
 - `image_validation.json`
 - `image_validation.md`
+- `tinyspan_x4_quality_metrics.json`
+- `tinyspan_x4_quality_metrics.md`
 - `model_design.md`
 - `training_quantization.md`
 - `hardware_design.md`
@@ -761,12 +785,12 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 
 优先顺序：
 
-1. 以 `c32b4_30fps_frozen_20260613` 作为 TinySPAN 上板安全基线，生成 `baseline_decision.md` 和 `baseline_manifest.json`。
-2. 把该基线的 checkpoint、quant plan、整数参考、RTL manifest 和 readiness 摘要迁移或归档到 `Tinyspan/artifacts/...`。
-3. 基于该基线继续 TinySPAN RTL/export 与 RTL 仿真，确保 manifest、定点参考、RTL 仿真来自同一个 checkpoint 和同一个 quant plan。
-4. 基于已通过的 `32x32` tile 上板证据和 TinySPAN PS/DDR X4 wrapper，继续优化 TinySPAN 专用
-   PS/DDR BD：PS/SD 准备完整 LR 帧，PL 端按 tile/halo 从 DDR 读取，TinySPAN 处理后写回 DDR
-   完整 HR 帧。
+1. 保持 X2 训练和 post-training watcher 运行；训练完成前只刷新状态，不启动 Vivado/JTAG/板卡流程。
+2. X2 训练结束后运行 `run_tinyspan_c32b4_post_training_prep.ps1`，冻结 checkpoint、导出 X2 quant plan、
+   X2 RTL manifest 和 readiness 报告。
+3. 用 X2 独立证据补齐 RTL 仿真、bitstream、真实板上输出、board-vs-fixed 逐字节一致性、
+   可视化预览和 `>=30fps` 吞吐。
+4. X4 完整帧正确性与吞吐已闭合，X4 子任务可交付；后续只做展示增强和回归保护，不再把 X4 当作阻塞项。
 5. FACE-ZUSSD 参考 PS DDR 配置 bitstream、A53 DDR alias probe 和 X4 `32x32 -> 128x128`
    board-vs-fixed smoke 已通过；后续每次修改 PS/DDR/BD 后仍需把 alias probe 作为回归门禁。
 6. 在不自研 DDR 控制器的前提下继续优化 I/O：保留板卡 PS DDR controller IP、HP/HPC 端口和
@@ -780,7 +804,8 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 10. 对 DDR 输出完整帧运行图像一致性验证；当前 A53 in-DDR compare 已证明 byte-exact，
     若需要展示，再补最终板上 `board_sr.png`、`comparison_preview.png` 和 `diff_heatmap.png`。
 11. 记录完整帧实测板上 throughput，并与理论吞吐、32x32 tile throughput 分开标注。
-12. X4 完整帧正确性与吞吐已闭合，X4 子任务可交付；继续补齐 X2 的独立证据包。
+12. 按 `check_contest_delivery_package.py` 的失败项推进，当前主缺口是 `x2_training_freeze`、`x2_gate_h`
+    和 `final_audit`。
 13. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
 
 ### 10.1 训练完成后的固定入口

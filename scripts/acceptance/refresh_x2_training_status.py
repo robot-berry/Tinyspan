@@ -116,6 +116,53 @@ Get-CimInstance Win32_Process |
     return {"processes": rows, "launcher_pid": launcher_pid, "python_pid": python_pid}
 
 
+def find_postprep_watchers(output_leaf: str) -> dict[str, Any]:
+    ps = rf"""
+$ErrorActionPreference = 'SilentlyContinue'
+Get-CimInstance Win32_Process |
+  Where-Object {{
+    $_.ProcessId -ne $PID -and
+    $_.Name -eq 'powershell.exe' -and
+    $_.CommandLine -match 'watch_tinyspan_x2_training_then_postprep\.ps1' -and
+    $_.CommandLine -match '{re.escape(output_leaf)}'
+  }} |
+  Select-Object ProcessId,Name,CommandLine |
+  ConvertTo-Json -Depth 3
+"""
+    try:
+        proc = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", ps],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+    except OSError:
+        return {"processes": [], "watcher_pid": None}
+    text = proc.stdout.strip()
+    if not text:
+        return {"processes": [], "watcher_pid": None}
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        return {"processes": [], "watcher_pid": None, "raw": text}
+    rows = data if isinstance(data, list) else [data]
+    pids = [row.get("ProcessId") for row in rows if row.get("ProcessId")]
+    return {"processes": rows, "watcher_pid": pids[0] if pids else None, "watcher_pids": pids}
+
+
+def tail_text(path: Path, max_lines: int = 20, tail_bytes: int = 64_000) -> list[str]:
+    if not path.exists():
+        return []
+    with path.open("rb") as handle:
+        handle.seek(0, 2)
+        size = handle.tell()
+        handle.seek(max(0, size - tail_bytes))
+        text = handle.read().decode("utf-8", errors="replace")
+    return text.splitlines()[-max_lines:]
+
+
 def recent_error_hints(stderr: Path, tail_bytes: int = 256_000) -> list[str]:
     if not stderr.exists():
         return []
@@ -148,6 +195,7 @@ def write_markdown(path: Path, status: dict[str, Any]) -> None:
     formal = status.get("formal_training", {})
     latest = formal.get("latest_observed", {})
     processes = formal.get("observed_processes", {})
+    watcher = formal.get("postprep_watcher", {})
     boundary = status.get("acceptance_boundary", {})
     missing = boundary.get("missing", [])
     lines = [
@@ -158,6 +206,8 @@ def write_markdown(path: Path, status: dict[str, Any]) -> None:
         f"- output: `{formal.get('output', '')}`",
         f"- launcher PID: `{processes.get('launcher_pid', '')}`",
         f"- python PID: `{processes.get('python_pid', '')}`",
+        f"- post-training watcher PID: `{watcher.get('watcher_pid', '')}`",
+        f"- post-training watcher latest: `{watcher.get('latest_line', '')}`",
         f"- latest epoch: `{latest.get('epoch', '')}`",
         f"- latest step: `{latest.get('step', '')} / {latest.get('total_steps', '')}`",
         f"- progress: `{latest.get('progress_percent', '')}`%",
@@ -190,6 +240,8 @@ def main() -> int:
     status_json = (tinyspan_root / args.status_json).resolve() if not args.status_json.is_absolute() else args.status_json.resolve()
     status_md = status_json.with_suffix(".md")
     output = (workspace_root / args.output).resolve() if not args.output.is_absolute() else args.output.resolve()
+    watcher_stdout = status_json.parent / "x2_postprep_watcher_stdout.log"
+    watcher_stderr = status_json.parent / "x2_postprep_watcher_stderr.log"
 
     status = read_json(status_json)
     formal = status.setdefault("formal_training", {})
@@ -212,6 +264,20 @@ def main() -> int:
         "launcher_pid": process_info.get("launcher_pid"),
         "python_pid": process_info.get("python_pid"),
         "processes": process_info.get("processes", []),
+    }
+    watcher_info = find_postprep_watchers(output.name)
+    watcher_stdout_tail = tail_text(watcher_stdout)
+    watcher_stderr_tail = tail_text(watcher_stderr)
+    formal["postprep_watcher"] = {
+        "status": "RUNNING" if watcher_info.get("watcher_pid") else "NOT_RUNNING",
+        "watcher_pid": watcher_info.get("watcher_pid"),
+        "watcher_pids": watcher_info.get("watcher_pids", []),
+        "processes": watcher_info.get("processes", []),
+        "stdout": file_info(watcher_stdout),
+        "stderr": file_info(watcher_stderr),
+        "latest_line": watcher_stdout_tail[-1] if watcher_stdout_tail else "",
+        "stdout_tail": watcher_stdout_tail,
+        "stderr_tail": watcher_stderr_tail,
     }
     formal["latest_observed"] = {
         "epoch": int(latest.get("epoch") or 0),

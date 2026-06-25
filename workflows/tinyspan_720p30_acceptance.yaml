@@ -1,6 +1,6 @@
 name: tinyspan_720p30_acceptance
 name_zh: TinySPAN 720p30 X2/X4 上板验收
-version: 8
+version: 9
 updated: 2026-06-25
 
 project_paths:
@@ -265,6 +265,26 @@ current_status_zh:
   board_acceptance_boundary: X4 子任务已可交付；整赛题仍缺 X2 独立冻结、量化、RTL、bitstream、真实板上输出、board-vs-fixed 一致性和 >=30fps 吞吐证据，不能宣告最终赛题完成。
   stopped_route: W8A12 wf18d/wf18e Vivado 已停止；其结果不作为 TinySPAN 验收证据。
 
+method_improvement_plan_zh:
+  principle: 可以继续提升整帧切块方法，但每次优化必须保护现有 X4 tile64 FIFO f155 的 0 mismatch 和 >=30fps 证据。
+  immediate_priority:
+    - 等待 X2 训练完成并自动执行 post-training prep；训练完成前只做状态刷新。
+    - X2 独立补齐 checkpoint freeze、quant plan、RTL manifest、bitstream、board-vs-fixed 和 >=30fps 证据。
+    - X4 只做展示增强和回归保护，不再把 X4 当作当前阻塞项。
+  ppa_improvement_priority:
+    - 用 AXI burst、AXI DataMover、AXI DMA 或 VDMA 替代单像素 AXI 调试桥作为正式高性能 I/O。
+    - 为 LR tile 读取、TinySPAN 计算和 SR tile 写回加入 ping-pong buffer，重叠读、算、写。
+    - 保持 64x64 LR tile 作为 X4 当前吞吐候选；更大 tile 必须重新证明 BRAM、时序、边缘裁剪和逐字节一致性。
+    - 继续直接调用 zynq_ultra_ps_e、PS DDR controller、HP/HPC 和 Xilinx 标准 AXI IP，不新增自研 DDR controller、DDR PHY 或板级 DDR 时序模块。
+  visual_delivery_priority:
+    - 用 PS/A53 从 DDR 批量导出 board_sr.png、comparison_preview.png 和 diff_heatmap.png。
+    - 展示材料走 DDR/文件路径，不再恢复 JTAG 全帧逐像素读回。
+  regression_required_after_each_change:
+    - A53 DDR alias probe PASS。
+    - 完整帧 throughput >=30fps。
+    - A53 in-DDR board-vs-fixed mismatch 0。
+    - comparison_preview.png 和 diff_heatmap.png 可查看。
+
 required_artifacts:
   - manifest.json
   - run_summary.md
@@ -289,6 +309,8 @@ required_artifacts:
   - tinyspan_tiled_fixed_reference_summary.md
   - image_validation.json
   - image_validation.md
+  - tinyspan_x4_quality_metrics.json
+  - tinyspan_x4_quality_metrics.md
   - model_design.md
   - training_quantization.md
   - hardware_design.md
@@ -330,6 +352,14 @@ image_validation:
     ssim_min: 0.99
     mae_rgb_level_max: 1.0
     max_channel_diff_max: 4
+  quality_metric_entry_zh:
+    script: tools/image_validation/evaluate_sr_quality.py
+    x4_current_report: artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_metrics_20260625/tinyspan_x4_quality_metrics.json
+    required_pairs:
+      - student_vs_teacher
+      - pytorch_vs_tiled_fixed
+      - full_integer_vs_tiled_fixed
+    note_zh: student_vs_teacher 是官方 SPAN teacher 一致性指标；REDS HR 真值指标需使用 REDS HR 图作为 reference 另行生成。
 
 workflow:
   - id: baseline_preflight

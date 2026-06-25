@@ -147,6 +147,9 @@ def build_check(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
     x4_manifest, x4_manifest_path = latest_json(
         repo_root, f"{artifact_dir.as_posix()}/gate_h_board_x4_320x180_*/manifest.json"
     )
+    x4_quality, x4_quality_path = latest_json(
+        repo_root, f"{artifact_dir.as_posix()}/x4_quality_metrics*/tinyspan_x4_quality_metrics.json"
+    )
     x2_manifest, x2_manifest_path = find_x2_manifest(repo_root, artifact_dir)
 
     checks: list[dict[str, Any]] = []
@@ -185,6 +188,7 @@ def build_check(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
         "rtl/board_wrapper",
         "scripts/acceptance/refresh_tinyspan_delivery_status.ps1",
         "scripts/acceptance/make_contest_delivery_index.py",
+        "tools/image_validation/evaluate_sr_quality.py",
     ]
     sources_ok, sources_missing = all_paths_exist(repo_root, sources)
     checks.append(
@@ -254,6 +258,34 @@ def build_check(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
             "missing: " + ", ".join(x4_images_missing) if x4_images_missing else "software reference, preview, heatmap exist",
             "software_tiled_fixed_point_sr、comparison_preview、diff_heatmap 均存在",
             "补生成 X4 可视化材料",
+        )
+    )
+
+    x4_quality_pairs = {
+        str(item.get("label")): item for item in (x4_quality or {}).get("pairs", [])
+    }
+    required_x4_quality_pairs = [
+        "student_vs_teacher",
+        "pytorch_vs_tiled_fixed",
+        "full_integer_vs_tiled_fixed",
+    ]
+    missing_x4_quality_pairs = [
+        label
+        for label in required_x4_quality_pairs
+        if label not in x4_quality_pairs or x4_quality_pairs[label].get("psnr_db") is None
+    ]
+    x4_quality_ok = bool(x4_quality and not missing_x4_quality_pairs)
+    checks.append(
+        row(
+            "x4_quality_metrics",
+            "X4 画质指标证据齐备",
+            pass_if(x4_quality_ok, "MISSING"),
+            (
+                f"metrics={rel(repo_root, x4_quality_path)}, "
+                f"pairs={list(x4_quality_pairs)}, missing={missing_x4_quality_pairs}"
+            ),
+            "X4 student-vs-teacher、PyTorch-vs-tiled fixed 和 full-integer-vs-tiled fixed 的 PSNR/SSIM/MAE 指标存在",
+            "运行 tools/image_validation/evaluate_sr_quality.py 生成 X4 画质指标",
         )
     )
 

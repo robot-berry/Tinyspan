@@ -135,5 +135,13 @@ board output == software fixed-point reference
 - `comparison_preview.png`
 - `diff_heatmap.png`
 - `throughput.json`
+- `tinyspan_x4_quality_metrics.json`
+- `tinyspan_x4_quality_metrics.md`
 - `resource_gate.json`
 - timing/utilization/power report
+
+画质指标入口使用 `tools/image_validation/evaluate_sr_quality.py`。当前 X4 已生成
+`artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_metrics_20260625/tinyspan_x4_quality_metrics.json`，
+其中包含 student-vs-teacher、PyTorch-vs-tile 定点和 full-integer-vs-tile 定点的 PSNR/SSIM/MAE。
+注意 student-vs-teacher 是官方 SPAN teacher 一致性指标；若要报告 REDS HR 真值指标，必须把 REDS HR
+图像作为 reference 重新生成质量报告。

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T11:36:33",
+  "generated_at": "2026-06-25T11:51:58",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "status": "NOT_COMPLETE",
@@ -54,6 +54,15 @@
       "evidence": "software reference, preview, heatmap exist",
       "expected": "software_tiled_fixed_point_sr、comparison_preview、diff_heatmap 均存在",
       "action": "补生成 X4 可视化材料"
+    },
+    {
+      "id": "x4_quality_metrics",
+      "name": "X4 画质指标证据齐备",
+      "status": "PASS",
+      "required": true,
+      "evidence": "metrics=artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_metrics_20260625/tinyspan_x4_quality_metrics.json, pairs=['student_vs_teacher', 'pytorch_vs_tiled_fixed', 'full_integer_vs_tiled_fixed', 'pytorch_vs_full_integer'], missing=[]",
+      "expected": "X4 student-vs-teacher、PyTorch-vs-tiled fixed 和 full-integer-vs-tiled fixed 的 PSNR/SSIM/MAE 指标存在",
+      "action": "运行 tools/image_validation/evaluate_sr_quality.py 生成 X4 画质指标"
     },
     {
       "id": "x2_training_freeze",
