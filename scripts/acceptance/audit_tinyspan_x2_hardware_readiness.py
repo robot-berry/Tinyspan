@@ -173,6 +173,72 @@ def main() -> int:
     required_failures = [item for item in checks if item["required"] and item["status"] != "PASS"]
     status = "READY" if not required_failures else "PARTIAL"
     blockers = [item["id"] for item in required_failures]
+    expected_tag = "x2_frozen_auto_YYYYMMDD"
+    expected_quant_plan = (
+        f"runs/tinyspan_quant_plan/{expected_tag}_x2_c32_b4_w8a8/"
+        "tinyspan_w8a8_quant_plan.json"
+    )
+    expected_rtl_manifest = (
+        f"rtl/generated/tinyspan_c32b4_{expected_tag}_x2_w8a8/"
+        "tinyspan_w8a8_rtl_manifest.json"
+    )
+    expected_bitstream = f"vivado/bitstreams/tinyspan_x2_c32b4_{expected_tag}_board.bit"
+    post_training_gate_order = [
+        {
+            "gate": "freeze_handoff_quant_rtl",
+            "command": (
+                "powershell -NoProfile -ExecutionPolicy Bypass -File "
+                ".\\scripts\\run_tinyspan_c32b4_post_training_prep.ps1 "
+                "-RunDir ..\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal "
+                f"-Scale 2 -Tag {expected_tag}"
+            ),
+            "starts_vivado_or_board": False,
+            "expected": [
+                "frozen X2 checkpoint and SHA256 manifest",
+                f"X2 W8A8 quant plan at {expected_quant_plan}",
+                f"X2 RTL manifest at {expected_rtl_manifest}",
+                "readiness report that remains incomplete until the X2 bitstream and board output exist",
+            ],
+        },
+        {
+            "gate": "x2_bitstream",
+            "command": (
+                "powershell -NoProfile -ExecutionPolicy Bypass -File "
+                ".\\scripts\\vivado\\run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1 "
+                "-Scale 2 -ImgW 640 -ImgH 360 -TileW 64 -TileH 64 -PlFreqMhz 155 "
+                "-RequireVivadoIdle"
+            ),
+            "starts_vivado_or_board": True,
+            "expected": [
+                f"X2 bitstream copied or recorded as {expected_bitstream}",
+                "timing, utilization, power, and resource-gate evidence under the XC7Z045/ZC706 limits",
+            ],
+        },
+        {
+            "gate": "x2_board_acceptance",
+            "command": (
+                "powershell -NoProfile -ExecutionPolicy Bypass -File "
+                ".\\scripts\\acceptance\\run_tinyspan_720p30_board_acceptance.ps1 "
+                "-Scale 2 -InputWidth 640 -InputHeight 360 -TileWidth 64 -TileHeight 64 "
+                "-SoftwarePng REPLACE_WITH_X2_PYTORCH_SR.png "
+                "-FixedPng REPLACE_WITH_X2_TILED_FIXED_SR.png "
+                "-BoardRaw REPLACE_WITH_X2_BOARD_OUTPUT.rgb "
+                "-MeasuredFps REPLACE_WITH_MEASURED_FPS "
+                "-Checkpoint REPLACE_WITH_X2_FROZEN_CHECKPOINT.pt "
+                "-QuantPlan REPLACE_WITH_X2_QUANT_PLAN.json "
+                "-Bitstream REPLACE_WITH_X2_BITSTREAM.bit "
+                "-BoardLog REPLACE_WITH_X2_BOARD_RESOURCE_OR_RUN_LOG.json "
+                "-OutDir artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_tile64"
+            ),
+            "starts_vivado_or_board": True,
+            "expected": [
+                "real X2 board output from the same frozen checkpoint and quant plan",
+                "A53/DDR or board-side compare mismatch 0 and max channel diff 0",
+                "measured full-frame throughput >=30fps",
+                "board_sr.png, comparison_preview.png, and diff_heatmap.png for visual review",
+            ],
+        },
+    ]
 
     audit = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
@@ -181,6 +247,10 @@ def main() -> int:
         "x2_training_status": rel(x2_status, repo),
         "x2_quant_plan": rel(x2_quant, repo),
         "x2_rtl_manifest": rel(x2_rtl, repo),
+        "expected_x2_quant_plan_after_freeze": expected_quant_plan,
+        "expected_x2_rtl_manifest_after_freeze": expected_rtl_manifest,
+        "expected_x2_bitstream_after_vivado": expected_bitstream,
+        "post_training_gate_order": post_training_gate_order,
         "blockers": blockers,
         "checks": checks,
         "notes": [
@@ -219,6 +289,29 @@ def main() -> int:
     lines.extend(
         [
             "",
+            "## Post-Training Gate Order",
+            "",
+            "训练仍在运行时只允许刷新状态，不启动 Vivado/JTAG/板卡流程。训练达到目标 step 且进程退出后，按下面顺序推进：",
+            "",
+        ]
+    )
+    for index, gate in enumerate(post_training_gate_order, start=1):
+        lines.extend(
+            [
+                f"{index}. `{gate['gate']}`",
+                "",
+                "```powershell",
+                gate["command"],
+                "```",
+                "",
+                f"- starts Vivado/board flow: `{gate['starts_vivado_or_board']}`",
+            ]
+        )
+        for expected in gate["expected"]:
+            lines.append(f"- expected: {expected}")
+        lines.append("")
+    lines.extend(
+        [
             "## Boundary",
             "",
             "- This is a static readiness audit only.",

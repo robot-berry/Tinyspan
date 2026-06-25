@@ -1,7 +1,7 @@
 # TinySPAN X2 Hardware Readiness
 
 - status: `PARTIAL`
-- generated at: `2026-06-25T12:36:08`
+- generated at: `2026-06-25T12:52:10`
 - X2 training status: `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json`
 - X2 quant plan: ``
 - X2 RTL manifest: ``
@@ -28,6 +28,44 @@
 | `full_stream_top_instantiates_x2_base` | `True` | `PASS` | `rtl/tinyspan_core/span_tinyspan_w8a8_full_streamed_rgb_base_equiv.v contains 'span_tinyspan_w8a8_bicubic_base_x2_streamed'` |
 | `integer_reference_uses_q14_x2` | `True` | `PASS` | `tools/model_to_hardware/run_tinyspan_w8a8_integer_reference.py contains 'rtl_fixed_q14_bicubic_x2'` |
 | `acceptance_preflight_supports_scale` | `True` | `PASS` | `scripts/acceptance/check_tinyspan_720p30_acceptance_inputs.ps1 contains 'expectedInputWidth'` |
+
+## Post-Training Gate Order
+
+训练仍在运行时只允许刷新状态，不启动 Vivado/JTAG/板卡流程。训练达到目标 step 且进程退出后，按下面顺序推进：
+
+1. `freeze_handoff_quant_rtl`
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_tinyspan_c32b4_post_training_prep.ps1 -RunDir ..\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal -Scale 2 -Tag x2_frozen_auto_YYYYMMDD
+```
+
+- starts Vivado/board flow: `False`
+- expected: frozen X2 checkpoint and SHA256 manifest
+- expected: X2 W8A8 quant plan at runs/tinyspan_quant_plan/x2_frozen_auto_YYYYMMDD_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json
+- expected: X2 RTL manifest at rtl/generated/tinyspan_c32b4_x2_frozen_auto_YYYYMMDD_x2_w8a8/tinyspan_w8a8_rtl_manifest.json
+- expected: readiness report that remains incomplete until the X2 bitstream and board output exist
+
+2. `x2_bitstream`
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\vivado\run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1 -Scale 2 -ImgW 640 -ImgH 360 -TileW 64 -TileH 64 -PlFreqMhz 155 -RequireVivadoIdle
+```
+
+- starts Vivado/board flow: `True`
+- expected: X2 bitstream copied or recorded as vivado/bitstreams/tinyspan_x2_c32b4_x2_frozen_auto_YYYYMMDD_board.bit
+- expected: timing, utilization, power, and resource-gate evidence under the XC7Z045/ZC706 limits
+
+3. `x2_board_acceptance`
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\acceptance\run_tinyspan_720p30_board_acceptance.ps1 -Scale 2 -InputWidth 640 -InputHeight 360 -TileWidth 64 -TileHeight 64 -SoftwarePng REPLACE_WITH_X2_PYTORCH_SR.png -FixedPng REPLACE_WITH_X2_TILED_FIXED_SR.png -BoardRaw REPLACE_WITH_X2_BOARD_OUTPUT.rgb -MeasuredFps REPLACE_WITH_MEASURED_FPS -Checkpoint REPLACE_WITH_X2_FROZEN_CHECKPOINT.pt -QuantPlan REPLACE_WITH_X2_QUANT_PLAN.json -Bitstream REPLACE_WITH_X2_BITSTREAM.bit -BoardLog REPLACE_WITH_X2_BOARD_RESOURCE_OR_RUN_LOG.json -OutDir artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_h_board_x2_640x360_tile64
+```
+
+- starts Vivado/board flow: `True`
+- expected: real X2 board output from the same frozen checkpoint and quant plan
+- expected: A53/DDR or board-side compare mismatch 0 and max channel diff 0
+- expected: measured full-frame throughput >=30fps
+- expected: board_sr.png, comparison_preview.png, and diff_heatmap.png for visual review
 
 ## Boundary
 

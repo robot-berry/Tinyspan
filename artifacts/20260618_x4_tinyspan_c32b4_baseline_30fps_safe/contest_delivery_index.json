@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-25T12:36:09",
+  "generated_at": "2026-06-25T12:52:10",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "git": {
     "branch": "main",
-    "commit": "4b8b1c17778b0fddf1c0affaf164b38c69525590",
+    "commit": "de4acc53ef7107c67846debad6e2b6e081ef95d0",
     "remote": "https://github.com/robot-berry/Tinyspan.git"
   },
   "overall": {
@@ -26,19 +26,19 @@
     "training_status": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json",
     "latest_observed": {
       "epoch": 32,
-      "step": 125190,
+      "step": 126621,
       "total_steps": 198000,
-      "progress_percent": 63.2273,
-      "loss": 0.02237778,
-      "distill_loss": 0.01290812,
-      "hr_loss": 0.01920884,
-      "edge_loss": 0.07954215,
-      "temporal_loss": 0.02018528,
-      "teacher_psnr": 32.706276,
-      "student_psnr": 29.422127,
-      "seconds": 74517.968,
-      "steps_per_second": 1.68,
-      "eta": "00.12:02:19",
+      "progress_percent": 63.95,
+      "loss": 0.02183345,
+      "distill_loss": 0.01291814,
+      "hr_loss": 0.01814135,
+      "edge_loss": 0.07997663,
+      "temporal_loss": 0.01843759,
+      "teacher_psnr": 33.056846,
+      "student_psnr": 29.779389,
+      "seconds": 75479.79,
+      "steps_per_second": 1.6775,
+      "eta": "00.11:49:10",
       "stderr_error_hints": "none"
     },
     "readiness": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
@@ -83,49 +83,49 @@
           "path": "docs/gate_status.md",
           "exists": true,
           "kind": "file",
-          "bytes": 3188,
-          "mtime": "2026-06-25T12:36:08",
-          "sha256": "57EC849DED5D8FBBC09169EC65064FAFDD1966B021ABDD7385E0CA24FD6023D4"
+          "bytes": 3186,
+          "mtime": "2026-06-25T12:52:10",
+          "sha256": "25FA465526946F4E17E6D35D6C9356B45F41F181C39100EE917137F22EA48D55"
         },
         {
           "path": "docs/contest_delivery_audit.md",
           "exists": true,
           "kind": "file",
           "bytes": 5981,
-          "mtime": "2026-06-25T12:36:08",
-          "sha256": "CE4119478C844FE9D8A13F05CD7B3748E3D2204E7697436570FBF82441243BC6"
+          "mtime": "2026-06-25T12:52:10",
+          "sha256": "C7931121F8F0328B4EA536A9CAF05ED1D5409B61E7DAE48272B3B110A7388175"
         },
         {
           "path": "docs/x2_hardware_readiness.md",
           "exists": true,
           "kind": "file",
-          "bytes": 2558,
-          "mtime": "2026-06-25T12:36:08",
-          "sha256": "585B0D4E2CACF187C99867FFFAB075863652B97C0D464D71C5E36EE6629101CB"
+          "bytes": 4978,
+          "mtime": "2026-06-25T12:52:10",
+          "sha256": "CAA30DC0BD2A41E7B58F977ECE2DFE9279665369E687DDB8C98F935AC7DFDF1B"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_completion_status.json",
           "exists": true,
           "kind": "file",
-          "bytes": 3566,
-          "mtime": "2026-06-25T12:36:08",
-          "sha256": "C2452AFF1C91FB396B15F8CDDFBEE2D23CF5E1F862BB9A1A259D4CAD17B07436"
+          "bytes": 3564,
+          "mtime": "2026-06-25T12:52:10",
+          "sha256": "AC5D75758EA9B5FCF7F2E6ED44627234FC8A8788C0368D2FAA4F7928C46CF808"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_delivery_audit.json",
           "exists": true,
           "kind": "file",
           "bytes": 10572,
-          "mtime": "2026-06-25T12:36:08",
-          "sha256": "C70A009D704CD09439B38CC5A05C17A45416D031781AA9F9399868621BD8F752"
+          "mtime": "2026-06-25T12:52:10",
+          "sha256": "6FA82E233F5FD01C1870CEFEE30DC0E4B879AFC48B49F92652CCF5C27764CDD7"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
           "exists": true,
           "kind": "file",
-          "bytes": 3498,
-          "mtime": "2026-06-25T12:36:08",
-          "sha256": "5BE73FF25EC66510D545B917FBFDAF68C1705CC43967EC18C706A8F0D227956B"
+          "bytes": 6325,
+          "mtime": "2026-06-25T12:52:10",
+          "sha256": "B5EA5ED32EA4EA263C7309A6EDB0D7177972D0D6B27E7ECE05DC98D38F8B0040"
         }
       ]
     },
@@ -193,9 +193,9 @@
           "path": "scripts/run_tinyspan_c32b4_post_training_prep.ps1",
           "exists": true,
           "kind": "file",
-          "bytes": 5499,
-          "mtime": "2026-06-25T10:57:40",
-          "sha256": "ADB34740499951980CB93017E8F2C5C14DB576C4CF73892DD354EFAE19244F97"
+          "bytes": 5977,
+          "mtime": "2026-06-25T12:45:45",
+          "sha256": "B6A6D441FDB8D3E7ABE489DBD252B777632BBC2885D8DF9A4C21D4504A0C80F9"
         },
         {
           "path": "tools/model_to_hardware/export_tinyspan_w8a8_quant_plan.py",
