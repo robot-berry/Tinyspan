@@ -78,21 +78,13 @@ if ($LASTEXITCODE -ne 0) {
   throw "Gate H evidence packager failed with exit code $LASTEXITCODE"
 }
 
-python (Join-Path $TinyspanRoot "scripts\acceptance\update_workflow_status.py") `
-  --artifact-dir (Join-Path $TinyspanRoot "artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe") `
-  --docs-out (Join-Path $TinyspanRoot "docs\gate_status.md") `
-  --json-out (Join-Path $TinyspanRoot "artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\contest_completion_status.json")
+& powershell -NoProfile -ExecutionPolicy Bypass `
+  -File (Join-Path $TinyspanRoot "scripts\acceptance\refresh_tinyspan_delivery_status.ps1") `
+  -TinyspanRoot $TinyspanRoot `
+  -WorkspaceRoot $WorkspaceRoot `
+  -ArtifactDir "artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe"
 if ($LASTEXITCODE -ne 0) {
-  throw "Workflow status refresh failed with exit code $LASTEXITCODE"
-}
-
-python (Join-Path $TinyspanRoot "scripts\acceptance\audit_contest_delivery.py") `
-  --repo-root $TinyspanRoot `
-  --artifact-dir "artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe" `
-  --json-out "artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\contest_delivery_audit.json" `
-  --md-out "docs\contest_delivery_audit.md"
-if ($LASTEXITCODE -ne 0) {
-  throw "Contest delivery audit refresh failed with exit code $LASTEXITCODE"
+  throw "TinySPAN delivery status refresh failed with exit code $LASTEXITCODE"
 }
 
 Write-Host "TINYSPAN_GATE_H_POSTPACK_DONE=$((Get-Date).ToString('o'))"

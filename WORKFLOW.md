@@ -788,6 +788,13 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 X2/X4 训练完成后，统一使用 `run_tinyspan_c32b4_post_training_prep.ps1` 推进冻结、handoff、量化计划导出、
 RTL 常量导出和 readiness 预检。该脚本默认拒绝冻结仍在运行的训练 checkpoint；需要先预览命令时使用 `-DryRun`。
 
+训练仍在运行时，只做状态刷新，不启动 Vivado/JTAG/板卡流程。状态刷新统一使用顺序入口，避免并行刷新造成
+`docs\gate_status.md` 读取旧的 X2 训练进度：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\acceptance\refresh_tinyspan_delivery_status.ps1
+```
+
 X2 正式训练完成后的主工程入口：
 
 ```powershell
