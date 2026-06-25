@@ -173,8 +173,8 @@ def main() -> int:
     required_failures = [item for item in checks if item["required"] and item["status"] != "PASS"]
     status = "READY" if not required_failures else "PARTIAL"
     blockers = [item["id"] for item in required_failures]
-    expected_tag = "x2_quality_resume_YYYYMMDD"
-    expected_run_dir = "..\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625"
+    expected_tag = "x2_quality_after_x4_20260625"
+    expected_run_dir = "..\\runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625"
     expected_frozen_checkpoint = f"runs/tinyspan_frozen_candidates/{expected_tag}/student_final.pt"
     expected_quant_plan = (
         f"runs/tinyspan_quant_plan/{expected_tag}_x2_c32_b4_w8a8/"

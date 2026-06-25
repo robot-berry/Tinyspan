@@ -114,6 +114,7 @@ def build_index(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
     if x2_training_path is None:
         x2_training_path = latest_file(repo_root, f"{artifact_dir.as_posix()}/x2_training_start*/x2_training_status.json")
     x4_gate_h_path = latest_file(repo_root, f"{artifact_dir.as_posix()}/gate_h_board_x4_320x180_*/manifest.json")
+    x4_submission_node_path = latest_file(repo_root, f"{artifact_dir.as_posix()}/x4_submission_node_*/manifest.json")
 
     completion = read_json(completion_path) or {}
     audit = read_json(audit_path) or {}
@@ -180,6 +181,7 @@ def build_index(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
                 "docs/verification_plan.md",
                 "docs/ppa_analysis.md",
                 "docs/x4_board_result_report_20260625.md",
+                "docs/x4_submission_node_20260625.md",
                 "docs/x4_quality_improvement_plan.md",
                 "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md",
                 "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_a53_compare_20260625.md",
@@ -194,6 +196,10 @@ def build_index(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
                 f"{artifact_dir.as_posix()}/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625/comparison_preview.png",
                 f"{artifact_dir.as_posix()}/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625/diff_heatmap.png",
                 f"{artifact_dir.as_posix()}/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625/tinyspan_tiled_fixed_reference_summary.json",
+                rel_path(repo_root, x4_submission_node_path) if x4_submission_node_path else "",
+                f"{artifact_dir.as_posix()}/x4_submission_node_20260625/board_sr_a53_equivalent.png",
+                f"{artifact_dir.as_posix()}/x4_submission_node_20260625/comparison_preview.png",
+                f"{artifact_dir.as_posix()}/x4_submission_node_20260625/diff_heatmap.png",
             ],
         ),
     ]
@@ -219,6 +225,7 @@ def build_index(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
         "x4": {
             "status": "PASS_X4" if x4_pass else "MISSING",
             "manifest": rel_path(repo_root, x4_gate_h_path) if x4_gate_h_path else "",
+            "submission_node": rel_path(repo_root, x4_submission_node_path) if x4_submission_node_path else "",
             "fps": (x4_gate_h or {}).get("acceptance_summary", {}).get("measured_fps"),
             "mismatch_bytes": (x4_gate_h or {}).get("acceptance_summary", {}).get("mismatch_bytes"),
             "total_bytes": (x4_gate_h or {}).get("acceptance_summary", {}).get("total_bytes"),

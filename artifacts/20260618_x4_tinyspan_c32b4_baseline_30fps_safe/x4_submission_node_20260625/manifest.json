@@ -1,0 +1,94 @@
+{
+  "node_id": "x4_submission_node_20260625",
+  "generated_at": "2026-06-25T21:13:30+08:00",
+  "status": "X4_READY_FOR_SUBMISSION",
+  "scope": "TinySPAN X4 subtask only",
+  "scale": 4,
+  "input_resolution": {
+    "width": 320,
+    "height": 180
+  },
+  "output_resolution": {
+    "width": 1280,
+    "height": 720
+  },
+  "tile": {
+    "width": 64,
+    "height": 64,
+    "count": 15
+  },
+  "route": "TinySPAN PS/DDR X4 via board zynq_ultra_ps_e / PS DDR controller IP; A53 in-DDR full-frame compare",
+  "no_custom_ddr_controller_or_phy": true,
+  "baseline_id": "c32b4_30fps_frozen_20260613",
+  "checkpoint_sha256": "6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938",
+  "quant_plan_sha256": "EB6EEDDDE9360F61E6FC30141B2A1E6539E519CB226AC18B8C219B9E40092C9D",
+  "bitstream": {
+    "path": "vivado/ps_tinyspan_ddr_x4_tile64_fifo_f155/ps_tinyspan_ddr_x4.runs/impl_1/pstinyspanx4ddr_wrapper.bit",
+    "sha256": "A94DC9B1417B35D05C9D57176109155BCBAFB5939C5E9EA9DC570C8184FD8232",
+    "pl_freq_mhz": 155,
+    "wns_ns": 0.020,
+    "tns_ns": 0.000
+  },
+  "resource": {
+    "device": "xczu19eg-ffvc1760-2-i",
+    "clb_luts": 6353,
+    "clb_registers": 4647,
+    "dsp": 81,
+    "bram_tile": 27,
+    "uram": 0,
+    "total_on_chip_power_w": 3.969,
+    "dynamic_power_w": 2.755,
+    "static_power_w": 1.213
+  },
+  "zc706_xc7z045_resource_ratio": {
+    "lut_percent": 2.91,
+    "register_percent": 1.06,
+    "dsp_percent": 9.00,
+    "bram_tile_percent": 4.95,
+    "uram_percent": 0.0
+  },
+  "throughput": {
+    "fps": 30.409639424076744,
+    "minimum_fps": 30.0,
+    "frame_cycles": 5097068,
+    "tiles_done": 15,
+    "status": "PASS"
+  },
+  "correctness": {
+    "method": "A53 baremetal comparator compares complete PS DDR output against complete fixed reference after PL run",
+    "mismatch_bytes": 0,
+    "total_bytes": 2764800,
+    "max_channel_diff": 0,
+    "status": "PASS"
+  },
+  "quality": {
+    "student_vs_teacher_psnr_db": 29.459008,
+    "pytorch_vs_tiled_fixed_psnr_db": 43.171866,
+    "full_integer_vs_tiled_fixed_psnr_db": 44.487280,
+    "reds_hr_sample_psnr_db": 25.851911,
+    "reds_hr_sample_bicubic_psnr_db": 25.787498
+  },
+  "evidence": {
+    "gate_h_manifest": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/manifest.json",
+    "x4_board_report": "docs/x4_board_result_report_20260625.md",
+    "throughput_report": "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md",
+    "a53_compare_report": "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_a53_compare_20260625.md",
+    "board_sr_a53_equivalent_png": {
+      "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_submission_node_20260625/board_sr_a53_equivalent.png",
+      "sha256": "A1CEC8945B9231B95B0D8F78CFD9D65F0E862937E2292A3E60856C144F5A4074"
+    },
+    "comparison_preview_png": {
+      "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_submission_node_20260625/comparison_preview.png",
+      "sha256": "A53E1FE3F045327B1EBEB6E0717936EBE4E2AEB882A114814196A0FC5EE5E967"
+    },
+    "diff_heatmap_png": {
+      "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_submission_node_20260625/diff_heatmap.png",
+      "sha256": "8845F0B3CECDA6871AE1F7A98D704060CDDE4EDE06FC5500E37F87B9337AD668"
+    }
+  },
+  "boundary": [
+    "This node marks the X4 subtask as ready for submission evidence review.",
+    "The visible board image is an A53-compare-equivalent PNG because the real board output in DDR matched the fixed reference byte-for-byte.",
+    "This node does not claim the whole contest workflow is complete; X2 still needs independent freeze, quantization, RTL, bitstream, board output, equality, and >=30fps evidence."
+  ]
+}

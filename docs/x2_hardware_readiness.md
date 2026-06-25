@@ -1,7 +1,7 @@
 # TinySPAN X2 Hardware Readiness
 
 - status: `PARTIAL`
-- generated at: `2026-06-25T17:27:09`
+- generated at: `2026-06-25T21:09:16`
 - X2 training status: `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json`
 - X2 quant plan: ``
 - X2 RTL manifest: ``
@@ -36,30 +36,30 @@
 1. `freeze_handoff_quant_rtl`
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_tinyspan_c32b4_post_training_prep.ps1 -RunDir ..\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal_quality_resume_20260625 -Scale 2 -Tag x2_quality_resume_YYYYMMDD
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_tinyspan_c32b4_post_training_prep.ps1 -RunDir ..\runs\tinyspan_distill\video_x2_c32_b4_quality_after_x4_20260625 -Scale 2 -Tag x2_quality_after_x4_20260625
 ```
 
 - starts Vivado/board flow: `False`
-- expected: frozen X2 checkpoint and SHA256 manifest at runs/tinyspan_frozen_candidates/x2_quality_resume_YYYYMMDD/student_final.pt
-- expected: X2 W8A8 quant plan at runs/tinyspan_quant_plan/x2_quality_resume_YYYYMMDD_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json
-- expected: X2 RTL manifest at rtl/generated/tinyspan_c32b4_x2_quality_resume_YYYYMMDD_x2_w8a8/tinyspan_w8a8_rtl_manifest.json
-- expected: X2 hardware-tiled fixed reference at artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_resume_YYYYMMDD/software_tiled_fixed_point_sr.png
+- expected: frozen X2 checkpoint and SHA256 manifest at runs/tinyspan_frozen_candidates/x2_quality_after_x4_20260625/student_final.pt
+- expected: X2 W8A8 quant plan at runs/tinyspan_quant_plan/x2_quality_after_x4_20260625_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json
+- expected: X2 RTL manifest at rtl/generated/tinyspan_c32b4_x2_quality_after_x4_20260625_x2_w8a8/tinyspan_w8a8_rtl_manifest.json
+- expected: X2 hardware-tiled fixed reference at artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625/software_tiled_fixed_point_sr.png
 - expected: readiness report that remains incomplete until the X2 bitstream and board output exist
 
 2. `x2_bitstream`
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\vivado\run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1 -Scale 2 -ImgW 640 -ImgH 360 -TileW 64 -TileH 64 -PlFreqMhz 155 -BitstreamOut vivado/bitstreams/tinyspan_x2_c32b4_x2_quality_resume_YYYYMMDD_board.bit -RequireVivadoIdle
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\vivado\run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1 -Scale 2 -ImgW 640 -ImgH 360 -TileW 64 -TileH 64 -PlFreqMhz 155 -BitstreamOut vivado/bitstreams/tinyspan_x2_c32b4_x2_quality_after_x4_20260625_board.bit -RequireVivadoIdle
 ```
 
 - starts Vivado/board flow: `True`
-- expected: X2 bitstream copied to vivado/bitstreams/tinyspan_x2_c32b4_x2_quality_resume_YYYYMMDD_board.bit
+- expected: X2 bitstream copied to vivado/bitstreams/tinyspan_x2_c32b4_x2_quality_after_x4_20260625_board.bit
 - expected: timing, utilization, power, and resource-gate evidence under the XC7Z045/ZC706 limits
 
 3. `x2_board_acceptance`
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\acceptance\run_tinyspan_720p30_board_acceptance.ps1 -Scale 2 -InputWidth 640 -InputHeight 360 -TileWidth 64 -TileHeight 64 -SoftwarePng artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_resume_YYYYMMDD/pytorch_training_sr.png -FixedPng artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_resume_YYYYMMDD/software_tiled_fixed_point_sr.png -BoardRaw REPLACE_WITH_X2_BOARD_OUTPUT.rgb -MeasuredFps REPLACE_WITH_MEASURED_FPS -Checkpoint runs/tinyspan_frozen_candidates/x2_quality_resume_YYYYMMDD/student_final.pt -QuantPlan runs/tinyspan_quant_plan/x2_quality_resume_YYYYMMDD_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json -Bitstream vivado/bitstreams/tinyspan_x2_c32b4_x2_quality_resume_YYYYMMDD_board.bit -BoardLog REPLACE_WITH_X2_BOARD_RESOURCE_OR_RUN_LOG.json -OutDir artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_h_board_x2_640x360_tile64x64
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\acceptance\run_tinyspan_720p30_board_acceptance.ps1 -Scale 2 -InputWidth 640 -InputHeight 360 -TileWidth 64 -TileHeight 64 -SoftwarePng artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625/pytorch_training_sr.png -FixedPng artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625/software_tiled_fixed_point_sr.png -BoardRaw REPLACE_WITH_X2_BOARD_OUTPUT.rgb -MeasuredFps REPLACE_WITH_MEASURED_FPS -Checkpoint runs/tinyspan_frozen_candidates/x2_quality_after_x4_20260625/student_final.pt -QuantPlan runs/tinyspan_quant_plan/x2_quality_after_x4_20260625_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json -Bitstream vivado/bitstreams/tinyspan_x2_c32b4_x2_quality_after_x4_20260625_board.bit -BoardLog REPLACE_WITH_X2_BOARD_RESOURCE_OR_RUN_LOG.json -OutDir artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_h_board_x2_640x360_tile64x64
 ```
 
 - starts Vivado/board flow: `True`

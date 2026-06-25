@@ -1,0 +1,484 @@
+{
+  "generated_at": "2026-06-25T14:36:39",
+  "checkpoint": "/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x4_c32_b4_quality_hr060_edge006_20260625/student_last.pt",
+  "checkpoint_sha256": "457CE12C7057D8190E462C9671C28E137AD92AE3B50441E9722EBFFDF3635398",
+  "val_frames": "/root/autodl-tmp/data/REDS/val_sharp",
+  "image_count": 16,
+  "scale": 4,
+  "channels": 32,
+  "num_blocks": 4,
+  "border": 4,
+  "device": "cuda",
+  "amp": true,
+  "summary": {
+    "student_vs_hr": {
+      "psnr_mean_db": 25.865854379274005,
+      "psnr_min_db": 25.5765388340983,
+      "psnr_max_db": 26.312055582919733,
+      "ssim_mean": 0.6950293108820915,
+      "mae_normalized_mean": 0.031756596406921744
+    },
+    "bicubic_vs_hr": {
+      "psnr_mean_db": 25.76331203682653,
+      "psnr_min_db": 25.474006121629152,
+      "psnr_max_db": 26.206092068316835,
+      "ssim_mean": 0.6910665035247803,
+      "mae_normalized_mean": 0.03194906550925225
+    }
+  },
+  "decision": {
+    "student_psnr_gain_over_bicubic_db": 0.10254234244747451,
+    "student_psnr_mean_ge_28db": false,
+    "student_psnr_mean_ge_30db": false
+  },
+  "rows": [
+    {
+      "index": 1,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000000.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0001_00000000_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0001_00000000_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0001_00000000_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0001_00000000_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.889368700168156,
+        "ssim": 0.7029294967651367,
+        "mae_rgb_level": 8.080710411071777,
+        "mae_normalized": 0.03168905898928642,
+        "max_channel_diff": 136,
+        "mse_rgb_level": 167.5496368408203,
+        "mismatch_bytes": 2467254,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.787495871218873,
+        "ssim": 0.6993477940559387,
+        "mae_rgb_level": 8.126996040344238,
+        "mae_normalized": 0.03187057375907898,
+        "max_channel_diff": 133,
+        "mse_rgb_level": 171.5263214111328,
+        "mismatch_bytes": 2463581,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 2,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000001.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0002_00000001_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0002_00000001_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0002_00000001_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0002_00000001_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.9034242256785,
+        "ssim": 0.7046921849250793,
+        "mae_rgb_level": 8.050602912902832,
+        "mae_normalized": 0.03157099336385727,
+        "max_channel_diff": 127,
+        "mse_rgb_level": 167.0082550048828,
+        "mismatch_bytes": 2466548,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.801759503752606,
+        "ssim": 0.7009792923927307,
+        "mae_rgb_level": 8.097416877746582,
+        "mae_normalized": 0.03175457566976547,
+        "max_channel_diff": 128,
+        "mse_rgb_level": 170.96389770507812,
+        "mismatch_bytes": 2463876,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 3,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000002.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0003_00000002_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0003_00000002_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0003_00000002_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0003_00000002_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.921653906200262,
+        "ssim": 0.7020129561424255,
+        "mae_rgb_level": 8.057880401611328,
+        "mae_normalized": 0.031599532812833786,
+        "max_channel_diff": 134,
+        "mse_rgb_level": 166.30870056152344,
+        "mismatch_bytes": 2470942,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.81848467203937,
+        "ssim": 0.6983395218849182,
+        "mae_rgb_level": 8.104812622070312,
+        "mae_normalized": 0.031783577054739,
+        "max_channel_diff": 137,
+        "mse_rgb_level": 170.3067626953125,
+        "mismatch_bytes": 2468063,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 4,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000003.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0004_00000003_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0004_00000003_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0004_00000003_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0004_00000003_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.91166872163944,
+        "ssim": 0.6958746910095215,
+        "mae_rgb_level": 8.09106731414795,
+        "mae_normalized": 0.03172967582941055,
+        "max_channel_diff": 131,
+        "mse_rgb_level": 166.69151306152344,
+        "mismatch_bytes": 2480186,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.813785986692345,
+        "ssim": 0.6923143863677979,
+        "mae_rgb_level": 8.135395050048828,
+        "mae_normalized": 0.03190350905060768,
+        "max_channel_diff": 134,
+        "mse_rgb_level": 170.49111938476562,
+        "mismatch_bytes": 2477987,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 5,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000004.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0005_00000004_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0005_00000004_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0005_00000004_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0005_00000004_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 26.05233018279467,
+        "ssim": 0.6942364573478699,
+        "mae_rgb_level": 7.974381923675537,
+        "mae_normalized": 0.03127208724617958,
+        "max_channel_diff": 131,
+        "mse_rgb_level": 161.37911987304688,
+        "mismatch_bytes": 2488611,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.951737116023857,
+        "ssim": 0.6904644966125488,
+        "mae_rgb_level": 8.01945686340332,
+        "mae_normalized": 0.0314488522708416,
+        "max_channel_diff": 128,
+        "mse_rgb_level": 165.16067504882812,
+        "mismatch_bytes": 2485413,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 6,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000005.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0006_00000005_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0006_00000005_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0006_00000005_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0006_00000005_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 26.008018608082573,
+        "ssim": 0.682661235332489,
+        "mae_rgb_level": 8.030451774597168,
+        "mae_normalized": 0.031491968780756,
+        "max_channel_diff": 145,
+        "mse_rgb_level": 163.03411865234375,
+        "mismatch_bytes": 2497618,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.905905301229595,
+        "ssim": 0.6786877512931824,
+        "mae_rgb_level": 8.076915740966797,
+        "mae_normalized": 0.031674180179834366,
+        "max_channel_diff": 147,
+        "mse_rgb_level": 166.91287231445312,
+        "mismatch_bytes": 2494368,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 7,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000006.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0007_00000006_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0007_00000006_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0007_00000006_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0007_00000006_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 26.312055582919733,
+        "ssim": 0.6947948336601257,
+        "mae_rgb_level": 7.708565711975098,
+        "mae_normalized": 0.03022966906428337,
+        "max_channel_diff": 150,
+        "mse_rgb_level": 152.01092529296875,
+        "mismatch_bytes": 2483086,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 26.206092068316835,
+        "ssim": 0.6908564567565918,
+        "mae_rgb_level": 7.755900859832764,
+        "mae_normalized": 0.03041529841721058,
+        "max_channel_diff": 154,
+        "mse_rgb_level": 155.7654571533203,
+        "mismatch_bytes": 2480687,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 8,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000007.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0008_00000007_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0008_00000007_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0008_00000007_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0008_00000007_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 26.02559809189546,
+        "ssim": 0.6914847493171692,
+        "mae_rgb_level": 7.944273471832275,
+        "mae_normalized": 0.03115401417016983,
+        "max_channel_diff": 138,
+        "mse_rgb_level": 162.37551879882812,
+        "mismatch_bytes": 2482232,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.927092761865104,
+        "ssim": 0.6877155900001526,
+        "mae_rgb_level": 7.989178657531738,
+        "mae_normalized": 0.03133011236786842,
+        "max_channel_diff": 139,
+        "mse_rgb_level": 166.10055541992188,
+        "mismatch_bytes": 2480406,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 9,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000008.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0009_00000008_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0009_00000008_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0009_00000008_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0009_00000008_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.969319424270026,
+        "ssim": 0.6960126757621765,
+        "mae_rgb_level": 7.9561944007873535,
+        "mae_normalized": 0.03120076283812523,
+        "max_channel_diff": 134,
+        "mse_rgb_level": 164.49337768554688,
+        "mismatch_bytes": 2473852,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.866329186647764,
+        "ssim": 0.6920647025108337,
+        "mae_rgb_level": 8.006132125854492,
+        "mae_normalized": 0.03139659762382507,
+        "max_channel_diff": 135,
+        "mse_rgb_level": 168.44085693359375,
+        "mismatch_bytes": 2471752,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 10,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000009.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0010_00000009_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0010_00000009_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0010_00000009_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0010_00000009_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.881837544920586,
+        "ssim": 0.7001364827156067,
+        "mae_rgb_level": 8.046792030334473,
+        "mae_normalized": 0.03155604749917984,
+        "max_channel_diff": 130,
+        "mse_rgb_level": 167.84043884277344,
+        "mismatch_bytes": 2469991,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.774593411566208,
+        "ssim": 0.6961453557014465,
+        "mae_rgb_level": 8.099299430847168,
+        "mae_normalized": 0.031761959195137024,
+        "max_channel_diff": 130,
+        "mse_rgb_level": 172.0366668701172,
+        "mismatch_bytes": 2467970,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 11,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000010.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0011_00000010_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0011_00000010_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0011_00000010_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0011_00000010_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.636706690662642,
+        "ssim": 0.6967711448669434,
+        "mae_rgb_level": 8.275218963623047,
+        "mae_normalized": 0.03245183825492859,
+        "max_channel_diff": 137,
+        "mse_rgb_level": 177.58639526367188,
+        "mismatch_bytes": 2463942,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.533979440233242,
+        "ssim": 0.6927681565284729,
+        "mae_rgb_level": 8.324193954467773,
+        "mae_normalized": 0.03264389932155609,
+        "max_channel_diff": 134,
+        "mse_rgb_level": 181.83706665039062,
+        "mismatch_bytes": 2462039,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 12,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000011.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0012_00000011_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0012_00000011_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0012_00000011_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0012_00000011_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.694428674203653,
+        "ssim": 0.6952326893806458,
+        "mae_rgb_level": 8.245936393737793,
+        "mae_normalized": 0.0323370061814785,
+        "max_channel_diff": 160,
+        "mse_rgb_level": 175.24171447753906,
+        "mismatch_bytes": 2470320,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.58980874042511,
+        "ssim": 0.6911144256591797,
+        "mae_rgb_level": 8.297261238098145,
+        "mae_normalized": 0.0325382798910141,
+        "max_channel_diff": 160,
+        "mse_rgb_level": 179.5144805908203,
+        "mismatch_bytes": 2467810,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 13,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000012.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0013_00000012_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0013_00000012_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0013_00000012_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0013_00000012_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.742680629447992,
+        "ssim": 0.6909561157226562,
+        "mae_rgb_level": 8.216347694396973,
+        "mae_normalized": 0.03222097083926201,
+        "max_channel_diff": 145,
+        "mse_rgb_level": 173.30548095703125,
+        "mismatch_bytes": 2474790,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.640833931209407,
+        "ssim": 0.6866140961647034,
+        "mae_rgb_level": 8.269645690917969,
+        "mae_normalized": 0.03242998197674751,
+        "max_channel_diff": 144,
+        "mse_rgb_level": 177.41770935058594,
+        "mismatch_bytes": 2473661,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 14,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000013.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0014_00000013_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0014_00000013_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0014_00000013_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0014_00000013_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.696645969631092,
+        "ssim": 0.6884512305259705,
+        "mae_rgb_level": 8.265975952148438,
+        "mae_normalized": 0.032415591180324554,
+        "max_channel_diff": 129,
+        "mse_rgb_level": 175.1522674560547,
+        "mismatch_bytes": 2481640,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.595981650533417,
+        "ssim": 0.6840949058532715,
+        "mae_rgb_level": 8.319231033325195,
+        "mae_normalized": 0.03262443467974663,
+        "max_channel_diff": 137,
+        "mse_rgb_level": 179.25950622558594,
+        "mismatch_bytes": 2480052,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 15,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000014.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0015_00000014_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0015_00000014_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0015_00000014_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0015_00000014_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.63139428177097,
+        "ssim": 0.692114531993866,
+        "mae_rgb_level": 8.302857398986816,
+        "mae_normalized": 0.03256022557616234,
+        "max_channel_diff": 136,
+        "mse_rgb_level": 177.8037567138672,
+        "mismatch_bytes": 2475979,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.5251068258416,
+        "ssim": 0.687823474407196,
+        "mae_rgb_level": 8.357108116149902,
+        "mae_normalized": 0.0327729731798172,
+        "max_channel_diff": 137,
+        "mse_rgb_level": 182.2089385986328,
+        "mismatch_bytes": 2474079,
+        "total_bytes": 2716992
+      }
+    },
+    {
+      "index": 16,
+      "source": "/root/autodl-tmp/data/REDS/val_sharp/000/00000015.png",
+      "hr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0016_00000015_hr.png",
+      "lr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0016_00000015_lr.png",
+      "bicubic_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0016_00000015_bicubic_sr.png",
+      "student_sr": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val_subset/sr_images/0016_00000015_student_sr.png",
+      "student_vs_hr": {
+        "psnr_db": 25.5765388340983,
+        "ssim": 0.6921074986457825,
+        "mae_rgb_level": 8.319655418395996,
+        "mae_normalized": 0.03262609988451004,
+        "max_channel_diff": 132,
+        "mse_rgb_level": 180.06382751464844,
+        "mismatch_bytes": 2472363,
+        "total_bytes": 2716992
+      },
+      "bicubic_vs_hr": {
+        "psnr_db": 25.474006121629152,
+        "ssim": 0.6877336502075195,
+        "mae_rgb_level": 8.373242378234863,
+        "mae_normalized": 0.03283624351024628,
+        "max_channel_diff": 137,
+        "mse_rgb_level": 184.36553955078125,
+        "mismatch_bytes": 2470495,
+        "total_bytes": 2716992
+      }
+    }
+  ]
+}

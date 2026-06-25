@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-25T17:27:10",
+  "generated_at": "2026-06-25T21:16:14",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "git": {
     "branch": "main",
-    "commit": "0a88c3f54ddb404a69dd96867e0bc3febe073411",
+    "commit": "a1b495196c8a1216d96eade88d883a1d5a205ced",
     "remote": "https://github.com/robot-berry/Tinyspan.git"
   },
   "overall": {
@@ -16,6 +16,7 @@
   "x4": {
     "status": "PASS_X4",
     "manifest": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/manifest.json",
+    "submission_node": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_submission_node_20260625/manifest.json",
     "fps": 30.409639424076744,
     "mismatch_bytes": 0,
     "total_bytes": 2764800,
@@ -75,9 +76,9 @@
           "path": "WORKFLOW.md",
           "exists": true,
           "kind": "file",
-          "bytes": 51757,
-          "mtime": "2026-06-25T17:24:33",
-          "sha256": "D4F4DBDA9170B7190FBBD1A6E3035C54E5D7ADB5B5394BB8CFEFB4BB8BB771D5"
+          "bytes": 56524,
+          "mtime": "2026-06-25T21:14:58",
+          "sha256": "42588BC8E79D00914DB6267D2DC8B4E52BDA41DEE2EFD1A97C5A7028D9C51E5B"
         },
         {
           "path": "docs/gate_status.md",
@@ -99,9 +100,9 @@
           "path": "docs/x2_hardware_readiness.md",
           "exists": true,
           "kind": "file",
-          "bytes": 6561,
-          "mtime": "2026-06-25T17:27:09",
-          "sha256": "643009026BE8D36C14BC73734F93389BA790CBAE0FD1D8145226B8548F1CBA45"
+          "bytes": 6573,
+          "mtime": "2026-06-25T21:09:16",
+          "sha256": "18801A6E0ED64BB13ABC1DF1AE7EC901CD3B73D482F071A5B8D29D41D2E63A3C"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_completion_status.json",
@@ -123,9 +124,9 @@
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
           "exists": true,
           "kind": "file",
-          "bytes": 8283,
-          "mtime": "2026-06-25T17:27:09",
-          "sha256": "E48B93B673EA3292B027D1C11EA96907D3B5D4A17C1B8ACE21E1B942948BE469"
+          "bytes": 8305,
+          "mtime": "2026-06-25T21:09:16",
+          "sha256": "94A8091A4CEE3A79E2DB59A01AB0739F581B2B30F6A5F1B4139F15B9840CD151"
         }
       ]
     },
@@ -296,6 +297,14 @@
           "sha256": "1A9EA5DEFFCE017CA2385B0B1D0ED248070C7E78377C4A3D502622E29DAAAF53"
         },
         {
+          "path": "docs/x4_submission_node_20260625.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2461,
+          "mtime": "2026-06-25T21:14:32",
+          "sha256": "BE205620B4B7E8DD6D6E59E86A2407A625995D72D0D91B83E68AB7DA010CFDC3"
+        },
+        {
           "path": "docs/x4_quality_improvement_plan.md",
           "exists": true,
           "kind": "file",
@@ -364,6 +373,38 @@
           "bytes": 3400,
           "mtime": "2026-06-25T04:21:03",
           "sha256": "D09912E23C3F21465359510946008554BCA31100B0B50F249C48A9482592A84A"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_submission_node_20260625/manifest.json",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3742,
+          "mtime": "2026-06-25T21:14:17",
+          "sha256": "63C2F1B91F5ED8DEDEE4085B705595B42EF2B42857E703A6BB450B47A43BC68C"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_submission_node_20260625/board_sr_a53_equivalent.png",
+          "exists": true,
+          "kind": "file",
+          "bytes": 1066005,
+          "mtime": "2026-06-25T04:21:02",
+          "sha256": "A1CEC8945B9231B95B0D8F78CFD9D65F0E862937E2292A3E60856C144F5A4074"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_submission_node_20260625/comparison_preview.png",
+          "exists": true,
+          "kind": "file",
+          "bytes": 139063,
+          "mtime": "2026-06-25T04:21:03",
+          "sha256": "A53E1FE3F045327B1EBEB6E0717936EBE4E2AEB882A114814196A0FC5EE5E967"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_submission_node_20260625/diff_heatmap.png",
+          "exists": true,
+          "kind": "file",
+          "bytes": 77108,
+          "mtime": "2026-06-25T04:21:03",
+          "sha256": "8845F0B3CECDA6871AE1F7A98D704060CDDE4EDE06FC5500E37F87B9337AD668"
         }
       ]
     }
