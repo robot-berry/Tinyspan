@@ -113,6 +113,19 @@ runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val/tinyspan_checkpoint_reds
 Only continue to quantization and board work if the multi-image `student_vs_hr` PSNR/SSIM improves over
 `bicubic_vs_hr`; claiming `30dB` requires the same multi-image REDS HR metric, not a single-image result.
 
+After copying the cloud run back into this repo, package the candidate evidence:
+
+```bash
+python scripts/acceptance/package_x4_quality_candidate.py \
+  --candidate-id x4_quality_hr060_edge006_20260625 \
+  --train-dir runs/tinyspan_distill/video_x4_c32_b4_quality_hr060_edge006_20260625 \
+  --quality-dir runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val \
+  --allow-incomplete
+```
+
+This package is only a software quality gate. It does not replace the current X4 submission baseline until the
+candidate also passes quantization, RTL/export checks, bitstream generation, real board equality, and `>=30fps`.
+
 ## Cost Control
 
 Start with this one candidate instead of training a larger model. A single RTX 4090D should be the lowest-cost fast option for this TinySPAN c32/b4 fine-tune. A100/H100 is not the first choice unless multiple candidates need to run in parallel.
