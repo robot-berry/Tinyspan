@@ -8,6 +8,7 @@ param(
   [int]$PollSeconds = 300,
   [int]$StableStoppedPolls = 2,
   [switch]$SkipRtlExport,
+  [switch]$SkipTiledReference,
   [switch]$SkipReadiness,
   [switch]$RequireReadinessPass,
   [switch]$DryRun
@@ -120,6 +121,7 @@ if ($DryRun) {
     "-Tag", $safeTag
   )
   if ($SkipRtlExport) { $postArgs += "-SkipRtlExport" }
+  if ($SkipTiledReference) { $postArgs += "-SkipTiledReference" }
   if ($SkipReadiness) { $postArgs += "-SkipReadiness" }
   if ($RequireReadinessPass) { $postArgs += "-RequireReadinessPass" }
   Write-Host "WOULD_RUN: powershell $($postArgs -join ' ')"
@@ -178,6 +180,7 @@ try {
     "-Tag", $safeTag
   )
   if ($SkipRtlExport) { $postArgs += "-SkipRtlExport" }
+  if ($SkipTiledReference) { $postArgs += "-SkipTiledReference" }
   if ($SkipReadiness) { $postArgs += "-SkipReadiness" }
   if ($RequireReadinessPass) { $postArgs += "-RequireReadinessPass" }
   & powershell @postArgs

@@ -182,6 +182,12 @@ def main() -> int:
         f"rtl/generated/tinyspan_c32b4_{expected_tag}_x2_w8a8/"
         "tinyspan_w8a8_rtl_manifest.json"
     )
+    expected_tiled_reference_dir = (
+        "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/"
+        f"full_frame_tiled_reference_x2_640x360_tile64x64_{expected_tag}"
+    )
+    expected_pytorch_sr_png = f"{expected_tiled_reference_dir}/pytorch_training_sr.png"
+    expected_tiled_fixed_png = f"{expected_tiled_reference_dir}/software_tiled_fixed_point_sr.png"
     expected_bitstream = f"vivado/bitstreams/tinyspan_x2_c32b4_{expected_tag}_board.bit"
     post_training_gate_order = [
         {
@@ -197,6 +203,7 @@ def main() -> int:
                 "frozen X2 checkpoint and SHA256 manifest",
                 f"X2 W8A8 quant plan at {expected_quant_plan}",
                 f"X2 RTL manifest at {expected_rtl_manifest}",
+                f"X2 hardware-tiled fixed reference at {expected_tiled_fixed_png}",
                 "readiness report that remains incomplete until the X2 bitstream and board output exist",
             ],
         },
@@ -220,15 +227,15 @@ def main() -> int:
                 "powershell -NoProfile -ExecutionPolicy Bypass -File "
                 ".\\scripts\\acceptance\\run_tinyspan_720p30_board_acceptance.ps1 "
                 "-Scale 2 -InputWidth 640 -InputHeight 360 -TileWidth 64 -TileHeight 64 "
-                "-SoftwarePng REPLACE_WITH_X2_PYTORCH_SR.png "
-                "-FixedPng REPLACE_WITH_X2_TILED_FIXED_SR.png "
+                f"-SoftwarePng {expected_pytorch_sr_png} "
+                f"-FixedPng {expected_tiled_fixed_png} "
                 "-BoardRaw REPLACE_WITH_X2_BOARD_OUTPUT.rgb "
                 "-MeasuredFps REPLACE_WITH_MEASURED_FPS "
                 "-Checkpoint REPLACE_WITH_X2_FROZEN_CHECKPOINT.pt "
                 "-QuantPlan REPLACE_WITH_X2_QUANT_PLAN.json "
                 "-Bitstream REPLACE_WITH_X2_BITSTREAM.bit "
                 "-BoardLog REPLACE_WITH_X2_BOARD_RESOURCE_OR_RUN_LOG.json "
-                "-OutDir artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_tile64"
+                "-OutDir artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_tile64x64"
             ),
             "starts_vivado_or_board": True,
             "expected": [
@@ -249,6 +256,7 @@ def main() -> int:
         "x2_rtl_manifest": rel(x2_rtl, repo),
         "expected_x2_quant_plan_after_freeze": expected_quant_plan,
         "expected_x2_rtl_manifest_after_freeze": expected_rtl_manifest,
+        "expected_x2_tiled_reference_after_freeze": expected_tiled_reference_dir,
         "expected_x2_bitstream_after_vivado": expected_bitstream,
         "post_training_gate_order": post_training_gate_order,
         "blockers": blockers,

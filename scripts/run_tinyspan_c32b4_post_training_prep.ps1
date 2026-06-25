@@ -5,6 +5,11 @@ param(
   [int]$Scale = 4,
   [switch]$DryRun,
   [switch]$SkipRtlExport,
+  [switch]$SkipTiledReference,
+  [string]$TiledReferenceInputPng = "G:\REDS\val_sharp\000\00000000.png",
+  [int]$TiledReferenceTileWidth = 64,
+  [int]$TiledReferenceTileHeight = 64,
+  [string]$TiledReferenceOutDir = "",
   [switch]$SkipReadiness,
   [switch]$RequireReadinessPass
 )
@@ -104,11 +109,33 @@ try {
   $rtlOutDir = "rtl\generated\tinyspan_c32b4_${safeTag}_${scaleTag}_w8a8"
   $rtlManifest = Join-Path $rtlOutDir "tinyspan_w8a8_rtl_manifest.json"
   $expectedBitstream = "vivado\bitstreams\tinyspan_${scaleTag}_c32b4_${safeTag}_board.bit"
+  if ($Scale -eq 2) {
+    $frameWidth = 640
+    $frameHeight = 360
+  } else {
+    $frameWidth = 320
+    $frameHeight = 180
+  }
+  if ([string]::IsNullOrWhiteSpace($TiledReferenceOutDir)) {
+    $TiledReferenceOutDir = "artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\full_frame_tiled_reference_${scaleTag}_${frameWidth}x${frameHeight}_tile${TiledReferenceTileWidth}x${TiledReferenceTileHeight}_${safeTag}"
+  }
   $rtlExportArgs = @(
     "-ExecutionPolicy", "Bypass",
     "-File", "scripts\export_tinyspan_c32b4_30fps_w8a8_to_rtl.ps1",
     "-QuantPlan", $quantPlan,
     "-OutDir", $rtlOutDir
+  )
+  $tiledReferenceArgs = @(
+    "-ExecutionPolicy", "Bypass",
+    "-File", "scripts\acceptance\make_tinyspan_tiled_fixed_reference.ps1",
+    "-InputPng", $TiledReferenceInputPng,
+    "-InputWidth", $frameWidth,
+    "-InputHeight", $frameHeight,
+    "-TileWidth", $TiledReferenceTileWidth,
+    "-TileHeight", $TiledReferenceTileHeight,
+    "-QuantPlan", $quantPlan,
+    "-Checkpoint", $checkpoint,
+    "-OutDir", $TiledReferenceOutDir
   )
   $readinessArgs = @(
     "-ExecutionPolicy", "Bypass",
@@ -124,6 +151,9 @@ try {
     Write-Host "WOULD_RUN: powershell $($freezeArgs -join ' ')"
     if (-not $SkipRtlExport) {
       Write-Host "WOULD_RUN: powershell $($rtlExportArgs -join ' ')"
+    }
+    if (-not $SkipTiledReference) {
+      Write-Host "WOULD_RUN: powershell $($tiledReferenceArgs -join ' ')"
     }
     if (-not $SkipReadiness) {
       Write-Host "WOULD_RUN: powershell $($readinessArgs -join ' ')"
@@ -148,6 +178,13 @@ try {
     & powershell @rtlExportArgs
     if ($LASTEXITCODE -ne 0) {
       throw "export_tinyspan_c32b4_30fps_w8a8_to_rtl.ps1 failed with exit code $LASTEXITCODE"
+    }
+  }
+
+  if (-not $SkipTiledReference) {
+    & powershell @tiledReferenceArgs
+    if ($LASTEXITCODE -ne 0) {
+      throw "make_tinyspan_tiled_fixed_reference.ps1 failed with exit code $LASTEXITCODE"
     }
   }
 
