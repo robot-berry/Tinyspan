@@ -1,5 +1,5 @@
 if {[llength $argv] < 13} {
-    error "Usage: run_xsct_ps_tinyspan_ddr_x4_smoke.tcl <psu_init.tcl> <ctrl_base> <input.raw> <output.hex> <img_w> <img_h> <scale> <input_base> <output_base> <timeout_ms> <readback_mode> <readback_pixels> <clear_output>"
+    error "Usage: run_xsct_ps_tinyspan_ddr_x4_smoke.tcl <psu_init.tcl> <ctrl_base> <input.raw> <output.hex> <img_w> <img_h> <scale> <input_base> <output_base> <timeout_ms> <readback_mode> <readback_pixels> <clear_output> ?input_words.bin?"
 }
 
 set psu_init_tcl [file normalize [lindex $argv 0]]
@@ -15,6 +15,10 @@ set timeout_ms [expr {int([lindex $argv 9])}]
 set readback_mode [string toupper [lindex $argv 10]]
 set readback_pixels [expr {int([lindex $argv 11])}]
 set clear_output [expr {int([lindex $argv 12])}]
+set input_words_bin ""
+if {[llength $argv] >= 14} {
+    set input_words_bin [file normalize [lindex $argv 13]]
+}
 
 if {$readback_mode ne "FULL" && $readback_mode ne "SAMPLE" && $readback_mode ne "SKIP"} {
     error "Unsupported readback_mode: $readback_mode"
@@ -24,6 +28,9 @@ if {![file exists $psu_init_tcl]} {
 }
 if {![file exists $input_raw]} {
     error "input raw not found: $input_raw"
+}
+if {$input_words_bin ne "" && ![file exists $input_words_bin]} {
+    error "input words bin not found: $input_words_bin"
 }
 
 set reg_control         [expr {$ctrl_base + 0x00}]
@@ -46,6 +53,13 @@ set expected_bytes [expr {$in_pixels * 3}]
 set actual_bytes [file size $input_raw]
 if {$actual_bytes != $expected_bytes} {
     error "input raw size mismatch: got $actual_bytes expected $expected_bytes"
+}
+if {$input_words_bin ne ""} {
+    set expected_word_bytes [expr {$in_pixels * 4}]
+    set actual_word_bytes [file size $input_words_bin]
+    if {$actual_word_bytes != $expected_word_bytes} {
+        error "input words bin size mismatch: got $actual_word_bytes expected $expected_word_bytes"
+    }
 }
 
 proc try_target {filter label} {
@@ -130,6 +144,12 @@ proc write_input_rgb_to_ddr {input_raw input_base in_pixels} {
         set pix [expr {($r << 16) | ($g << 8) | $b}]
         write32 [expr {$input_base + $i * 4}] $pix
     }
+    return $in_pixels
+}
+
+proc write_input_words_to_ddr {input_words_bin input_base in_pixels} {
+    dow -data $input_words_bin $input_base
+    puts "TINYSPAN_PS_DDR_X4_INPUT_DOW_DATA=$input_words_bin"
     return $in_pixels
 }
 
@@ -244,7 +264,11 @@ if {$img_w_readback != $img_w || $img_h_readback != $img_h ||
 puts [format "TINYSPAN_PS_DDR_X4_CONFIG=0x%08X" [read32 $reg_config]]
 puts [format "TINYSPAN_PS_DDR_X4_STATUS_AFTER_CLEAR=0x%08X" [read32 $reg_status]]
 
-set input_words [write_input_rgb_to_ddr $input_raw $input_base $in_pixels]
+if {$input_words_bin ne ""} {
+    set input_words [write_input_words_to_ddr $input_words_bin $input_base $in_pixels]
+} else {
+    set input_words [write_input_rgb_to_ddr $input_raw $input_base $in_pixels]
+}
 puts "TINYSPAN_PS_DDR_X4_INPUT_DDR_WRITE_WORDS=$input_words"
 if {$clear_output != 0} {
     set clear_words [clear_output_ddr $output_base $out_pixels]

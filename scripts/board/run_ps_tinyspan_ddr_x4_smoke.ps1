@@ -7,7 +7,7 @@ param(
   [int]$ImgW = 32,
   [int]$ImgH = 32,
   [int]$Scale = 4,
-  [int]$PlFreqMhz = 150,
+  [double]$PlFreqMhz = 150.0,
   [string]$CtrlBase = "0xA0000000",
   [string]$InputBase = "0x10000000",
   [string]$OutputBase = "0x11000000",
@@ -93,6 +93,25 @@ function Convert-HexPixelsToRaw {
   [System.IO.File]::WriteAllBytes($RawPath, $bytes)
 }
 
+function Convert-Rgb888RawToWordsBin {
+  param([string]$RawPath, [string]$OutPath, [int]$Pixels)
+  $raw = [System.IO.File]::ReadAllBytes($RawPath)
+  if ($raw.Length -ne ($Pixels * 3)) {
+    throw "RGB888 raw size mismatch for $RawPath`: got $($raw.Length), expected $($Pixels * 3)"
+  }
+  $words = New-Object byte[] ($Pixels * 4)
+  for ($i = 0; $i -lt $Pixels; $i++) {
+    $r = $raw[$i * 3 + 0]
+    $g = $raw[$i * 3 + 1]
+    $b = $raw[$i * 3 + 2]
+    $words[$i * 4 + 0] = $b
+    $words[$i * 4 + 1] = $g
+    $words[$i * 4 + 2] = $r
+    $words[$i * 4 + 3] = 0
+  }
+  [System.IO.File]::WriteAllBytes($OutPath, $words)
+}
+
 function Compare-FileBytes {
   param([string]$A, [string]$B)
   $aBytes = [System.IO.File]::ReadAllBytes($A)
@@ -146,6 +165,7 @@ try {
   $outW = $ImgW * $Scale
   $outH = $ImgH * $Scale
   $inputRaw = Join-Path $outDirAbs "input_rgb888_${ImgW}x${ImgH}.rgb"
+  $inputWords = Join-Path $outDirAbs "input_words_${ImgW}x${ImgH}.bin"
   $boardHex = Join-Path $outDirAbs "board_output_${outW}x${outH}.hex"
   $boardRaw = Join-Path $outDirAbs "board_output_${outW}x${outH}.rgb"
   $boardPng = Join-Path $outDirAbs "board_output_${outW}x${outH}.png"
@@ -161,6 +181,7 @@ try {
   if ($LASTEXITCODE -ne 0) {
     throw "input PNG to raw conversion failed"
   }
+  Convert-Rgb888RawToWordsBin -RawPath $inputRaw -OutPath $inputWords -Pixels ($ImgW * $ImgH)
 
   if (-not $NoProgram) {
     Write-Host "TINYSPAN_PS_DDR_X4_PROGRAM_LOG=$programLog"
@@ -189,7 +210,8 @@ try {
     [string]$TimeoutMs,
     $ReadbackMode,
     [string]$ReadbackPixels,
-    $clearOutput
+    $clearOutput,
+    $inputWords
   )
   Remove-Item -Path $xsctLog,$xsctStdoutLog,$xsctStderrLog -Force -ErrorAction SilentlyContinue
   Add-Content -Path $xsctLog -Encoding UTF8 -Value "TINYSPAN_PS_DDR_X4_WRAPPER_XSCT_WALL_TIMEOUT_SECONDS=$xsctWallTimeoutEffective"
@@ -293,6 +315,7 @@ try {
     psu_init_tcl = $PsuInitTcl
     input_png = $InputPng
     input_raw = $inputRaw
+    input_words = $inputWords
     board_hex = if (Test-Path $boardHex) { $boardHex } else { "" }
     board_raw = if (Test-Path $boardRaw) { $boardRaw } else { "" }
     board_png = if (Test-Path $boardPng) { $boardPng } else { "" }

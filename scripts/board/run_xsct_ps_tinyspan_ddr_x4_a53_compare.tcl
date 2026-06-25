@@ -37,6 +37,10 @@ set reg_img_w       [expr {$ctrl_base + 0x08}]
 set reg_img_h       [expr {$ctrl_base + 0x0c}]
 set reg_input_base  [expr {$ctrl_base + 0x10}]
 set reg_output_base [expr {$ctrl_base + 0x14}]
+set reg_frame_cycles_lo [expr {$ctrl_base + 0x18}]
+set reg_frame_cycles_hi [expr {$ctrl_base + 0x1c}]
+set reg_tiles_done  [expr {$ctrl_base + 0x20}]
+set reg_error       [expr {$ctrl_base + 0x24}]
 set reg_config      [expr {$ctrl_base + 0x28}]
 
 set in_pixels [expr {$img_w * $img_h}]
@@ -154,6 +158,20 @@ puts "TINYSPAN_A53_COMPARE_START_WRITE_DONE=1"
 puts "TINYSPAN_A53_COMPARE_POST_START_FIXED_WAIT_MS=$wait_ms"
 flush stdout
 after $wait_ms
+
+set frame_status [read32 $reg_status]
+set frame_error [read32 $reg_error]
+set cycles_lo [read32 $reg_frame_cycles_lo]
+set cycles_hi [read32 $reg_frame_cycles_hi]
+set tiles_done [read32 $reg_tiles_done]
+set frame_cycles [expr {($cycles_hi * 4294967296) + $cycles_lo}]
+puts [format "TINYSPAN_A53_COMPARE_FRAME_STATUS=0x%08X" $frame_status]
+puts [format "TINYSPAN_A53_COMPARE_FRAME_ERROR=0x%08X" $frame_error]
+puts [format "TINYSPAN_A53_COMPARE_FRAME_CYCLES_LO=0x%08X" $cycles_lo]
+puts [format "TINYSPAN_A53_COMPARE_FRAME_CYCLES_HI=0x%08X" $cycles_hi]
+puts "TINYSPAN_A53_COMPARE_FRAME_CYCLES=$frame_cycles"
+puts "TINYSPAN_A53_COMPARE_TILES_DONE=$tiles_done"
+flush stdout
 
 if {![try_target {name =~ "Cortex-A53 #0"} "A53_0"]} {
     if {![try_target {name =~ "*Cortex-A53*#0*"} "A53_0_GLOB"]} {

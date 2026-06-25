@@ -1,29 +1,20 @@
 # TinySPAN 赛题交付索引
 
-生成时间：`2026-06-25T21:16:14`
-索引生成前提交：`a1b495196c8a1216d96eade88d883a1d5a205ced`
-总体状态：`NOT_COMPLETE`
+生成时间：`2026-06-26T06:31:01`
+索引生成前提交：`778e78301449f0afd5ef0a7a6901d5b9ef335c85`
+总体状态：`PASS`
 
 本索引只读取现有文件和 artifact，不启动 Vivado、JTAG、板卡或训练流程。
 
 ## 当前结论
 
 - X4 子任务：`PASS_X4`，fps `30.409639424076744`，mismatch `0/2764800`。
-- X2 训练：`training_running`，epoch `1`，step `2243/51480`，progress `4.357%`。
-- X2 readiness：`PARTIAL`。
+- X2 训练：`PASS`，epoch `13`，step `51480/51480`，progress `100.0%`。
+- X2 readiness：`READY`。
 
 ## X2 剩余缺口
 
-- readiness blocker: `x2_quant_plan_exists`
-- readiness blocker: `x2_rtl_manifest_exists`
-- evidence missing: finished/frozen X2 TinySPAN checkpoint
-- evidence missing: X2 W8A8 quant plan
-- evidence missing: X2 fixed-point/tiled reference
-- evidence missing: X2 RTL export and simulation
-- evidence missing: X2 bitstream
-- evidence missing: real X2 board output
-- evidence missing: board-vs-software byte-exact comparison
-- evidence missing: measured >=30fps throughput
+- 无
 
 ## 证据分组
 
@@ -32,13 +23,13 @@
 状态：`PASS`
 
 - `PASS` `README.md`，3086 bytes，SHA256 `BDC897F4BF2E060879D6C4FBAB7C6A3AC42A1E30DAB18F708CBECA567A10C36B`
-- `PASS` `WORKFLOW.md`，56524 bytes，SHA256 `42588BC8E79D00914DB6267D2DC8B4E52BDA41DEE2EFD1A97C5A7028D9C51E5B`
-- `PASS` `docs/gate_status.md`，3178 bytes，SHA256 `A55BC7900C29D70C2B8455B3A8100825E5296D3E4ACC49FC0054BF164F334579`
-- `PASS` `docs/contest_delivery_audit.md`，6013 bytes，SHA256 `B348970272A26363EFA0719B8B8D1C80624F674B8AE84CA1813EE000C8C17C3B`
-- `PASS` `docs/x2_hardware_readiness.md`，6573 bytes，SHA256 `18801A6E0ED64BB13ABC1DF1AE7EC901CD3B73D482F071A5B8D29D41D2E63A3C`
-- `PASS` `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_completion_status.json`，3560 bytes，SHA256 `059685235F742CD3EEB9DFF7369DF98113FF279A7B00D9EDAB94F1C5A638FBA4`
-- `PASS` `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_delivery_audit.json`，10604 bytes，SHA256 `DDEC8061C40390B7C59F06BDD88D0BBA3DE3A3CB120622869418101486864E29`
-- `PASS` `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json`，8305 bytes，SHA256 `94A8091A4CEE3A79E2DB59A01AB0739F581B2B30F6A5F1B4139F15B9840CD151`
+- `PASS` `WORKFLOW.md`，59416 bytes，SHA256 `98AC59B22B2C44CCD4CB3621B9B7D6B86F597DF92C3F471FD6FFA6340C1BEAEA`
+- `PASS` `docs/gate_status.md`，2904 bytes，SHA256 `D3E0C07E8BF87449D73D8062188CFA286ED87A78DBC631D7D0C1B9DD0EC4575B`
+- `PASS` `docs/contest_delivery_audit.md`，5697 bytes，SHA256 `1BF67D4D5A6031CB70D8721D1FF91534E1C4F4E5A7DAE3470451E849A0638188`
+- `PASS` `docs/x2_hardware_readiness.md`，7069 bytes，SHA256 `317063163A6D7A730641F1426E054F55AA9346A57B65632141AE3826B8456D0A`
+- `PASS` `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_completion_status.json`，3522 bytes，SHA256 `2380523B3AAB604A636E48E45D2BDD374DA68163E9ABE71FD5C9FF834D4FA257`
+- `PASS` `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_delivery_audit.json`，10250 bytes，SHA256 `54D5EAC4449C34B769E51FFDDDBEDD00FAE56A85BF74F426F297FA233AEAC062`
+- `PASS` `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json`，8814 bytes，SHA256 `86C6F5028111CC8A1841C0262B2397024E1BB178EA8024B748B3C022E93B4C7E`
 
 ### AI 模型、训练和量化
 
@@ -51,7 +42,7 @@
 - `PASS` `configs/distill_tinyspan_video_x2_c32_b4.json`，3128 bytes，SHA256 `EDEF41ED2C4634AB25D51A5D4A185BCF42D07675FCFC1219E1F3FF1BF1B9B6D5`
 - `PASS` `scripts/train_tinyspan_video_x2_c32_b4.ps1`，2254 bytes，SHA256 `E08FE2B3A344D2BA0E2AA8E608686CD68818AF41009071B7C960B12FDDA93D4F`
 - `PASS` `scripts/start_tinyspan_c32b4_x2_training.ps1`，2440 bytes，SHA256 `4B378D9C4DAC6595C821144DFDF4A8CA0E822CCCA0F376B815E0CD81CF9A17B8`
-- `PASS` `scripts/run_tinyspan_c32b4_post_training_prep.ps1`，7511 bytes，SHA256 `26A285D0E0D235AF7762D14FFFFD714FB0ADAD1BD880D06E3B2141A2C4E32140`
+- `PASS` `scripts/run_tinyspan_c32b4_post_training_prep.ps1`，7707 bytes，SHA256 `9CFAB82E4973D777C1D335C1ED177D4A5C3583202826E784416FE45C2514EF8A`
 - `PASS` `tools/model_to_hardware/export_tinyspan_w8a8_quant_plan.py`，14483 bytes，SHA256 `3ADAADB344053C0D9AB6DB109B875F599AAD5A3964B63891E90F2B86E8D66358`
 - `PASS` `tools/model_to_hardware/run_tinyspan_w8a8_integer_reference.py`，19055 bytes，SHA256 `0652BC0A22FE45230009C9B923BA77A25B21BD1493FA732321A91FAF2F121A52`
 
@@ -60,11 +51,11 @@
 状态：`PASS`
 
 - `PASS` `docs/hardware_design.md`，5321 bytes，SHA256 `41E60E7F9077F501C131BF9DE7DAE6C642AB37F673453A10E79FD094BD11A8CF`
-- `PASS` `rtl/tinyspan_core`，8 files，55763 bytes
-- `PASS` `rtl/board_wrapper`，10 files，96604 bytes
+- `PASS` `rtl/tinyspan_core`，8 files，50402 bytes
+- `PASS` `rtl/board_wrapper`，10 files，98016 bytes
 - `PASS` `tools/model_to_hardware/export_tinyspan_w8a8_to_rtl.py`，10636 bytes，SHA256 `8CEFA6FAF2A059EEF2E9E7F7FF99E5DCF2D5FDB6CE970228764DA0850CF6243E`
-- `PASS` `scripts/vivado/create_vivado_ps_tinyspan_ddr_x4_bd_project.tcl`，10078 bytes，SHA256 `10B9D844359430FEB96845C107A6910E12AEC1D4D8D667651D3DF0951A8773E3`
-- `PASS` `scripts/vivado/run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1`，4404 bytes，SHA256 `AF615F66DB2F95938E31614D29C6E828EF8EE96D02F3E444ED001C2507B04632`
+- `PASS` `scripts/vivado/create_vivado_ps_tinyspan_ddr_x4_bd_project.tcl`，11210 bytes，SHA256 `2BF8F195817C148FCB4CB6F83573DA2235DDCB59C43243B9F90564187C96C4B5`
+- `PASS` `scripts/vivado/run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1`，4900 bytes，SHA256 `6EE0248556C1BF745572BC0B53B3C7408707C0CED872576791C86F22435B2A2C`
 
 ### 验证方案与 PPA
 

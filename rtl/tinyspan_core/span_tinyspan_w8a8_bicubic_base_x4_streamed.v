@@ -15,7 +15,8 @@ module span_tinyspan_w8a8_bicubic_base_x4_streamed #(
     parameter integer DATA_W = 24,
     parameter integer ACT_W = 8,
     parameter integer IMG_W = 4,
-    parameter integer IMG_H = 4
+    parameter integer IMG_H = 4,
+    parameter integer SCALE = 4
 ) (
     input  wire                       clk,
     input  wire                       rst,
@@ -33,8 +34,8 @@ module span_tinyspan_w8a8_bicubic_base_x4_streamed #(
     output reg                        m_last
 );
     localparam integer FRAME_PIXELS = IMG_W * IMG_H;
-    localparam integer HR_W = IMG_W * 4;
-    localparam integer HR_H = IMG_H * 4;
+    localparam integer HR_W = IMG_W * SCALE;
+    localparam integer HR_H = IMG_H * SCALE;
     localparam integer LR_PIX_W = (FRAME_PIXELS <= 2) ? 1 : $clog2(FRAME_PIXELS);
     localparam integer HR_X_W = (HR_W <= 2) ? 1 : $clog2(HR_W);
     localparam integer HR_Y_W = (HR_H <= 2) ? 1 : $clog2(HR_H);
@@ -286,40 +287,61 @@ module span_tinyspan_w8a8_bicubic_base_x4_streamed #(
         input integer phase;
         input integer tap;
         begin
-            case (phase)
-                0: begin
-                    case (tap)
-                        0: phase_coeff_q14 = -16'sd1080;
-                        1: phase_coeff_q14 =  16'sd6984;
-                        2: phase_coeff_q14 =  16'sd12280;
-                        default: phase_coeff_q14 = -16'sd1800;
-                    endcase
-                end
-                1: begin
-                    case (tap)
-                        0: phase_coeff_q14 = -16'sd168;
-                        1: phase_coeff_q14 =  16'sd1880;
-                        2: phase_coeff_q14 =  16'sd15848;
-                        default: phase_coeff_q14 = -16'sd1176;
-                    endcase
-                end
-                2: begin
-                    case (tap)
-                        0: phase_coeff_q14 = -16'sd1176;
-                        1: phase_coeff_q14 =  16'sd15848;
-                        2: phase_coeff_q14 =  16'sd1880;
-                        default: phase_coeff_q14 = -16'sd168;
-                    endcase
-                end
-                default: begin
-                    case (tap)
-                        0: phase_coeff_q14 = -16'sd1800;
-                        1: phase_coeff_q14 =  16'sd12280;
-                        2: phase_coeff_q14 =  16'sd6984;
-                        default: phase_coeff_q14 = -16'sd1080;
-                    endcase
-                end
-            endcase
+            if (SCALE == 2) begin
+                case (phase)
+                    0: begin
+                        case (tap)
+                            0: phase_coeff_q14 = -16'sd576;
+                            1: phase_coeff_q14 =  16'sd4288;
+                            2: phase_coeff_q14 =  16'sd14400;
+                            default: phase_coeff_q14 = -16'sd1728;
+                        endcase
+                    end
+                    default: begin
+                        case (tap)
+                            0: phase_coeff_q14 = -16'sd1728;
+                            1: phase_coeff_q14 =  16'sd14400;
+                            2: phase_coeff_q14 =  16'sd4288;
+                            default: phase_coeff_q14 = -16'sd576;
+                        endcase
+                    end
+                endcase
+            end else begin
+                case (phase)
+                    0: begin
+                        case (tap)
+                            0: phase_coeff_q14 = -16'sd1080;
+                            1: phase_coeff_q14 =  16'sd6984;
+                            2: phase_coeff_q14 =  16'sd12280;
+                            default: phase_coeff_q14 = -16'sd1800;
+                        endcase
+                    end
+                    1: begin
+                        case (tap)
+                            0: phase_coeff_q14 = -16'sd168;
+                            1: phase_coeff_q14 =  16'sd1880;
+                            2: phase_coeff_q14 =  16'sd15848;
+                            default: phase_coeff_q14 = -16'sd1176;
+                        endcase
+                    end
+                    2: begin
+                        case (tap)
+                            0: phase_coeff_q14 = -16'sd1176;
+                            1: phase_coeff_q14 =  16'sd15848;
+                            2: phase_coeff_q14 =  16'sd1880;
+                            default: phase_coeff_q14 = -16'sd168;
+                        endcase
+                    end
+                    default: begin
+                        case (tap)
+                            0: phase_coeff_q14 = -16'sd1800;
+                            1: phase_coeff_q14 =  16'sd12280;
+                            2: phase_coeff_q14 =  16'sd6984;
+                            default: phase_coeff_q14 = -16'sd1080;
+                        endcase
+                    end
+                endcase
+            end
         end
     endfunction
 
@@ -398,10 +420,17 @@ module span_tinyspan_w8a8_bicubic_base_x4_streamed #(
         integer ty0;
         integer ty1;
         begin
-            sx_phase = out_x & 3;
-            sy_phase = out_y & 3;
-            src_x_floor = (out_x >>> 2) + ((sx_phase < 2) ? -1 : 0);
-            src_y_floor = (out_y >>> 2) + ((sy_phase < 2) ? -1 : 0);
+            if (SCALE == 2) begin
+                sx_phase = out_x & 1;
+                sy_phase = out_y & 1;
+                src_x_floor = (out_x >>> 1) + ((sx_phase < 1) ? -1 : 0);
+                src_y_floor = (out_y >>> 1) + ((sy_phase < 1) ? -1 : 0);
+            end else begin
+                sx_phase = out_x & 3;
+                sy_phase = out_y & 3;
+                src_x_floor = (out_x >>> 2) + ((sx_phase < 2) ? -1 : 0);
+                src_y_floor = (out_y >>> 2) + ((sy_phase < 2) ? -1 : 0);
+            end
             ty0 = pair_index * 2;
             ty1 = ty0 + 1;
 

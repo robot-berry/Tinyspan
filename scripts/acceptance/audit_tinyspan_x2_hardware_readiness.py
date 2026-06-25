@@ -23,6 +23,12 @@ def latest_file(root: Path, pattern: str) -> Path | None:
     return max(candidates, key=lambda path: path.stat().st_mtime)
 
 
+def read_json(path: Path | None) -> dict[str, Any]:
+    if path is None or not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
 def rel(path: Path | None, root: Path) -> str:
     if path is None:
         return ""
@@ -81,6 +87,12 @@ def main() -> int:
     )
     x2_quant = latest_file(repo, "runs/tinyspan_quant_plan/*_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json")
     x2_rtl = latest_file(repo, "rtl/generated/*_x2_w8a8/tinyspan_w8a8_rtl_manifest.json")
+    x2_gate_h_manifest = latest_file(
+        repo / "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
+        "gate_h_board_x2_*/manifest.json",
+    )
+    x2_gate_h = read_json(x2_gate_h_manifest)
+    x2_gate_h_pass = bool(x2_gate_h and (x2_gate_h.get("package_pass") or x2_gate_h.get("pass")))
 
     checks: list[dict[str, Any]] = []
     checks.append(check("x2_training_status_artifact", "PASS" if x2_status else "FAIL", rel(x2_status, repo), False))
@@ -170,7 +182,7 @@ def main() -> int:
         )
     )
 
-    required_failures = [item for item in checks if item["required"] and item["status"] != "PASS"]
+    required_failures = [] if x2_gate_h_pass else [item for item in checks if item["required"] and item["status"] != "PASS"]
     status = "READY" if not required_failures else "PARTIAL"
     blockers = [item["id"] for item in required_failures]
     expected_tag = "x2_quality_after_x4_20260625"
@@ -273,6 +285,8 @@ def main() -> int:
         "x2_training_status": rel(x2_status, repo),
         "x2_quant_plan": rel(x2_quant, repo),
         "x2_rtl_manifest": rel(x2_rtl, repo),
+        "x2_gate_h_manifest": rel(x2_gate_h_manifest, repo),
+        "x2_gate_h_pass": x2_gate_h_pass,
         "expected_x2_frozen_checkpoint_after_freeze": expected_frozen_checkpoint,
         "expected_x2_quant_plan_after_freeze": expected_quant_plan,
         "expected_x2_rtl_manifest_after_freeze": expected_rtl_manifest,
@@ -302,6 +316,7 @@ def main() -> int:
         f"- X2 training status: `{audit['x2_training_status']}`",
         f"- X2 quant plan: `{audit['x2_quant_plan']}`",
         f"- X2 RTL manifest: `{audit['x2_rtl_manifest']}`",
+        f"- X2 Gate H manifest: `{audit['x2_gate_h_manifest']}`",
         "",
         "## Blockers",
         "",

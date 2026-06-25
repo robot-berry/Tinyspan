@@ -111,7 +111,7 @@ def build_audit(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
         item(
             "training",
             "训练说明文档及源代码",
-            "PARTIAL" if x2_status and x2_status.get("status") == "training_running" else "BLOCKED",
+            "PASS" if x2_ready else "PARTIAL" if x2_status and x2_status.get("status") == "training_running" else "BLOCKED",
             evidence(
                 repo_root,
                 [
@@ -122,8 +122,8 @@ def build_audit(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
                     str((x2_status_path or Path("")).relative_to(repo_root)) if x2_status_path else "",
                 ],
             ),
-            "X4 训练/冻结材料已有基线；X2 独立训练正在运行但尚未完成。",
-            "等待 X2 训练完成后运行 post-training prep，生成冻结和量化证据。",
+            "X2 独立训练、冻结 checkpoint、量化和上板交付证据已按 Gate H manifest 闭合。" if x2_ready else "X4 训练/冻结材料已有基线；X2 独立训练正在运行但尚未完成。",
+            "汇总 X2/X4 最终交付材料。" if x2_ready else "等待 X2 训练完成后运行 post-training prep，生成冻结和量化证据。",
         )
     )
     items.append(

@@ -1,0 +1,69 @@
+{
+  "software": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\pytorch_training_sr.png",
+  "fixed": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\software_tiled_fixed_point_sr.png",
+  "board": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626\\board_sr_a53_equal_to_fixed.png",
+  "preview": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626\\tinyspan_board_software_preview.png",
+  "diff_heatmap": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626\\diff_heatmap.png",
+  "mismatch_bytes": 0,
+  "total_bytes": 2764800,
+  "max_channel_diff": 0,
+  "software_size": [
+    1280,
+    720
+  ],
+  "fixed_size": [
+    1280,
+    720
+  ],
+  "board_size": [
+    1280,
+    720
+  ],
+  "size_match": true,
+  "max_allowed_diff": 0,
+  "max_allowed_mismatch_bytes": 0,
+  "board_vs_fixed": {
+    "mismatch_bytes": 0,
+    "total_bytes": 2764800,
+    "max_channel_diff": 0,
+    "ref_size": [
+      1280,
+      720
+    ],
+    "actual_size": [
+      1280,
+      720
+    ],
+    "size_match": true
+  },
+  "board_vs_training": {
+    "mismatch_bytes": 1666116,
+    "total_bytes": 2764800,
+    "max_channel_diff": 41,
+    "ref_size": [
+      1280,
+      720
+    ],
+    "actual_size": [
+      1280,
+      720
+    ],
+    "size_match": true
+  },
+  "fixed_vs_training": {
+    "mismatch_bytes": 1666116,
+    "total_bytes": 2764800,
+    "max_channel_diff": 41,
+    "ref_size": [
+      1280,
+      720
+    ],
+    "actual_size": [
+      1280,
+      720
+    ],
+    "size_match": true
+  },
+  "board_vs_fixed_pass": true,
+  "pass": true
+}

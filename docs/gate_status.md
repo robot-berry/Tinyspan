@@ -1,15 +1,13 @@
 # TinySPAN 赛题完成状态
 
-更新时间：`2026-06-25T17:27:09`
+更新时间：`2026-06-26T06:31:01`
 
 当前硬件安全基线：`c32b4_30fps_frozen_20260613`
 Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`
 
 ## 总体结论
 
-- `NOT_COMPLETE`：X4 子任务已经达到可交付状态；整赛题仍缺 X2 独立证据。
-- X4 Gate H：`30.409639424076744fps`，`0/2764800` mismatch。
-- X2 训练：epoch `1`，step `2243/51480`。
+- `PASS`：X2/X4 独立证据均已闭合。
 
 ## Gate 状态
 
@@ -24,7 +22,7 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 | F TinySPAN 板卡冒烟测试 | `PASS` | X4 32x32 上板 smoke PASS；perf-only `1831.14409883295fps`，mismatch `0/49152`。 | 保留 32x32 smoke 作为小图回归门禁。 |
 | G TinySPAN 图像一致性可视化验证 | `PASS` | X4 32x32 board-vs-fixed byte-exact，并已生成整帧 tile64 固定点预览/heatmap。 | 展示材料可继续补 board PNG、显示输出或 SD 写回图。 |
 | H TinySPAN X4 最终 720p30 验收 | `PASS_X4` | X4 整帧上板验收闭合：`30.409639424076744fps`，mismatch `0/2764800`，max diff `0`。 | X4 子任务可交付；整赛题继续补 X2 独立证据。 |
-| X2 X2 独立证据包 | `PARTIAL` | X2 正式训练运行中；epoch `1`，step `2243/51480`，progress `4.357%`。 | 训练完成后冻结、量化、导出 RTL、生成 bitstream 并上板验证。 |
+| X2 X2 独立证据包 | `PASS` | X2 Gate H 整帧上板验收闭合：`32.86048226988138fps`，mismatch `0/2764800`，max diff `0`。 | 汇总 X2/X4 最终交付材料。 |
 
 ## X4 可交付边界
 
@@ -34,6 +32,6 @@ Checkpoint SHA256：`6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF33
 
 ## 未闭合项
 
-- X2 独立冻结 checkpoint、量化计划、RTL、bitstream、真实板上输出和 `>=30fps` 证据仍未完成。
+- 无。X2/X4 Gate H 均已闭合。
 
 本文件由 `scripts/acceptance/update_workflow_status.py` 生成；该脚本只读 artifact，不启动 Vivado、JTAG、板卡或训练。

@@ -50,9 +50,28 @@ foreach src $rtl_sources {
 set_property top sr_ddr_tinyspan_x4_tile_writer_endpoint [current_fileset]
 update_compile_order -fileset sources_1
 
-puts "TINYSPAN_DDR_ENDPOINT_STAGE=rtl_elaboration"
-synth_design -rtl \
+set synth_args [list \
+    -rtl \
     -top sr_ddr_tinyspan_x4_tile_writer_endpoint \
-    -part xczu19eg-ffvc1760-2-i
+    -part xczu19eg-ffvc1760-2-i \
+]
+foreach {env_name generic_name} {
+    PS_TINYSPAN_DDR_X4_SCALE SCALE
+    PS_TINYSPAN_DDR_X4_IMG_W DEFAULT_IMG_W
+    PS_TINYSPAN_DDR_X4_IMG_H DEFAULT_IMG_H
+    PS_TINYSPAN_DDR_X4_TILE_W TILE_W
+    PS_TINYSPAN_DDR_X4_TILE_H TILE_H
+    PS_TINYSPAN_DDR_X4_USE_SERIAL_BASE USE_SERIAL_BASE
+    PS_TINYSPAN_DDR_X4_BASE_Q31 BASE_Q31
+    PS_TINYSPAN_DDR_X4_Q16_MULT Q16_MULT
+} {
+    if {[info exists ::env($env_name)]} {
+        lappend synth_args -generic "${generic_name}=$::env($env_name)"
+        puts "TINYSPAN_DDR_ENDPOINT_GENERIC_${generic_name}=$::env($env_name)"
+    }
+}
+
+puts "TINYSPAN_DDR_ENDPOINT_STAGE=rtl_elaboration"
+synth_design {*}$synth_args
 puts "PASS sr_ddr_tinyspan_x4_tile_writer_endpoint rtl_elaboration"
 quit

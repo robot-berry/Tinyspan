@@ -1,23 +1,23 @@
 # TinySPAN X2 Hardware Readiness
 
-- status: `PARTIAL`
-- generated at: `2026-06-25T21:09:16`
+- status: `READY`
+- generated at: `2026-06-26T06:31:01`
 - X2 training status: `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json`
-- X2 quant plan: ``
-- X2 RTL manifest: ``
+- X2 quant plan: `runs/tinyspan_quant_plan/x2_quality_after_x4_20260625_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json`
+- X2 RTL manifest: `rtl/generated/tinyspan_c32b4_x2_quality_after_x4_20260625_x2_w8a8/tinyspan_w8a8_rtl_manifest.json`
+- X2 Gate H manifest: `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626/manifest.json`
 
 ## Blockers
 
-- `x2_quant_plan_exists`
-- `x2_rtl_manifest_exists`
+- none
 
 ## Checks
 
 | Check | Required | Status | Detail |
 | --- | --- | --- | --- |
 | `x2_training_status_artifact` | `False` | `PASS` | `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json` |
-| `x2_quant_plan_exists` | `True` | `FAIL` | `` |
-| `x2_rtl_manifest_exists` | `True` | `FAIL` | `` |
+| `x2_quant_plan_exists` | `True` | `PASS` | `runs/tinyspan_quant_plan/x2_quality_after_x4_20260625_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json` |
+| `x2_rtl_manifest_exists` | `True` | `PASS` | `rtl/generated/tinyspan_c32b4_x2_quality_after_x4_20260625_x2_w8a8/tinyspan_w8a8_rtl_manifest.json` |
 | `x2_bicubic_base_rtl_exists` | `True` | `PASS` | `rtl/tinyspan_core/span_tinyspan_w8a8_bicubic_base_x2_streamed.v` |
 | `board_shell_scale_parameterized` | `True` | `PASS` | `rtl/board_wrapper/sr_tile_tinyspan_x4_writer_shell.v contains 'parameter integer SCALE'` |
 | `ddr_endpoint_scale_parameterized` | `True` | `PASS` | `rtl/board_wrapper/sr_ddr_tinyspan_x4_tile_writer_endpoint.v contains 'parameter integer SCALE'` |

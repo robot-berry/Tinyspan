@@ -55,6 +55,10 @@ module sr_tile_output_writer #(
     reg [ADDR_W-1:0] output_base;
     reg [COORD_W-1:0] out_x;
     reg [COORD_W-1:0] out_y;
+    reg wr_valid_q;
+    reg [ADDR_W-1:0] wr_addr_q;
+    reg [DATA_W-1:0] wr_data_q;
+    reg wr_last_q;
 
     wire [COORD_W-1:0] hr_valid_w = valid_w * SCALE_C;
     wire [COORD_W-1:0] hr_valid_h = valid_h * SCALE_C;
@@ -63,7 +67,8 @@ module sr_tile_output_writer #(
     wire [COORD_W-1:0] hr_tile_y = tile_y * SCALE_C;
     wire command_bad = (cmd_image_w == 0) || (cmd_valid_w == 0) || (cmd_valid_h == 0) ||
                        (cmd_tile_x >= cmd_image_w);
-    wire write_fire = s_valid && s_ready;
+    wire write_accept = s_valid && s_ready;
+    wire wr_fire = wr_valid_q && wr_ready;
     wire last_pixel = (out_x == (hr_valid_w - {{(COORD_W-1){1'b0}}, 1'b1})) &&
                       (out_y == (hr_valid_h - {{(COORD_W-1){1'b0}}, 1'b1}));
     wire end_row = (out_x == (hr_valid_w - {{(COORD_W-1){1'b0}}, 1'b1}));
@@ -75,10 +80,10 @@ module sr_tile_output_writer #(
     wire [MUL_W-1:0] byte_offset = pixel_index * BYTES_PER_PIXEL;
 
     assign cmd_ready = (state == ST_IDLE);
-    assign s_ready = (state == ST_WRITE) && wr_ready;
-    assign wr_valid = (state == ST_WRITE) && s_valid;
-    assign wr_addr = output_base + byte_offset[ADDR_W-1:0];
-    assign wr_data = s_data;
+    assign s_ready = (state == ST_WRITE) && !wr_last_q && (!wr_valid_q || wr_ready);
+    assign wr_valid = wr_valid_q;
+    assign wr_addr = wr_addr_q;
+    assign wr_data = wr_data_q;
 
     always @(posedge clk) begin
         if (rst) begin
@@ -91,6 +96,10 @@ module sr_tile_output_writer #(
             output_base <= {ADDR_W{1'b0}};
             out_x <= {COORD_W{1'b0}};
             out_y <= {COORD_W{1'b0}};
+            wr_valid_q <= 1'b0;
+            wr_addr_q <= {ADDR_W{1'b0}};
+            wr_data_q <= {DATA_W{1'b0}};
+            wr_last_q <= 1'b0;
             busy <= 1'b0;
             done <= 1'b0;
             error <= 1'b0;
@@ -112,6 +121,8 @@ module sr_tile_output_writer #(
                             output_base <= cmd_output_base;
                             out_x <= {COORD_W{1'b0}};
                             out_y <= {COORD_W{1'b0}};
+                            wr_valid_q <= 1'b0;
+                            wr_last_q <= 1'b0;
                             busy <= 1'b1;
                             state <= ST_WRITE;
                         end
@@ -120,11 +131,30 @@ module sr_tile_output_writer #(
 
                 ST_WRITE: begin
                     busy <= 1'b1;
-                    if (write_fire) begin
+                    if (wr_fire && wr_last_q) begin
+                        wr_valid_q <= 1'b0;
+                        wr_last_q <= 1'b0;
+                        done <= 1'b1;
+                        busy <= 1'b0;
+                        state <= ST_IDLE;
+                    end else begin
+                        if (wr_fire) begin
+                            wr_valid_q <= 1'b0;
+                            wr_last_q <= 1'b0;
+                        end
+
+                        if (write_accept) begin
+                            wr_valid_q <= 1'b1;
+                            wr_addr_q <= output_base + byte_offset[ADDR_W-1:0];
+                            wr_data_q <= s_data;
+                            wr_last_q <= last_pixel;
+                        end
+                    end
+
+                    if (write_accept) begin
                         if (last_pixel) begin
-                            done <= 1'b1;
-                            busy <= 1'b0;
-                            state <= ST_IDLE;
+                            out_x <= out_x;
+                            out_y <= out_y;
                         end else if (end_row) begin
                             out_x <= {COORD_W{1'b0}};
                             out_y <= out_y + {{(COORD_W-1){1'b0}}, 1'b1};

@@ -17,6 +17,8 @@ module sr_tile_tinyspan_x4_writer_shell #(
     parameter integer SCALE = 4,
     parameter integer BYTES_PER_PIXEL = 3,
     parameter integer USE_SERIAL_BASE = 0,
+    parameter integer BASE_Q31 = 2007717611,
+    parameter integer Q16_MULT = 140748,
     parameter integer HR_TILE_W = TILE_W * SCALE,
     parameter integer HR_TILE_H = TILE_H * SCALE
 ) (
@@ -189,7 +191,9 @@ module sr_tile_tinyspan_x4_writer_shell #(
         .IMG_W(TILE_W),
         .IMG_H(TILE_H),
         .SCALE(SCALE),
-        .USE_SERIAL_BASE(USE_SERIAL_BASE)
+        .USE_SERIAL_BASE(USE_SERIAL_BASE),
+        .BASE_Q31(BASE_Q31),
+        .Q16_MULT(Q16_MULT)
     ) u_tinyspan (
         .clk(clk),
         .rst(rst),

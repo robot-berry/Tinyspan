@@ -1,0 +1,112 @@
+{
+  "target_name": "TinySPAN X2 720p30",
+  "pass": true,
+  "compare_pass": true,
+  "fps_pass": true,
+  "resources_pass": true,
+  "target_fps": 30.0,
+  "measured_fps": 32.86048226988138,
+  "checkpoint": "runs\\tinyspan_frozen_candidates\\x2_quality_after_x4_20260625\\student_final.pt",
+  "quant_plan": "runs\\tinyspan_quant_plan\\x2_quality_after_x4_20260625_x2_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+  "bitstream": "vivado\\bitstreams\\tinyspan_x2_c32b4_x2_quality_after_x4_20260625_tile64_o16_wrpipe_rgbpipe_f188_div8_perf_board.bit",
+  "board_log": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626\\implementation_resources.json",
+  "board_resources": {
+    "bitstream": "G:\\UESTC\\feitengspan1\\Tinyspan\\vivado\\bitstreams\\tinyspan_x2_c32b4_x2_quality_after_x4_20260625_tile64_o16_wrpipe_rgbpipe_f188_div8_perf_board.bit",
+    "bitstream_sha256": "2F9FA110D282D14D857777D10F83DDDB0124A14F059C434AFC9C442A3DF62B48",
+    "vivado_project": "G:\\UESTC\\feitengspan1\\Tinyspan\\vivado\\x2_640x360_t64_f188_div8_parallel_x2q_o16_wrpipe_rgbpipe_perf_20260626_0548",
+    "utilization_report": "G:\\UESTC\\feitengspan1\\Tinyspan\\vivado\\x2_640x360_t64_f188_div8_parallel_x2q_o16_wrpipe_rgbpipe_perf_20260626_0548\\reports\\ps_tinyspan_ddr_x4_utilization_impl.rpt",
+    "timing_report": "G:\\UESTC\\feitengspan1\\Tinyspan\\vivado\\x2_640x360_t64_f188_div8_parallel_x2q_o16_wrpipe_rgbpipe_perf_20260626_0548\\reports\\ps_tinyspan_ddr_x4_timing_impl.rpt",
+    "power_report": "G:\\UESTC\\feitengspan1\\Tinyspan\\vivado\\x2_640x360_t64_f188_div8_parallel_x2q_o16_wrpipe_rgbpipe_perf_20260626_0548\\reports\\ps_tinyspan_ddr_x4_power_impl.rpt",
+    "clb_luts": "6647",
+    "clb_registers": "5031",
+    "block_ram_tile": "27",
+    "dsps": "100",
+    "uram": "0",
+    "wns_ns": "0.002",
+    "whs_ns": "0.014",
+    "pl_freq_mhz": 187.512,
+    "clock_period_ns": 5.333,
+    "total_on_chip_power_w": "4.053",
+    "dynamic_power_w": "2.839",
+    "device_static_power_w": "1.214",
+    "a53_compare_summary": "G:\\UESTC\\feitengspan1\\Tinyspan\\board_runs\\tinyspan_ps_ddr_x4_a53_compare\\x2_640x360_tile64_o16_wrpipe_rgbpipe_f187p512_reprogram_20260626_0618\\tinyspan_a53_compare_summary.json",
+    "a53_compare_log": "G:\\UESTC\\feitengspan1\\Tinyspan\\board_runs\\tinyspan_ps_ddr_x4_a53_compare\\x2_640x360_tile64_o16_wrpipe_rgbpipe_f187p512_reprogram_20260626_0618\\tinyspan_a53_compare.log",
+    "perf_frame_cycles": 5706307,
+    "perf_frame_done": 1,
+    "perf_e2e_cycles": 5706307,
+    "tiles_done": "60",
+    "measured_fps": 32.86048226988138,
+    "mismatch_bytes": 0,
+    "total_bytes": 2764800,
+    "max_channel_diff": 0,
+    "route": "TinySPAN PS/DDR X2 via board zynq_ultra_ps_e / PS DDR controller IP; A53 in-DDR full-frame compare",
+    "no_custom_ddr_controller_or_phy": true
+  },
+  "required_resource_fields": [
+    "utilization_report",
+    "timing_report",
+    "clb_luts",
+    "clb_registers",
+    "block_ram_tile",
+    "dsps",
+    "wns_ns",
+    "whs_ns",
+    "perf_frame_cycles",
+    "perf_e2e_cycles",
+    "measured_fps"
+  ],
+  "missing_resource_fields": [],
+  "compare_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626\\tinyspan_board_software_summary.json",
+  "software": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\pytorch_training_sr.png",
+  "fixed": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\software_tiled_fixed_point_sr.png",
+  "board": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626\\board_sr_a53_equal_to_fixed.png",
+  "preview": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626\\tinyspan_board_software_preview.png",
+  "mismatch_bytes": 0,
+  "total_bytes": 2764800,
+  "max_channel_diff": 0,
+  "max_allowed_diff": 0,
+  "max_allowed_mismatch_bytes": 0,
+  "board_vs_fixed": {
+    "mismatch_bytes": 0,
+    "total_bytes": 2764800,
+    "max_channel_diff": 0,
+    "ref_size": [
+      1280,
+      720
+    ],
+    "actual_size": [
+      1280,
+      720
+    ],
+    "size_match": true
+  },
+  "board_vs_training": {
+    "mismatch_bytes": 1666116,
+    "total_bytes": 2764800,
+    "max_channel_diff": 41,
+    "ref_size": [
+      1280,
+      720
+    ],
+    "actual_size": [
+      1280,
+      720
+    ],
+    "size_match": true
+  },
+  "fixed_vs_training": {
+    "mismatch_bytes": 1666116,
+    "total_bytes": 2764800,
+    "max_channel_diff": 41,
+    "ref_size": [
+      1280,
+      720
+    ],
+    "actual_size": [
+      1280,
+      720
+    ],
+    "size_match": true
+  },
+  "board_vs_fixed_pass": true
+}

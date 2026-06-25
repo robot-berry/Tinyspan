@@ -11,6 +11,11 @@ param(
   [string]$InputBase = "0x10000000",
   [string]$OutputBase = "0x11000000",
   [int]$MDataWidth = 32,
+  [int64]$BaseQ31 = 2007717611,
+  [int]$Q16Mult = 140748,
+  [string]$Pl0SrcSel = "",
+  [int]$Pl0Divisor0 = 0,
+  [int]$Pl0Divisor1 = 0,
   [int]$MaxThreads = 1,
   [string]$SynthDirective = "RuntimeOptimized",
   [string]$PlaceDirective = "Default",
@@ -58,6 +63,17 @@ try {
   $env:PS_TINYSPAN_DDR_X4_INPUT_BASE = "$InputBase"
   $env:PS_TINYSPAN_DDR_X4_OUTPUT_BASE = "$OutputBase"
   $env:PS_TINYSPAN_DDR_X4_M_AXI_DATA_W = "$MDataWidth"
+  $env:PS_TINYSPAN_DDR_X4_BASE_Q31 = "$BaseQ31"
+  $env:PS_TINYSPAN_DDR_X4_Q16_MULT = "$Q16Mult"
+  if ($Pl0SrcSel -ne "") {
+    $env:PS_TINYSPAN_DDR_X4_PL0_SRCSEL = "$Pl0SrcSel"
+  }
+  if ($Pl0Divisor0 -gt 0) {
+    $env:PS_TINYSPAN_DDR_X4_PL0_DIVISOR0 = "$Pl0Divisor0"
+  }
+  if ($Pl0Divisor1 -gt 0) {
+    $env:PS_TINYSPAN_DDR_X4_PL0_DIVISOR1 = "$Pl0Divisor1"
+  }
   $env:PS_TINYSPAN_DDR_X4_USE_SERIAL_BASE = if ($UseSerialBase) { "1" } else { "0" }
   $env:PS_TINYSPAN_DDR_X4_MAX_THREADS = "$MaxThreads"
   $env:PS_TINYSPAN_DDR_X4_SYNTH_DIRECTIVE = "$SynthDirective"

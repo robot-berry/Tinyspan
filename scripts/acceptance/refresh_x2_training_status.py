@@ -39,6 +39,13 @@ def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
+def latest_file(root: Path, pattern: str) -> Path | None:
+    candidates = [path for path in root.glob(pattern) if path.is_file()]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda path: path.stat().st_mtime)
+
+
 def read_latest_metric(metrics: Path) -> dict[str, Any]:
     if not metrics.exists():
         return {}
@@ -286,9 +293,17 @@ def main() -> int:
     remaining = max(0, args.total_steps - step)
     eta = timespan_text(remaining / speed) if speed > 0 else ""
     hints = recent_error_hints(train_stderr)
-    status["status"] = "training_running"
     status["updated_at"] = datetime.now().isoformat(timespec="seconds")
     process_info = find_training_processes(output.name)
+    final_checkpoint = output / "student_last.pt"
+    training_complete = (
+        step >= args.total_steps
+        and final_checkpoint.exists()
+        and not process_info.get("launcher_pid")
+        and not process_info.get("python_pid")
+    )
+    formal["status"] = "COMPLETED" if training_complete else "RUNNING"
+    status["status"] = "PASS" if training_complete else "training_running"
     formal["observed_processes"] = {
         "launcher_pid": process_info.get("launcher_pid"),
         "python_pid": process_info.get("python_pid"),
@@ -326,12 +341,25 @@ def main() -> int:
         "stderr_error_hints": "none" if not hints else hints,
     }
     formal["latest_artifacts"] = {
+        "student_last": file_info(final_checkpoint),
         "student_latest": file_info(output / "student_latest.pt"),
         "preview": file_info(output / "video_distill_latest_preview.png"),
         "metrics": file_info(output / "metrics.csv"),
         "stdout": file_info(train_stdout),
         "stderr": file_info(train_stderr),
     }
+    gate_h_manifest = latest_file(
+        tinyspan_root / "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
+        "gate_h_board_x2_*/manifest.json",
+    )
+    if training_complete:
+        boundary = status.setdefault("acceptance_boundary", {})
+        if gate_h_manifest:
+            boundary["status"] = "ACCEPTED"
+            boundary["missing"] = []
+            boundary["gate_h_manifest"] = str(gate_h_manifest)
+        else:
+            boundary["status"] = "TRAINING_COMPLETE_NOT_ACCEPTED"
     status_json.parent.mkdir(parents=True, exist_ok=True)
     status_json.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_markdown(status_md, status)

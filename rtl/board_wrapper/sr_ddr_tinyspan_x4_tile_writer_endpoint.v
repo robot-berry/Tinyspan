@@ -42,7 +42,9 @@ module sr_ddr_tinyspan_x4_tile_writer_endpoint #(
     parameter integer COORD_W = 16,
     parameter integer ADDR_W = 32,
     parameter integer BYTES_PER_PIXEL = 4,
-    parameter integer USE_SERIAL_BASE = 0
+    parameter integer USE_SERIAL_BASE = 0,
+    parameter integer BASE_Q31 = 2007717611,
+    parameter integer Q16_MULT = 140748
 ) (
     input  wire                                  s_axi_aclk,
     input  wire                                  s_axi_aresetn,
@@ -182,7 +184,9 @@ module sr_ddr_tinyspan_x4_tile_writer_endpoint #(
         .ADDR_W(ADDR_W),
         .SCALE(SCALE),
         .BYTES_PER_PIXEL(BYTES_PER_PIXEL),
-        .USE_SERIAL_BASE(USE_SERIAL_BASE)
+        .USE_SERIAL_BASE(USE_SERIAL_BASE),
+        .BASE_Q31(BASE_Q31),
+        .Q16_MULT(Q16_MULT)
     ) u_tile_writer (
         .clk(s_axi_aclk),
         .rst(bridge_rst),

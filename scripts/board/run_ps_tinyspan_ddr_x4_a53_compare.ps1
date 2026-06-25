@@ -9,7 +9,7 @@ param(
   [int]$ImgW = 320,
   [int]$ImgH = 180,
   [int]$Scale = 4,
-  [int]$PlFreqMhz = 155,
+  [double]$PlFreqMhz = 155.0,
   [string]$CtrlBase = "0xA0000000",
   [string]$InputBase = "0x10000000",
   [string]$OutputBase = "0x11000000",
@@ -232,6 +232,10 @@ try {
   }
 
   $frameCycles = 5097068
+  $frameCyclesFromBoard = Get-LogValue $text "FRAME_CYCLES"
+  if (-not [string]::IsNullOrWhiteSpace($frameCyclesFromBoard) -and [int64]$frameCyclesFromBoard -gt 0) {
+    $frameCycles = [int64]$frameCyclesFromBoard
+  }
   $fps = ($PlFreqMhz * 1000000.0) / [double]$frameCycles
   $summary = [ordered]@{
     status = "PASS"
@@ -256,12 +260,17 @@ try {
     mismatch_bytes = Get-LogValue $text "MISMATCH_BYTES"
     total_bytes = Get-LogValue $text "TOTAL_BYTES"
     max_diff = Get-LogValue $text "MAX_DIFF"
+    frame_status_reg = Get-LogHexValue $text "FRAME_STATUS"
+    frame_error_reg = Get-LogHexValue $text "FRAME_ERROR"
+    frame_cycles = $frameCycles
+    tiles_done = Get-LogValue $text "TILES_DONE"
+    fps_from_frame_cycles = $fps
     first_mismatch_pixel = Get-LogValue $text "FIRST_MISMATCH_PIXEL"
     first_expected = Get-LogHexValue $text "FIRST_EXPECTED"
     first_actual = Get-LogHexValue $text "FIRST_ACTUAL"
     compare_pass = $true
     throughput_evidence = [ordered]@{
-      source = "x4_320x180_tile64_fifo_f155_skipread_20260625_0412"
+      source = "same A53 compare board run"
       frame_cycles = $frameCycles
       fps_from_frame_cycles = $fps
     }
@@ -279,7 +288,8 @@ try {
     "- Fixed wait: ${WaitMs} ms",
     "- Mismatch bytes: $($summary.mismatch_bytes) / $($summary.total_bytes)",
     "- Max diff: $($summary.max_diff)",
-    "- Throughput evidence: $($fps) fps from prior SKIP-read frame_cycles=$frameCycles @ ${PlFreqMhz}MHz",
+    "- Frame cycles: $frameCycles",
+    "- FPS from frame cycles @ ${PlFreqMhz}MHz: $fps",
     "- XSCT log: $xsctLog",
     "- Summary JSON: $summaryJson"
   ) | Set-Content -Path $summaryMd -Encoding UTF8

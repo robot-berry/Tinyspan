@@ -1044,17 +1044,20 @@ python .\scripts\acceptance\check_contest_delivery_package.py `
 该校验只读取 `contest_completion_status.json`、`contest_delivery_audit.json`、`contest_delivery_index.json`、
 X2/X4 Gate H manifest、图像验证材料和文档/源码索引，不启动 Vivado、JTAG、XSCT、板卡或训练流程。
 
-## 11. 2026-06-25 当前状态节点
+## 11. 2026-06-26 当前状态节点
 
-截至 2026-06-25 23:10，本轮 TinySPAN 状态如下：
+截至 2026-06-26 06:31，本轮 TinySPAN 赛题交付状态如下：
 
-- X2 云端训练已完成：`runs/tinyspan_distill/video_x2_c32_b4_quality_after_x4_20260625`，最终 `epoch=13`、`step=51480`，冻结 checkpoint 来自 `student_last.pt`。
+- X2 云端训练已完成：`runs/tinyspan_distill/video_x2_c32_b4_quality_after_x4_20260625`，最终 `epoch=13`、`step=51480 / 51480`，冻结 checkpoint 为 `runs/tinyspan_frozen_candidates/x2_quality_after_x4_20260625/student_final.pt`。
 - X2 全量 REDS `val_sharp` 软件质量评估已完成：`3000` 张，student PSNR mean `31.121459919373763 dB`，bicubic PSNR mean `30.853986135469682 dB`，gain `0.26747378390408016 dB`，满足 X2 `>=30dB` 软件质量目标。
-- X2 软件质量候选包已重新打包为通过状态：`artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_quality_candidates/x2_quality_after_x4_20260625_cloud_eval/manifest.json`，`software_quality_gate_pass=true`，`missing_required=[]`。
 - X2 post-training prep 已完成：冻结 checkpoint、handoff、W8A8 quant plan、RTL export、`640x360 -> 1280x720` tile64 fixed reference 均已生成。
-- X2 仍未宣告赛题交付完成：还缺 X2 bitstream、真实板上输出、board-vs-fixed `0 mismatch`、真实 `>=30fps`、资源/WNS/PPA 和可查看板上图像证据。
-- X4 当前 submission node 仍作为可提交硬件安全基线保留，不被新的 X4 提质训练自动替换。
-- 按用户最新要求，X2 训练和 full-val 安全落地后，已启动新的 X4 提质训练支线：`runs/tinyspan_distill/video_x4_c32_b4_quality_after_x2_20260625`，云端训练进程已运行，并由 `scripts/cloud/watch_x4_training_then_eval.py` 监控；该支线目标仍是 full REDS val `>=28dB`，训练完成前不启动 Vivado/JTAG/XSCT/板卡。
+- X2 Gate H 上板验收已闭合：`artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626/manifest.json`，`PASS_X2`，`32.86048226988138fps @ 187.512MHz`，`mismatch=0 / 2764800`，`max_diff=0`。
+- X2 bitstream：`vivado/bitstreams/tinyspan_x2_c32b4_x2_quality_after_x4_20260625_tile64_o16_wrpipe_rgbpipe_f188_div8_perf_board.bit`，SHA256 `2F9FA110D282D14D857777D10F83DDDB0124A14F059C434AFC9C442A3DF62B48`。
+- X2 PPA：CLB LUT `6647`，CLB Register `5031`，DSP `100`，BRAM Tile `27`，URAM `0`，WNS `+0.002ns`，WHS `+0.014ns`，总功耗 `4.053W`。
+- X2 正确性证明采用 A53 bare-metal DDR 内对比：PL 输出和同一冻结 checkpoint/quant plan 的 fixed reference 在 DDR 中逐字节一致；可查看图 `board_sr_a53_equal_to_fixed.png` 是在 `0 mismatch` 证明后复制 fixed reference 作为等价视图，不是慢速整帧 JTAG 读回图。
+- X4 Gate H 仍采用当前可提交硬件安全基线：`gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/manifest.json`，`30.409639424076744fps`，`mismatch=0 / 2764800`，`max_diff=0`。
+- X4 后续画质提升可以在 X2 闭合后继续作为支线推进；已跑过的 `x4_quality_after_x2_20260625_cloud_eval` 未达到替换门槛，不替换当前 X4 submission baseline。新的 X4 提升训练只有重新完成冻结、量化、RTL/export、bitstream、真实板上 `0 mismatch` 和 `>=30fps` 后，才允许成为替代提交节点。
+- 只读交付包校验已通过：`docs/contest_delivery_package_check.md` 显示 `STATUS PASS`，`required_failed_count=0`；`contest_delivery_audit.json` 的 `accepted=true`。
 
 ## 12. 完成定义
 

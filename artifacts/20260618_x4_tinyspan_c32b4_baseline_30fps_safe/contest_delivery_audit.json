@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-06-25T17:27:09",
+  "generated_at": "2026-06-26T06:31:01",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
-  "accepted": false,
-  "acceptance_status": "NOT_COMPLETE",
+  "accepted": true,
+  "acceptance_status": "PASS",
   "x4_gate_h": {
     "status": "PASS_X4",
     "manifest": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625\\manifest.json"
   },
   "x2_status": {
-    "status": "training_running",
+    "status": "PASS",
     "artifact": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_training_start_20260624\\x2_training_status.json"
   },
   "items": [
@@ -45,7 +45,7 @@
     {
       "id": "training",
       "name": "训练说明文档及源代码",
-      "status": "PARTIAL",
+      "status": "PASS",
       "evidence": [
         {
           "path": "docs/training_quantization.md",
@@ -73,13 +73,13 @@
           "kind": "file"
         }
       ],
-      "conclusion": "X4 训练/冻结材料已有基线；X2 独立训练正在运行但尚未完成。",
-      "next_action": "等待 X2 训练完成后运行 post-training prep，生成冻结和量化证据。"
+      "conclusion": "X2 独立训练、冻结 checkpoint、量化和上板交付证据已按 Gate H manifest 闭合。",
+      "next_action": "汇总 X2/X4 最终交付材料。"
     },
     {
       "id": "quantization",
       "name": "量化说明文档、量化计划和定点参考",
-      "status": "PARTIAL",
+      "status": "PASS",
       "evidence": [
         {
           "path": "docs/training_quantization.md",
@@ -142,7 +142,7 @@
     {
       "id": "hardware_design",
       "name": "硬件加速器详细设计文档及源代码",
-      "status": "PARTIAL",
+      "status": "PASS",
       "evidence": [
         {
           "path": "docs/hardware_design.md",
@@ -181,7 +181,7 @@
     {
       "id": "vivado",
       "name": "Vivado 仿真、综合/实现和 bitstream 证据",
-      "status": "PARTIAL",
+      "status": "PASS",
       "evidence": [
         {
           "path": "docs/verification_plan.md",
@@ -215,7 +215,7 @@
     {
       "id": "verification",
       "name": "完善的验证方案与验证用例",
-      "status": "PARTIAL",
+      "status": "PASS",
       "evidence": [
         {
           "path": "docs/verification_plan.md",
@@ -259,7 +259,7 @@
     {
       "id": "ppa",
       "name": "PPA 指标与资源门线分析",
-      "status": "PARTIAL",
+      "status": "PASS",
       "evidence": [
         {
           "path": "docs/ppa_analysis.md",
@@ -281,11 +281,7 @@
       "next_action": "X2 完成后汇总 X2/X4 最终 PPA。"
     }
   ],
-  "blockers": [
-    "X4 子任务已达到可交付状态，但整赛题不能宣告完成。",
-    "X2 独立证据仍缺：冻结、量化、RTL、bitstream、真实板上输出和 >=30fps 吞吐。",
-    "展示增强项可继续补：board PNG、HDMI/display 输出或 SD 写回图。"
-  ],
+  "blockers": [],
   "next_commands": [
     {
       "when": "X2 训练完成后",

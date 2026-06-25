@@ -27,6 +27,8 @@ set input_base 0x10000000
 set output_base 0x11000000
 set m_axi_data_w 32
 set use_serial_base 0
+set base_q31 2007717611
+set q16_mult 140748
 
 foreach {env_name var_name} {
   PS_TINYSPAN_DDR_X4_IMG_W img_w
@@ -39,6 +41,8 @@ foreach {env_name var_name} {
   PS_TINYSPAN_DDR_X4_OUTPUT_BASE output_base
   PS_TINYSPAN_DDR_X4_M_AXI_DATA_W m_axi_data_w
   PS_TINYSPAN_DDR_X4_USE_SERIAL_BASE use_serial_base
+  PS_TINYSPAN_DDR_X4_BASE_Q31 base_q31
+  PS_TINYSPAN_DDR_X4_Q16_MULT q16_mult
 } {
   if {[info exists ::env($env_name)]} {
     set $var_name $::env($env_name)
@@ -178,6 +182,21 @@ if {$apply_ps_ref_ddr ne "0"} {
     puts "PS_TINYSPAN_DDR_X4_DDR_REF_STATUS=disabled"
 }
 
+set pl0_override_props [list]
+if {[info exists ::env(PS_TINYSPAN_DDR_X4_PL0_SRCSEL)] && $::env(PS_TINYSPAN_DDR_X4_PL0_SRCSEL) ne ""} {
+    lappend pl0_override_props CONFIG.PSU__CRL_APB__PL0_REF_CTRL__SRCSEL $::env(PS_TINYSPAN_DDR_X4_PL0_SRCSEL)
+}
+if {[info exists ::env(PS_TINYSPAN_DDR_X4_PL0_DIVISOR0)] && $::env(PS_TINYSPAN_DDR_X4_PL0_DIVISOR0) ne ""} {
+    lappend pl0_override_props CONFIG.PSU__CRL_APB__PL0_REF_CTRL__DIVISOR0 $::env(PS_TINYSPAN_DDR_X4_PL0_DIVISOR0)
+}
+if {[info exists ::env(PS_TINYSPAN_DDR_X4_PL0_DIVISOR1)] && $::env(PS_TINYSPAN_DDR_X4_PL0_DIVISOR1) ne ""} {
+    lappend pl0_override_props CONFIG.PSU__CRL_APB__PL0_REF_CTRL__DIVISOR1 $::env(PS_TINYSPAN_DDR_X4_PL0_DIVISOR1)
+}
+if {[llength $pl0_override_props] > 0} {
+    set_property -dict $pl0_override_props $ps
+    puts "PS_TINYSPAN_DDR_X4_PL0_OVERRIDE_PROPS=$pl0_override_props"
+}
+
 set ctrl_ic [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:* ctrl_ic]
 set_property -dict [list CONFIG.NUM_SI {1} CONFIG.NUM_MI {1}] $ctrl_ic
 
@@ -199,6 +218,8 @@ set_property -dict [list \
   CONFIG.SCALE $scale \
   CONFIG.BYTES_PER_PIXEL {4} \
   CONFIG.USE_SERIAL_BASE $use_serial_base \
+  CONFIG.BASE_Q31 $base_q31 \
+  CONFIG.Q16_MULT $q16_mult \
 ] $sr
 
 connect_bd_intf_net [get_bd_intf_pins ps/M_AXI_HPM0_FPD] [get_bd_intf_pins ctrl_ic/S00_AXI]
@@ -270,5 +291,7 @@ puts "PS_TINYSPAN_DDR_X4_TILE_W=$tile_w"
 puts "PS_TINYSPAN_DDR_X4_TILE_H=$tile_h"
 puts "PS_TINYSPAN_DDR_X4_SCALE=$scale"
 puts "PS_TINYSPAN_DDR_X4_PL_FREQ_MHZ=$pl_freq_mhz"
+puts "PS_TINYSPAN_DDR_X4_BASE_Q31=$base_q31"
+puts "PS_TINYSPAN_DDR_X4_Q16_MULT=$q16_mult"
 puts "PS_TINYSPAN_DDR_X4_DATA_PATH=PS DDR -> HP0 -> TinySPAN DDR endpoint M_AXI -> DDR"
 puts "PS_TINYSPAN_DDR_X4_DDR_POLICY=use ZynqMP PS DDR controller IP; no custom DDR controller or PHY"

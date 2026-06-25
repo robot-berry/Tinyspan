@@ -10,7 +10,7 @@
 // exactly over the int8 range for this frozen plan.
 module span_tinyspan_w8a8_base_add_equiv #(
     parameter integer ACT_W = 8,
-    parameter signed [32:0] BASE_Q31 = 33'sd2007717611
+    parameter integer BASE_Q31 = 2007717611
 ) (
     input  wire signed [3*ACT_W-1:0] learned_rgb_i,
     input  wire signed [3*ACT_W-1:0] base_rgb_i,

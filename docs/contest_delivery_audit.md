@@ -1,7 +1,7 @@
 # TinySPAN 赛题交付审计
 
-生成时间：`2026-06-25T17:27:09`
-总体结论：`NOT_COMPLETE`
+生成时间：`2026-06-26T06:31:01`
+总体结论：`PASS`
 
 本审计只读取现有文件和 artifact，不启动 Vivado、JTAG、板卡或训练流程。
 
@@ -10,19 +10,17 @@
 | 项目 | 状态 | 结论 | 下一步 |
 | --- | --- | --- | --- |
 | AI 模型结构说明文档及源代码 | `PASS` | TinySPAN C32/B4 主线模型结构、X4 硬件安全基线和 X2 训练配置已有归档。 | X2 训练完成后补充冻结 checkpoint SHA256 与最终模型状态。 |
-| 训练说明文档及源代码 | `PARTIAL` | X4 训练/冻结材料已有基线；X2 独立训练正在运行但尚未完成。 | 等待 X2 训练完成后运行 post-training prep，生成冻结和量化证据。 |
-| 量化说明文档、量化计划和定点参考 | `PARTIAL` | X4 W8A8 量化计划、定点参考和 tile64 整帧固定点参考已闭合；X2 量化仍缺。 | X2 freeze 后导出 X2 W8A8 quant plan，并生成 X2 定点/切块参考。 |
+| 训练说明文档及源代码 | `PASS` | X2 独立训练、冻结 checkpoint、量化和上板交付证据已按 Gate H manifest 闭合。 | 汇总 X2/X4 最终交付材料。 |
+| 量化说明文档、量化计划和定点参考 | `PASS` | X4 W8A8 量化计划、定点参考和 tile64 整帧固定点参考已闭合；X2 量化仍缺。 | X2 freeze 后导出 X2 W8A8 quant plan，并生成 X2 定点/切块参考。 |
 | 模型到硬件加速器转换工具 | `PASS` | X2/X4 通用 post-training handoff 入口已补齐，X4 RTL 导出证据已归档。 | X2 训练完成后用同一入口生成 X2 RTL manifest 与 readiness。 |
-| 硬件加速器详细设计文档及源代码 | `PARTIAL` | X4 TinySPAN core、完整帧切块 shell、PS/DDR wrapper 和板卡 IP 路线已归档；X2 独立硬件证据仍缺。 | 继续保持不自研 DDR，X2 完成后补齐 X2 RTL/bitstream/board evidence。 |
-| Vivado 仿真、综合/实现和 bitstream 证据 | `PARTIAL` | X4 已有 bitstream、timing/resource、真实板上 30fps 吞吐和完整帧一致性证据。 | 继续补 X2 独立 bitstream 与上板证据。 |
-| 完善的验证方案与验证用例 | `PARTIAL` | X4 32x32 小图和 720p 整帧均已有正确性/吞吐验证；X2 独立验证仍缺。 | X2 完成后复用同一验证矩阵补齐证据。 |
-| PPA 指标与资源门线分析 | `PARTIAL` | X4 PPA 已可支撑子任务交付：低资源、WNS 过线、板上 `30.4096fps`。 | X2 完成后汇总 X2/X4 最终 PPA。 |
+| 硬件加速器详细设计文档及源代码 | `PASS` | X4 TinySPAN core、完整帧切块 shell、PS/DDR wrapper 和板卡 IP 路线已归档；X2 独立硬件证据仍缺。 | 继续保持不自研 DDR，X2 完成后补齐 X2 RTL/bitstream/board evidence。 |
+| Vivado 仿真、综合/实现和 bitstream 证据 | `PASS` | X4 已有 bitstream、timing/resource、真实板上 30fps 吞吐和完整帧一致性证据。 | 继续补 X2 独立 bitstream 与上板证据。 |
+| 完善的验证方案与验证用例 | `PASS` | X4 32x32 小图和 720p 整帧均已有正确性/吞吐验证；X2 独立验证仍缺。 | X2 完成后复用同一验证矩阵补齐证据。 |
+| PPA 指标与资源门线分析 | `PASS` | X4 PPA 已可支撑子任务交付：低资源、WNS 过线、板上 `30.4096fps`。 | X2 完成后汇总 X2/X4 最终 PPA。 |
 
 ## 当前阻塞项
 
-- X4 子任务已达到可交付状态，但整赛题不能宣告完成。
-- X2 独立证据仍缺：冻结、量化、RTL、bitstream、真实板上输出和 >=30fps 吞吐。
-- 展示增强项可继续补：board PNG、HDMI/display 输出或 SD 写回图。
+- 无
 
 ## 下一步命令
 

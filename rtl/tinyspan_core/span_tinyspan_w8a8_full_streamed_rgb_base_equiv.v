@@ -11,7 +11,8 @@ module span_tinyspan_w8a8_full_streamed_rgb_base_equiv #(
     parameter integer IMG_W = 4,
     parameter integer IMG_H = 4,
     parameter integer SCALE = 4,
-    parameter integer USE_SERIAL_BASE = 1
+    parameter integer USE_SERIAL_BASE = 1,
+    parameter integer BASE_Q31 = 2007717611
 ) (
     input  wire                       clk,
     input  wire                       rst,
@@ -99,7 +100,8 @@ module span_tinyspan_w8a8_full_streamed_rgb_base_equiv #(
     endgenerate
 
     span_tinyspan_w8a8_base_add_equiv #(
-        .ACT_W(ACT_W)
+        .ACT_W(ACT_W),
+        .BASE_Q31(BASE_Q31)
     ) u_base_add_equiv (
         .learned_rgb_i({3*ACT_W{1'b0}}),
         .base_rgb_i(base_rgb),

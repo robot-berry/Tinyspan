@@ -73,6 +73,7 @@ def build_rows(artifact_dir: Path) -> tuple[list[dict[str, str]], dict[str, Any]
         "full_frame_tiled_reference_x4_320x180_*/tinyspan_tiled_fixed_reference_summary.json",
     )
     gate_h, gate_h_path = latest_json(artifact_dir, "gate_h_board_x4_320x180_*/manifest.json")
+    x2_gate_h, x2_gate_h_path = latest_json(artifact_dir, "gate_h_board_x2_*/manifest.json")
     x2_training, x2_path = latest_json(artifact_dir, "x2_training_*/x2_training_status.json")
     if x2_training is None:
         x2_training, x2_path = latest_json(artifact_dir, "x2_training_start_*/x2_training_status.json")
@@ -87,7 +88,8 @@ def build_rows(artifact_dir: Path) -> tuple[list[dict[str, str]], dict[str, Any]
     gate_g_pass = bool(gate_f and gate_f.get("compare_pass"))
     gate_h_pass = bool(gate_h and (gate_h.get("package_pass") or gate_h.get("pass")))
     x2_running = bool(x2_training and x2_training.get("status") == "training_running")
-    x2_pass = bool(x2_training and x2_training.get("status") == "PASS")
+    x2_gate_h_pass = bool(x2_gate_h and (x2_gate_h.get("package_pass") or x2_gate_h.get("pass")))
+    x2_pass = x2_gate_h_pass or bool(x2_training and x2_training.get("status") == "PASS")
 
     rows: list[dict[str, str]] = []
     rows.append(
@@ -186,7 +188,16 @@ def build_rows(artifact_dir: Path) -> tuple[list[dict[str, str]], dict[str, Any]
         )
 
     latest = (x2_training or {}).get("formal_training", {}).get("latest_observed", {})
-    if x2_pass:
+    if x2_gate_h_pass:
+        x2_acc = x2_gate_h.get("acceptance_summary", {}) or {}
+        x2_status = "PASS"
+        x2_evidence = (
+            f"X2 Gate H 整帧上板验收闭合：`{text(x2_acc.get('measured_fps'))}fps`，"
+            f"mismatch `{text(x2_acc.get('mismatch_bytes'))}/{text(x2_acc.get('total_bytes'))}`，"
+            f"max diff `{text(x2_acc.get('max_channel_diff'))}`。"
+        )
+        x2_next = "汇总 X2/X4 最终交付材料。"
+    elif x2_pass:
         x2_status = "PASS"
         x2_evidence = "X2 独立证据包已闭合。"
         x2_next = "汇总 X2/X4 最终交付材料。"
@@ -213,6 +224,8 @@ def build_rows(artifact_dir: Path) -> tuple[list[dict[str, str]], dict[str, Any]
         "tiled_ref_path": str(tiled_ref_path) if tiled_ref_path else "",
         "gate_h": gate_h,
         "gate_h_path": str(gate_h_path) if gate_h_path else "",
+        "x2_gate_h": x2_gate_h,
+        "x2_gate_h_path": str(x2_gate_h_path) if x2_gate_h_path else "",
         "x2_training": x2_training,
         "x2_training_path": str(x2_path) if x2_path else "",
         "accepted": accepted,
@@ -279,13 +292,20 @@ def write_markdown(path: Path, rows: list[dict[str, str]], context: dict[str, An
             "- X4 DDR 路线只调用板卡/AMD Xilinx IP：`zynq_ultra_ps_e`、PS DDR controller、HP/HPC、SmartConnect；不自研 DDR controller/PHY。",
             "- 可选增强项：补充可直接展示的 board PNG、HDMI/display 输出或 SD 写回图。",
             "",
-            "## 未闭合项",
-            "",
-            "- X2 独立冻结 checkpoint、量化计划、RTL、bitstream、真实板上输出和 `>=30fps` 证据仍未完成。",
-            "",
-            "本文件由 `scripts/acceptance/update_workflow_status.py` 生成；该脚本只读 artifact，不启动 Vivado、JTAG、板卡或训练。",
         ]
     )
+    if context.get("accepted"):
+        lines.extend(["## 未闭合项", "", "- 无。X2/X4 Gate H 均已闭合。", ""])
+    else:
+        lines.extend(
+            [
+                "## 未闭合项",
+                "",
+                "- X2 独立冻结 checkpoint、量化计划、RTL、bitstream、真实板上输出和 `>=30fps` 证据仍未完成。",
+                "",
+            ]
+        )
+    lines.append("本文件由 `scripts/acceptance/update_workflow_status.py` 生成；该脚本只读 artifact，不启动 Vivado、JTAG、板卡或训练。")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

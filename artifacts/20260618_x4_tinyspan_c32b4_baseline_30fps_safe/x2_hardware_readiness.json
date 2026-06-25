@@ -1,10 +1,12 @@
 {
-  "generated_at": "2026-06-25T21:09:16",
-  "status": "PARTIAL",
+  "generated_at": "2026-06-26T06:31:01",
+  "status": "READY",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "x2_training_status": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json",
-  "x2_quant_plan": "",
-  "x2_rtl_manifest": "",
+  "x2_quant_plan": "runs/tinyspan_quant_plan/x2_quality_after_x4_20260625_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json",
+  "x2_rtl_manifest": "rtl/generated/tinyspan_c32b4_x2_quality_after_x4_20260625_x2_w8a8/tinyspan_w8a8_rtl_manifest.json",
+  "x2_gate_h_manifest": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626/manifest.json",
+  "x2_gate_h_pass": true,
   "expected_x2_frozen_checkpoint_after_freeze": "runs/tinyspan_frozen_candidates/x2_quality_after_x4_20260625/student_final.pt",
   "expected_x2_quant_plan_after_freeze": "runs/tinyspan_quant_plan/x2_quality_after_x4_20260625_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json",
   "expected_x2_rtl_manifest_after_freeze": "rtl/generated/tinyspan_c32b4_x2_quality_after_x4_20260625_x2_w8a8/tinyspan_w8a8_rtl_manifest.json",
@@ -54,10 +56,7 @@
       ]
     }
   ],
-  "blockers": [
-    "x2_quant_plan_exists",
-    "x2_rtl_manifest_exists"
-  ],
+  "blockers": [],
   "checks": [
     {
       "id": "x2_training_status_artifact",
@@ -67,14 +66,14 @@
     },
     {
       "id": "x2_quant_plan_exists",
-      "status": "FAIL",
-      "detail": "",
+      "status": "PASS",
+      "detail": "runs/tinyspan_quant_plan/x2_quality_after_x4_20260625_x2_c32_b4_w8a8/tinyspan_w8a8_quant_plan.json",
       "required": true
     },
     {
       "id": "x2_rtl_manifest_exists",
-      "status": "FAIL",
-      "detail": "",
+      "status": "PASS",
+      "detail": "rtl/generated/tinyspan_c32b4_x2_quality_after_x4_20260625_x2_w8a8/tinyspan_w8a8_rtl_manifest.json",
       "required": true
     },
     {

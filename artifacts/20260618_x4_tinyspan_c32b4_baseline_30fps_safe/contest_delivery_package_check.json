@@ -1,14 +1,10 @@
 {
-  "generated_at": "2026-06-25T21:30:59",
+  "generated_at": "2026-06-26T06:39:19",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
-  "status": "NOT_COMPLETE",
-  "required_failed_count": 3,
-  "failed_requirements": [
-    "x2_training_freeze",
-    "x2_gate_h",
-    "final_audit"
-  ],
+  "status": "PASS",
+  "required_failed_count": 0,
+  "failed_requirements": [],
   "checks": [
     {
       "id": "docs",
@@ -76,27 +72,27 @@
     {
       "id": "x2_training_freeze",
       "name": "X2 独立训练冻结与量化/RTL 准备闭合",
-      "status": "PARTIAL",
+      "status": "PASS",
       "required": true,
-      "evidence": "training=artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json, gate=PARTIAL, readiness=PARTIAL, blockers=['x2_quant_plan_exists', 'x2_rtl_manifest_exists']",
+      "evidence": "training=artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json, gate=PASS, readiness=READY, blockers=[]",
       "expected": "X2 gate=PASS，readiness=PASS，无量化/RTL manifest 缺口",
       "action": "等待 X2 训练完成并运行 post-training prep"
     },
     {
       "id": "x2_gate_h",
       "name": "X2 720p30 板上正确性与吞吐闭合",
-      "status": "MISSING",
+      "status": "PASS",
       "required": true,
-      "evidence": "manifest=, fps=None, mismatch=None/None, missing=['finished/frozen X2 TinySPAN checkpoint', 'X2 W8A8 quant plan', 'X2 fixed-point/tiled reference', 'X2 RTL export and simulation', 'X2 bitstream', 'real X2 board output', 'board-vs-software byte-exact comparison', 'measured >=30fps throughput']",
+      "evidence": "manifest=artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626/manifest.json, fps=32.86048226988138, mismatch=0/2764800, missing=[]",
       "expected": "X2 scale=2，1280x720，fps>=30，mismatch=0，max diff=0，同一 bitstream/quant/checkpoint",
       "action": "生成 X2 bitstream 并完成真实板上输出、board-vs-fixed 和吞吐验收"
     },
     {
       "id": "final_audit",
       "name": "整赛题交付审计通过",
-      "status": "NOT_COMPLETE",
+      "status": "PASS",
       "required": true,
-      "evidence": "accepted=False, status=NOT_COMPLETE",
+      "evidence": "accepted=True, status=PASS",
       "expected": "contest_delivery_audit accepted=true",
       "action": "X2/X4 全部闭合后重新运行交付审计"
     }

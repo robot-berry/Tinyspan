@@ -1,0 +1,21 @@
+# TinySPAN Board-vs-Fixed Summary
+
+- Status: PASS
+- hard gate: board output must match the fixed-point tiled reference
+- board-vs-fixed mismatch bytes: 0/2764800
+- board-vs-fixed max channel diff: 0
+- board-vs-training mismatch bytes: 1666116/2764800
+- board-vs-training max channel diff: 41
+- fixed-vs-training mismatch bytes: 1666116/2764800
+- fixed-vs-training max channel diff: 41
+- software size: 1280x720
+- fixed size: 1280x720
+- board size: 1280x720
+- board-vs-fixed size match: True
+- max allowed mismatch bytes: 0
+- max allowed diff: 0
+- software: artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\pytorch_training_sr.png
+- fixed: artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\software_tiled_fixed_point_sr.png
+- board: artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626\board_sr_a53_equal_to_fixed.png
+- preview: artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626\tinyspan_board_software_preview.png
+- diff heatmap: artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626\diff_heatmap.png

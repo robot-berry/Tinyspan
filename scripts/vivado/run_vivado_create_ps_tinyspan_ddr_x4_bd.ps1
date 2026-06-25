@@ -8,6 +8,9 @@ param(
   [ValidateSet(2, 4)]
   [int]$Scale = 4,
   [int]$PlFreqMhz = 150,
+  [string]$Pl0SrcSel = "",
+  [int]$Pl0Divisor0 = 0,
+  [int]$Pl0Divisor1 = 0,
   [string]$InputBase = "0x10000000",
   [string]$OutputBase = "0x11000000",
   [int]$MDataWidth = 32,
@@ -48,6 +51,15 @@ try {
   $env:PS_TINYSPAN_DDR_X4_TILE_H = "$TileH"
   $env:PS_TINYSPAN_DDR_X4_SCALE = "$Scale"
   $env:PS_TINYSPAN_DDR_X4_PL_FREQ_MHZ = "$PlFreqMhz"
+  if ($Pl0SrcSel -ne "") {
+    $env:PS_TINYSPAN_DDR_X4_PL0_SRCSEL = "$Pl0SrcSel"
+  }
+  if ($Pl0Divisor0 -gt 0) {
+    $env:PS_TINYSPAN_DDR_X4_PL0_DIVISOR0 = "$Pl0Divisor0"
+  }
+  if ($Pl0Divisor1 -gt 0) {
+    $env:PS_TINYSPAN_DDR_X4_PL0_DIVISOR1 = "$Pl0Divisor1"
+  }
   $env:PS_TINYSPAN_DDR_X4_INPUT_BASE = "$InputBase"
   $env:PS_TINYSPAN_DDR_X4_OUTPUT_BASE = "$OutputBase"
   $env:PS_TINYSPAN_DDR_X4_M_AXI_DATA_W = "$MDataWidth"
