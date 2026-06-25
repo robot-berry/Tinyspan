@@ -44,9 +44,16 @@ $root = Resolve-Path (Join-Path $PSScriptRoot "..")
 Push-Location $root
 try {
   $metrics = Join-Path $RunDir "metrics.csv"
-  $checkpoint = Join-Path $RunDir "student_latest.pt"
-  if (-not (Test-Path $checkpoint)) {
-    throw "Checkpoint not found: $checkpoint"
+  $latestCheckpoint = Join-Path $RunDir "student_latest.pt"
+  $finalCheckpoint = Join-Path $RunDir "student_last.pt"
+  if (Test-Path $finalCheckpoint) {
+    $checkpoint = $finalCheckpoint
+    $checkpointSource = "student_last.pt"
+  } elseif (Test-Path $latestCheckpoint) {
+    $checkpoint = $latestCheckpoint
+    $checkpointSource = "student_latest.pt"
+  } else {
+    throw "Checkpoint not found: $finalCheckpoint or $latestCheckpoint"
   }
 
   $latestMetric = Get-LatestMetric $metrics
@@ -54,6 +61,7 @@ try {
     $Tag = "step$($latestMetric.step)_" + (Get-Date -Format "yyyyMMdd_HHmmss")
   }
   $safeTag = $Tag -replace "[^A-Za-z0-9_.-]", "_"
+  $scaleTag = "x${Scale}"
 
   $normalizedRunDir = ConvertTo-NormalizedPathText $RunDir
   $normalizedRunDirLeaf = [System.IO.Path]::GetFileName($normalizedRunDir.TrimEnd("/"))
@@ -74,6 +82,7 @@ try {
 
   Write-Host "RUN_DIR=$RunDir"
   Write-Host "CHECKPOINT=$checkpoint"
+  Write-Host "CHECKPOINT_SOURCE=$checkpointSource"
   Write-Host "TAG=$safeTag"
   Write-Host "SCALE=$Scale"
   Write-Host "LATEST_EPOCH=$($latestMetric.epoch)"
@@ -91,10 +100,10 @@ try {
     "-RunHandoff"
   )
   $handoffSummary = "runs\tinyspan_realtime_handoff\c32b4_${safeTag}_summary.json"
-  $scaleTag = "x${Scale}"
   $quantPlan = "runs\tinyspan_quant_plan\${safeTag}_${scaleTag}_c32_b4_w8a8\tinyspan_w8a8_quant_plan.json"
   $rtlOutDir = "rtl\generated\tinyspan_c32b4_${safeTag}_${scaleTag}_w8a8"
   $rtlManifest = Join-Path $rtlOutDir "tinyspan_w8a8_rtl_manifest.json"
+  $expectedBitstream = "vivado\bitstreams\tinyspan_${scaleTag}_c32b4_${safeTag}_board.bit"
   $rtlExportArgs = @(
     "-ExecutionPolicy", "Bypass",
     "-File", "scripts\export_tinyspan_c32b4_30fps_w8a8_to_rtl.ps1",
@@ -106,6 +115,7 @@ try {
     "-File", "scripts\acceptance\check_tinyspan_30fps_board_acceptance_ready.ps1",
     "-HandoffSummary", $handoffSummary,
     "-RtlManifest", $rtlManifest,
+    "-Bitstream", $expectedBitstream,
     "-OutDir", "board_runs\tinyspan_board_acceptance\readiness_${safeTag}_${scaleTag}"
   )
 

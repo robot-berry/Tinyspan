@@ -89,7 +89,8 @@ if ([string]::IsNullOrWhiteSpace($WorkspaceRoot)) {
 
 $runDirAbs = Resolve-Under -Root $TinyspanRoot -Path $RunDir
 $metricsPath = Join-Path $runDirAbs "metrics.csv"
-$checkpointPath = Join-Path $runDirAbs "student_latest.pt"
+$latestCheckpointPath = Join-Path $runDirAbs "student_latest.pt"
+$finalCheckpointPath = Join-Path $runDirAbs "student_last.pt"
 if ([string]::IsNullOrWhiteSpace($Tag)) {
   $Tag = "x2_frozen_" + (Get-Date -Format "yyyyMMdd_HHmmss")
 }
@@ -155,8 +156,8 @@ while ($true) {
   Start-Sleep -Seconds $PollSeconds
 }
 
-if (-not (Test-Path $checkpointPath)) {
-  throw "Checkpoint not found after training completion: $checkpointPath"
+if ((-not (Test-Path $finalCheckpointPath)) -and (-not (Test-Path $latestCheckpointPath))) {
+  throw "Checkpoint not found after training completion: $finalCheckpointPath or $latestCheckpointPath"
 }
 
 Push-Location $TinyspanRoot
