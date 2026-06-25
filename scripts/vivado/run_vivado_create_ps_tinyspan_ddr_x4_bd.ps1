@@ -5,6 +5,8 @@ param(
   [int]$ImgH = 180,
   [int]$TileW = 32,
   [int]$TileH = 32,
+  [ValidateSet(2, 4)]
+  [int]$Scale = 4,
   [int]$PlFreqMhz = 150,
   [string]$InputBase = "0x10000000",
   [string]$OutputBase = "0x11000000",
@@ -44,6 +46,7 @@ try {
   $env:PS_TINYSPAN_DDR_X4_IMG_H = "$ImgH"
   $env:PS_TINYSPAN_DDR_X4_TILE_W = "$TileW"
   $env:PS_TINYSPAN_DDR_X4_TILE_H = "$TileH"
+  $env:PS_TINYSPAN_DDR_X4_SCALE = "$Scale"
   $env:PS_TINYSPAN_DDR_X4_PL_FREQ_MHZ = "$PlFreqMhz"
   $env:PS_TINYSPAN_DDR_X4_INPUT_BASE = "$InputBase"
   $env:PS_TINYSPAN_DDR_X4_OUTPUT_BASE = "$OutputBase"

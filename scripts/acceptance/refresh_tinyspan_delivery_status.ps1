@@ -40,6 +40,12 @@ try {
     }
   }
 
+  python scripts\acceptance\audit_tinyspan_x2_hardware_readiness.py `
+    --repo-root $TinyspanRoot
+  if ($LASTEXITCODE -ne 0) {
+    throw "audit_tinyspan_x2_hardware_readiness.py failed with exit code $LASTEXITCODE"
+  }
+
   python scripts\acceptance\update_workflow_status.py `
     --artifact-dir $ArtifactDir `
     --docs-out $DocsGateStatus `

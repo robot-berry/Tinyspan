@@ -1,6 +1,6 @@
 # TinySPAN 赛题交付审计
 
-生成时间：`2026-06-25T10:58:20`
+生成时间：`2026-06-25T11:03:24`
 总体结论：`NOT_COMPLETE`
 
 本审计只读取现有文件和 artifact，不启动 Vivado、JTAG、板卡或训练流程。
@@ -67,6 +67,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_tinyspan_c32b4
 ### 硬件加速器详细设计文档及源代码
 
 - `PASS` `docs/hardware_design.md`
+- `PASS` `docs/x2_hardware_readiness.md`
 - `PASS` `rtl/tinyspan_core`
 - `PASS` `rtl/board_wrapper/sr_stream_dynamic_cropper.v`
 - `PASS` `rtl/board_wrapper/sr_ddr_pixel_axi_master.v`
@@ -83,6 +84,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_tinyspan_c32b4
 ### 完善的验证方案与验证用例
 
 - `PASS` `docs/verification_plan.md`
+- `PASS` `docs/x2_hardware_readiness.md`
 - `PASS` `docs/gate_status.md`
 - `PASS` `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_f_board_x4_32x32_f150_tile32_20260621/acceptance/tinyspan_board_acceptance_summary.json`
 - `PASS` `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/manifest.json`

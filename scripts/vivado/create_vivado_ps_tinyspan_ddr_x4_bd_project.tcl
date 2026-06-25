@@ -21,6 +21,7 @@ set img_w 320
 set img_h 180
 set tile_w 32
 set tile_h 32
+set scale 4
 set pl_freq_mhz 150
 set input_base 0x10000000
 set output_base 0x11000000
@@ -32,6 +33,7 @@ foreach {env_name var_name} {
   PS_TINYSPAN_DDR_X4_IMG_H img_h
   PS_TINYSPAN_DDR_X4_TILE_W tile_w
   PS_TINYSPAN_DDR_X4_TILE_H tile_h
+  PS_TINYSPAN_DDR_X4_SCALE scale
   PS_TINYSPAN_DDR_X4_PL_FREQ_MHZ pl_freq_mhz
   PS_TINYSPAN_DDR_X4_INPUT_BASE input_base
   PS_TINYSPAN_DDR_X4_OUTPUT_BASE output_base
@@ -193,7 +195,7 @@ set_property -dict [list \
   CONFIG.DEFAULT_OUTPUT_BASE $output_base \
   CONFIG.TILE_W $tile_w \
   CONFIG.TILE_H $tile_h \
-  CONFIG.SCALE {4} \
+  CONFIG.SCALE $scale \
   CONFIG.BYTES_PER_PIXEL {4} \
   CONFIG.USE_SERIAL_BASE $use_serial_base \
 ] $sr
@@ -265,6 +267,7 @@ puts "PS_TINYSPAN_DDR_X4_IMG_W=$img_w"
 puts "PS_TINYSPAN_DDR_X4_IMG_H=$img_h"
 puts "PS_TINYSPAN_DDR_X4_TILE_W=$tile_w"
 puts "PS_TINYSPAN_DDR_X4_TILE_H=$tile_h"
+puts "PS_TINYSPAN_DDR_X4_SCALE=$scale"
 puts "PS_TINYSPAN_DDR_X4_PL_FREQ_MHZ=$pl_freq_mhz"
 puts "PS_TINYSPAN_DDR_X4_DATA_PATH=PS DDR -> HP0 -> TinySPAN DDR endpoint M_AXI -> DDR"
 puts "PS_TINYSPAN_DDR_X4_DDR_POLICY=use ZynqMP PS DDR controller IP; no custom DDR controller or PHY"

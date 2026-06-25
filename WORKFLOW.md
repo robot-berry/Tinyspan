@@ -803,6 +803,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\watch_tinyspan_x2_
   -Tag x2_frozen_YYYYMMDD
 ```
 
+X2 硬件链路在训练结束前先用静态审计锁定缺口，尤其要防止复用 X4-only `bicubic_base_x4`
+作为 X2 交付证据：
+
+```powershell
+python .\scripts\acceptance\audit_tinyspan_x2_hardware_readiness.py
+```
+
 X2 正式训练完成后的主工程入口：
 
 ```powershell

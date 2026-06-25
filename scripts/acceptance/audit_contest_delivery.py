@@ -180,6 +180,7 @@ def build_audit(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
                 repo_root,
                 [
                     "docs/hardware_design.md",
+                    "docs/x2_hardware_readiness.md",
                     "rtl/tinyspan_core",
                     "rtl/board_wrapper/sr_stream_dynamic_cropper.v",
                     "rtl/board_wrapper/sr_ddr_pixel_axi_master.v",
@@ -218,6 +219,7 @@ def build_audit(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
                 repo_root,
                 [
                     "docs/verification_plan.md",
+                    "docs/x2_hardware_readiness.md",
                     "docs/gate_status.md",
                     "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_f_board_x4_32x32_f150_tile32_20260621/acceptance/tinyspan_board_acceptance_summary.json",
                     "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/manifest.json",

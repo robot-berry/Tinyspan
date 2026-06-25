@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T10:58:20",
+  "generated_at": "2026-06-25T11:03:24",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "accepted": false,
@@ -150,6 +150,11 @@
           "kind": "file"
         },
         {
+          "path": "docs/x2_hardware_readiness.md",
+          "exists": true,
+          "kind": "file"
+        },
+        {
           "path": "rtl/tinyspan_core",
           "exists": true,
           "kind": "dir"
@@ -214,6 +219,11 @@
       "evidence": [
         {
           "path": "docs/verification_plan.md",
+          "exists": true,
+          "kind": "file"
+        },
+        {
+          "path": "docs/x2_hardware_readiness.md",
           "exists": true,
           "kind": "file"
         },

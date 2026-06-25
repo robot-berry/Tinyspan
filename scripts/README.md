@@ -32,9 +32,14 @@ Current folders:
     stderr log tails without touching the running training job.
   - `acceptance/refresh_tinyspan_delivery_status.ps1`: sequential read-only
     status refresh. It updates X2 training status first, then regenerates
-    `docs/gate_status.md` and `docs/contest_delivery_audit.md`, avoiding stale
-    gate reports caused by parallel refresh ordering. It does not start
+    X2 hardware readiness, `docs/gate_status.md`, and
+    `docs/contest_delivery_audit.md`, avoiding stale gate reports caused by
+    parallel refresh ordering. It does not start
     training, Vivado, JTAG, or board flows.
+  - `acceptance/audit_tinyspan_x2_hardware_readiness.py`: static X2 hardware
+    readiness audit. It verifies that PS/DDR wrappers are scale-aware and
+    records the remaining X2 blockers, especially the missing X2 bicubic/core
+    wrapper, without starting Vivado or board flows.
 - `run_tinyspan_c32b4_post_training_prep.ps1`: common X2/X4 post-training
   entrypoint. Use `-Scale 2` for the independent X2 route and `-Scale 4` for
   X4. It refuses to freeze a still-running training checkpoint unless only
