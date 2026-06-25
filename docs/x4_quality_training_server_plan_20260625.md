@@ -84,6 +84,35 @@ python train/distill_tinyspan_video.py \
   --amp
 ```
 
+## Quality Evaluation After Training
+
+After `student_last.pt` is written, run the REDS HR quality gate on the same server:
+
+```bash
+python tools/image_validation/evaluate_tinyspan_checkpoint_reds_hr.py \
+  --checkpoint runs/tinyspan_distill/video_x4_c32_b4_quality_hr060_edge006_20260625/student_last.pt \
+  --val-frames /data/REDS/val_sharp \
+  --out-dir runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val \
+  --scale 4 \
+  --channels 32 \
+  --num-blocks 4 \
+  --max-images 16 \
+  --border 4 \
+  --amp
+```
+
+This writes:
+
+```text
+runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val/tinyspan_checkpoint_reds_hr_quality.json
+runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val/tinyspan_checkpoint_reds_hr_quality.md
+runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val/tinyspan_checkpoint_reds_hr_quality.csv
+runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val/tinyspan_checkpoint_reds_hr_quality_preview.png
+```
+
+Only continue to quantization and board work if the multi-image `student_vs_hr` PSNR/SSIM improves over
+`bicubic_vs_hr`; claiming `30dB` requires the same multi-image REDS HR metric, not a single-image result.
+
 ## Cost Control
 
 Start with this one candidate instead of training a larger model. A single RTX 4090D should be the lowest-cost fast option for this TinySPAN c32/b4 fine-tune. A100/H100 is not the first choice unless multiple candidates need to run in parallel.

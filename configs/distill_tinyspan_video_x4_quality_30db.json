@@ -32,6 +32,7 @@
   },
   "start_command_windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_tinyspan_c32b4_x4_quality_training.ps1 -TrainFrames G:/REDS/train_sharp",
   "start_command_linux": "TRAIN_FRAMES=/data/REDS/train_sharp bash scripts/start_tinyspan_c32b4_x4_quality_training.sh",
+  "quality_eval_command_linux": "python tools/image_validation/evaluate_tinyspan_checkpoint_reds_hr.py --checkpoint runs/tinyspan_distill/video_x4_c32_b4_quality_hr060_edge006_20260625/student_last.pt --val-frames /data/REDS/val_sharp --out-dir runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val --scale 4 --channels 32 --num-blocks 4 --max-images 16 --border 4 --amp",
   "stage_gates": [
     "Student-vs-HR REDS validation average PSNR must exceed the current X4 fixed-vs-HR sample trend and bicubic baseline.",
     "If claiming 30dB, report multi-image REDS val average PSNR/SSIM, not a single-image or PyTorch-vs-fixed number.",
