@@ -1,140 +1,91 @@
-# TinySPAN X4 画质提升路线
+# TinySPAN X4 PSNR 30dB 画质提升候选方案
 
-## 目的
+## 结论
 
-当前 X4 安全基线 `c32b4_30fps_frozen_20260613` 已经完成真实板卡闭合：
+当前 X4 已经可以作为 X4 子任务提交，但当前提交采用的是已经闭合的安全基线，不用画质提升候选替换：
 
-- `320x180 -> 1280x720`
-- `30.409639424076744fps @155MHz`
-- board-vs-fixed `0 / 2764800` mismatch
-- ZC706 / XC7Z045 等效资源门线内
+- 基线：`c32b4_30fps_frozen_20260613`
+- 输入/输出：`320x180 -> 1280x720`
+- 上板吞吐：`30.409639424076744fps @155MHz`
+- 正确性：board/A53 in-DDR compare `0 / 2764800` mismatch
+- REDS HR 单样例：`25.851911dB`
 
-但 REDS HR 样例中，TinySPAN X4 fixed output 相对 bicubic baseline 的 PSNR/SSIM 只略有提升：
+如果要把 X4 REDS HR PSNR 提升到接近或达到 `30dB`，需要作为独立候选重新训练、量化、导出 RTL、生成 bitstream 并上板验证。不能直接修改已经闭合的 X4 安全基线。
 
-| Pair | PSNR | SSIM |
+## PSNR 口径
+
+`30dB` 目标只对如下口径有效：
+
+| 口径 | 当前值 | 目标 |
 | --- | ---: | ---: |
-| TinySPAN X4 tile64 fixed vs REDS HR | 25.851911 dB | 0.700177 |
-| Bicubic LR vs REDS HR | 25.787498 dB | 0.699348 |
+| X4 fixed SR vs REDS HR | 25.851911 dB 单样例 | 多图平均接近或达到 30dB |
+| Student SR vs teacher | 29.459008 dB | 可辅助观察，不作为最终 HR 画质 |
+| PyTorch SR vs fixed SR | 43.171866 dB | 已满足定点一致性门槛 |
 
-因此后续可以提升画质，但必须保持当前 X4 bitstream 作为安全基线。任何画质候选只有在重新通过软件、量化、RTL、bitstream、真实板卡和 `>=30fps` 后，才能替换当前基线。
+因此，30dB 不能用单张简单图证明，也不能用 PyTorch-vs-fixed 的一致性 PSNR 替代。正式口径必须报告 REDS val 多图平均 PSNR/SSIM，并与 bicubic baseline 同口径比较。
 
-## 不可破坏的安全基线
+## 候选路线
 
-以下证据不得被候选模型覆盖：
+### Q1：当前拓扑 fine-tune
 
-```text
-artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/manifest.json
-sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md
-sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_a53_compare_20260625.md
-```
+优先保持硬件拓扑不变：
 
-候选模型应放入新的 artifact 目录，例如：
+- scale：X4
+- channels：32
+- blocks：4
+- tile：`64x64`
+- 起点 checkpoint：`model/checkpoints/c32b4_30fps_frozen_20260613/student_30fps_candidate.pt`
 
-```text
-artifacts/20260625_x4_tinyspan_quality_candidate/
-```
+训练方向：
 
-## 提升方向
+- 增加 HR ground-truth 权重，降低只拟合 teacher 带来的过平滑。
+- 保留 temporal loss，防止视频帧间闪烁。
+- 加强 edge loss，面向文档线条、人像轮廓和会议画面细节。
+- 训练后必须重新跑 W8A8 quant plan 和 fixed reference，不能沿用旧 quant plan。
 
-### PSNR 目标口径
+阶段目标：
 
-`35dB` 是否可达取决于 PSNR 的 reference：
-
-| PSNR reference | 当前值 | 35dB 可达性 | 用途 |
-| --- | ---: | --- | --- |
-| PyTorch SR vs hardware-tiled fixed SR | 43.171866 dB | 已超过 | 衡量量化/定点/切块误差 |
-| Full-integer SR vs hardware-tiled fixed SR | 44.487280 dB | 已超过 | 衡量整帧定点与 tile 定点一致性 |
-| PyTorch SR vs full-integer SR | 48.717049 dB | 已超过 | 衡量 PyTorch 到整数参考漂移 |
-| Student SR vs SPAN teacher | 29.459008 dB | 可作为提升目标，但不保证到 35dB | 衡量学生模型拟合 teacher |
-| TinySPAN X4 fixed SR vs REDS HR | 25.851911 dB | 当前硬件约束下不应设为硬目标 | 衡量真实超分还原度 |
-
-因此：
-
-- `35dB` 可以作为定点一致性、量化误差、PyTorch-to-fixed 漂移的硬门槛；当前已经满足。
-- `35dB` 不适合作为 X4 REDS HR 真值 PSNR 的交付硬门槛。对 `320x180 -> 1280x720` 的 X4 自然图像超分，TinySPAN 低资源 720p30 路线更现实的目标是稳定超过 bicubic，并在多张 REDS val 与会议/文档展示图上提高平均 PSNR/SSIM。
-- 如果必须冲击 REDS HR `35dB`，需要更强模型、更大训练集、更复杂损失和更高算力，极可能破坏 ZC706 等效资源、功耗和 `>=30fps` 约束。
-
-### Q1：先提升训练，不改硬件结构
-
-这是优先路线。目标是在 `c32b4` 拓扑不变的情况下，提高量化后画质。
-
-建议改动：
-
-- 使用 REDS train/val 的 HR/LR 对进行更完整训练和验证。
-- 保留 SPAN/teacher distillation，但增加 HR ground-truth loss。
-- 损失函数从单一 L1 扩展为：
-
-```text
-L = L1(SR, HR) + alpha * L1(SR, teacher) + beta * edge_loss + gamma * ssim_loss
-```
-
-- 加入 QAT 或 fake-quant 训练，使 W8A8 量化误差进入训练闭环。
-- 加强会议场景 crop：人像、文档、文字、边缘线条。
-
-软件验收门槛：
-
-- REDS val 至少 5 张图，TinySPAN fixed-vs-HR 平均 PSNR 高于 bicubic baseline。
-- 单张展示图不能作为替换依据，必须有平均指标。
-- PyTorch-vs-fixed PSNR 不低于当前 `43.17dB` 的量级，避免训练提升被定点误差吃掉。
+| 阶段 | 目标 | 说明 |
+| --- | --- | --- |
+| P1 | REDS val 平均 PSNR `>=28dB` 且高于 bicubic | 先证明训练方向有效 |
+| P2 | REDS val 平均 PSNR 接近或达到 `30dB` | 作为画质冲刺目标 |
+| P3 | 上板 `0 mismatch + >=30fps` | 只有通过后才能替换基线 |
 
 ### Q2：中等模型候选
 
-如果 Q1 提升不足，再尝试中等模型：
+如果 Q1 达不到 30dB，可尝试：
 
-- `c48b4`：通道从 32 增至 48，block 不变。
-- `c32b6`：通道不变，block 从 4 增至 6。
-
-硬件风险：
-
-- 当前 X4 吞吐只有 `30.4096fps`，余量很小。
-- 通道或 block 增加会提高 DSP/BRAM/latency，可能跌破 `30fps`。
-- 因此中等模型必须先跑软件质量和资源估算，再进 Vivado。
-
-候选替换门槛：
-
-- `>=30fps` 真实板卡吞吐。
-- board-vs-fixed `0` mismatch。
-- ZC706 / XC7Z045 等效资源门线内。
-- REDS val 平均 PSNR/SSIM 明显高于当前安全基线和 bicubic baseline。
-
-### Q3：tile overlap / halo
-
-在 tile 边缘加入 overlap，再裁剪中心有效区域，可以减轻边缘伪影，提升文档线条和人脸边缘稳定性。
+- `c48b4`
+- `c32b6`
 
 风险：
 
-- 每帧实际计算量增加。
-- tile 数、DDR 读写和 crop 逻辑都会变复杂。
-- 当前 `30fps` 余量有限，halo 只能作为画质候选，不应直接改主线。
+- 当前 X4 安全基线吞吐只有 `30.4096fps`，余量非常小。
+- 增加通道或 block 很可能导致 DSP/BRAM/latency 上升，跌破 `30fps`。
+- 因此 Q2 必须先做软件质量和资源估算，再进 Vivado。
 
-验收门槛：
+### Q3：tile overlap / halo
 
-- 边缘 tile padding/crop 与 tile manifest 自动化验证通过。
-- full-frame board-vs-fixed `0` mismatch。
-- 真实板卡 `>=30fps`。
+对 tile 边界加入 overlap，再裁剪中心有效区，可能改善边缘伪影。
 
-### Q4：实际 SD 卡图片展示集
+风险：
 
-板子 SD 卡中的会议/文档/人像图适合作为展示验证集，不替代 REDS 正式训练集。
+- 实际计算量和 DDR 访问量增加。
+- 需要重新验证 tile manifest、padding/crop、拼接和 board-vs-fixed。
 
-要求：
+## 替换当前 X4 提交基线的硬门槛
 
-- 对每张 HR 展示图生成对应 LR 输入。
-- 输出 TinySPAN SR、bicubic baseline、diff heatmap 和 quality metrics。
-- 若严格声称“板上 SD 卡读图”，必须由 PS/A53 从 SD 读入 DDR，不能用 host-to-DDR replay 冒充。
+候选模型只有同时满足以下条件，才能替换当前 X4 提交节点：
 
-## 推荐执行顺序
+1. REDS val 多图平均 PSNR/SSIM 高于当前安全基线和 bicubic baseline。
+2. 若声称 30dB，则必须是同一口径多图平均接近或达到 `30dB`，不是单图结果。
+3. W8A8 quant plan 来自候选 checkpoint。
+4. hardware-tiled fixed reference 来自同一候选 checkpoint 和 quant plan。
+5. RTL/export drift 检查通过。
+6. bitstream timing/resource/power 通过 ZC706/XC7Z045 等效门线。
+7. 真实板卡输出与 software fixed reference `0` mismatch。
+8. 真实板卡完整帧吞吐 `>=30fps`。
 
-1. 保持当前 X4 Gate H 安全基线不变。
-2. 等 X2 训练稳定运行时，只做离线准备，不抢占 GPU。
-3. X2 训练结束后，再决定是否启动 X4 Q1 画质候选训练。
-4. Q1 软件指标优于当前安全基线后，导出 W8A8 quant plan。
-5. 生成 fixed reference 和 tile64 reference。
-6. 跑 RTL/export drift 检查。
-7. 重新综合实现，检查资源、时序和功耗。
-8. 上板跑吞吐和 A53 in-DDR full-frame compare。
-9. 只有全部通过，才更新 `WORKFLOW.md` 和交付索引，把候选提升为新基线。
+## 当前执行策略
 
-## 当前结论
-
-可以提升超分效果，但不能直接在当前闭合 bitstream 上“调参数”后宣称提升。正确路线是保留 `c32b4_30fps_frozen_20260613` 作为 X4 安全基线，同时新建画质候选分支。候选必须以 REDS val 平均指标、量化后定点指标和真实板卡 `0 mismatch + >=30fps` 为替换条件。
+当前提交节点先提交 X4 安全基线。PSNR 30dB 画质提升作为后续独立候选，不阻塞当前 X4 子任务提交，也不替代当前已闭合 bitstream。

@@ -42,7 +42,8 @@ Main documents:
   X4 board resource, timing, power, throughput, correctness, and image-quality
   summary.
 - [docs/x4_quality_improvement_plan.md](docs/x4_quality_improvement_plan.md):
-  quality-improvement route that preserves the closed X4 safety baseline.
+  independent PSNR-30dB-oriented quality candidate plan; not part of the
+  current X4 submission baseline until it passes the full hardware gate.
 - [docs/contest_delivery_index.md](docs/contest_delivery_index.md): current
   contest delivery evidence index with SHA256 hashes.
 - [docs/contest_delivery_package_check.md](docs/contest_delivery_package_check.md):

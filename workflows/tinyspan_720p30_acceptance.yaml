@@ -259,7 +259,9 @@ current_status_zh:
   x4_full_frame_tiled_reference: 已生成 X4 320x180 到 1280x720、tile 64x64、15 tile 的 hardware-tiled fixed reference，路径为 artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625。
   x4_full_frame_tiled_reference_hashes: checkpoint SHA256 6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938，quant-plan SHA256 EB6EEDDDE9360F61E6FC30141B2A1E6539E519CB226AC18B8C219B9E40092C9D。
   x4_gate_h: X4 320x180 到 1280x720、tile 64x64、155MHz 的真实板上完整帧验收已闭合，吞吐 30.409639424076744fps，A53 in-DDR compare mismatch 0/2764800，max diff 0。
+  x4_submit_node: X4_SUBMIT_20260625_CURRENT_BASELINE；当前 X4 子任务可以按该节点提交，提交内容为 c32b4_30fps_frozen_20260613、tile64 FIFO f155 bitstream、30.409639424076744fps、0/2764800 mismatch 和 ZC706 等效资源门线内。
   x4_reds_hr_quality: 已新增 REDS val HR 样例质量包 artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/reds_val_quality_x4_00000000_tile64_20260625，使用 G:\REDS\val_sharp\000\00000000.png 作为 HR reference。
+  x4_psnr30_quality_candidate: PSNR 30dB 作为后续独立画质候选目标记录在 docs/x4_quality_improvement_plan.md；该候选不阻塞 X4 当前提交节点，只有重新完成训练、量化、RTL、bitstream、真实板上 0 mismatch 和 >=30fps 后才能替换当前基线。
   x2_readiness: X2 静态硬件准备为 PARTIAL，仅剩 x2_quant_plan_exists 和 x2_rtl_manifest_exists，二者需等待 X2 训练完成后由 post-training prep 生成。
   post_training_watcher: X2 post-training watcher 已启动，等待 step >= 198000 且训练进程退出后，自动执行冻结、量化、RTL 导出和 readiness 检查；训练期间不启动 Vivado/JTAG。
   delivery_package_check: 最终交付包校验脚本 scripts/acceptance/check_contest_delivery_package.py 已接入刷新流程；当前状态 NOT_COMPLETE，失败项仅为 x2_training_freeze、x2_gate_h、final_audit。
@@ -271,7 +273,8 @@ method_improvement_plan_zh:
   immediate_priority:
     - 等待 X2 训练完成并自动执行 post-training prep；训练完成前只做状态刷新。
     - X2 独立补齐 checkpoint freeze、quant plan、RTL manifest、bitstream、board-vs-fixed 和 >=30fps 证据。
-    - X4 只做展示增强和回归保护，不再把 X4 当作当前阻塞项。
+    - X4 当前安全基线按 X4_SUBMIT_20260625_CURRENT_BASELINE 作为 X4 子任务提交节点。
+    - X4 PSNR 30dB 画质提升作为独立候选路线，不阻塞当前 X4 提交，不替代当前 bitstream。
   ppa_improvement_priority:
     - 用 AXI burst、AXI DataMover、AXI DMA 或 VDMA 替代单像素 AXI 调试桥作为正式高性能 I/O。
     - 为 LR tile 读取、TinySPAN 计算和 SR tile 写回加入 ping-pong buffer，重叠读、算、写。
@@ -286,6 +289,20 @@ method_improvement_plan_zh:
     - 完整帧 throughput >=30fps。
     - A53 in-DDR board-vs-fixed mismatch 0。
     - comparison_preview.png 和 diff_heatmap.png 可查看。
+
+x4_quality_candidate_zh:
+  node: X4_QUALITY_CANDIDATE_PSNR30
+  target: REDS HR 多图平均 PSNR 接近或达到 30dB，同时 SSIM 高于 bicubic baseline。
+  first_stage_target: REDS val 至少 5 张图平均 PSNR >=28dB 且高于 bicubic baseline。
+  boundary: 该节点是后续候选，不属于当前 X4 提交基线；不能用单张图或 PyTorch-vs-fixed 一致性 PSNR 代替 REDS HR 多图平均。
+  replacement_gate:
+    - 候选 checkpoint 独立冻结。
+    - W8A8 quant plan 来自候选 checkpoint。
+    - hardware-tiled fixed reference 来自同一候选 checkpoint 和 quant plan。
+    - RTL/export drift 检查通过。
+    - bitstream timing/resource/power 通过 ZC706/XC7Z045 等效门线。
+    - 真实板卡输出与 software fixed reference 0 mismatch。
+    - 真实板卡完整帧吞吐 >=30fps。
 
 required_artifacts:
   - manifest.json

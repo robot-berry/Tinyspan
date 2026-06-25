@@ -367,9 +367,27 @@ artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/reds_val_quality_x4_000
 不能冒充为严格的板上 SD 卡读图验证。
 
 X4 当前板上资源、时序、功耗、吞吐、正确性和画质指标已汇总到
-`docs/x4_board_result_report_20260625.md`。画质提升不直接覆盖当前 X4 安全基线，而是按
-`docs/x4_quality_improvement_plan.md` 新建候选路线：先证明 REDS val 平均画质提升和量化后定点一致性，
-再重新通过 RTL、bitstream、真实板卡 `0 mismatch` 和 `>=30fps`，最后才允许替换基线。
+`docs/x4_board_result_report_20260625.md`。
+
+### 6.4 X4 当前方案提交节点
+
+提交节点：`X4_SUBMIT_20260625_CURRENT_BASELINE`
+
+该节点允许提交当前 X4 子任务方案：
+
+- scale：X4
+- 输入/输出：`320x180 -> 1280x720`
+- tile：`64x64`
+- checkpoint：`c32b4_30fps_frozen_20260613`
+- bitstream SHA256：`A94DC9B1417B35D05C9D57176109155BCBAFB5939C5E9EA9DC570C8184FD8232`
+- 吞吐：`30.409639424076744fps @155MHz`
+- 正确性：A53 in-DDR compare `0 / 2764800` mismatch，max diff `0`
+- 资源：LUT `6353`，Register `4647`，DSP `81`，BRAM Tile `27`，URAM `0`
+- 边界：该提交节点只表示 X4 子任务可提交；整赛题仍等待 X2 独立闭合。
+
+后续 PSNR `30dB` 画质提升不阻塞该 X4 提交节点，按
+`docs/x4_quality_improvement_plan.md` 作为独立候选推进。候选只有重新完成训练、量化、RTL、bitstream、
+真实板卡 `0 mismatch` 和 `>=30fps` 后，才允许替换本 X4 提交基线。
 
 路线决策记录：
 

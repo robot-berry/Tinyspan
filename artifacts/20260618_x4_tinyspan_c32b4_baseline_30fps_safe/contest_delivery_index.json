@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-25T12:21:21",
+  "generated_at": "2026-06-25T12:36:09",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "git": {
     "branch": "main",
-    "commit": "5b965dc71b16853175c4f5450e40047a5ea747b2",
+    "commit": "4b8b1c17778b0fddf1c0affaf164b38c69525590",
     "remote": "https://github.com/robot-berry/Tinyspan.git"
   },
   "overall": {
@@ -26,19 +26,19 @@
     "training_status": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json",
     "latest_observed": {
       "epoch": 32,
-      "step": 123931,
+      "step": 125190,
       "total_steps": 198000,
-      "progress_percent": 62.5914,
-      "loss": 0.01787976,
-      "distill_loss": 0.0103022,
-      "hr_loss": 0.01591317,
-      "edge_loss": 0.06188995,
-      "temporal_loss": 0.01578565,
-      "teacher_psnr": 34.350853,
-      "student_psnr": 31.721699,
-      "seconds": 73629.218,
-      "steps_per_second": 1.6832,
-      "eta": "00.12:13:24",
+      "progress_percent": 63.2273,
+      "loss": 0.02237778,
+      "distill_loss": 0.01290812,
+      "hr_loss": 0.01920884,
+      "edge_loss": 0.07954215,
+      "temporal_loss": 0.02018528,
+      "teacher_psnr": 32.706276,
+      "student_psnr": 29.422127,
+      "seconds": 74517.968,
+      "steps_per_second": 1.68,
+      "eta": "00.12:02:19",
       "stderr_error_hints": "none"
     },
     "readiness": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
@@ -67,65 +67,65 @@
           "path": "README.md",
           "exists": true,
           "kind": "file",
-          "bytes": 3014,
-          "mtime": "2026-06-25T12:20:36",
-          "sha256": "0976E119B5B5FCE788A662A7CCEE46B9982CA145797A2333746AEDC64BA73C4C"
+          "bytes": 3086,
+          "mtime": "2026-06-25T12:34:59",
+          "sha256": "BDC897F4BF2E060879D6C4FBAB7C6A3AC42A1E30DAB18F708CBECA567A10C36B"
         },
         {
           "path": "WORKFLOW.md",
           "exists": true,
           "kind": "file",
-          "bytes": 48198,
-          "mtime": "2026-06-25T12:20:36",
-          "sha256": "115B9B21A42DC45EA1A532FF797C0A110DEC48AEBA0CB9B148DA534A23B9F699"
+          "bytes": 48817,
+          "mtime": "2026-06-25T12:34:59",
+          "sha256": "13444C4B4906C767E0302C75E83D1505C84B0B1E31787406AFECA46114B1A746"
         },
         {
           "path": "docs/gate_status.md",
           "exists": true,
           "kind": "file",
           "bytes": 3188,
-          "mtime": "2026-06-25T12:21:20",
-          "sha256": "3EF15B0C64ACAEA4D274936FD9261720D6C1F88AEBD1331E98230909FF7154C4"
+          "mtime": "2026-06-25T12:36:08",
+          "sha256": "57EC849DED5D8FBBC09169EC65064FAFDD1966B021ABDD7385E0CA24FD6023D4"
         },
         {
           "path": "docs/contest_delivery_audit.md",
           "exists": true,
           "kind": "file",
           "bytes": 5981,
-          "mtime": "2026-06-25T12:21:20",
-          "sha256": "1CB814DC143D3E2EB45CB163ED2419E53DB9955C44CD0164EC799AB285DD6E76"
+          "mtime": "2026-06-25T12:36:08",
+          "sha256": "CE4119478C844FE9D8A13F05CD7B3748E3D2204E7697436570FBF82441243BC6"
         },
         {
           "path": "docs/x2_hardware_readiness.md",
           "exists": true,
           "kind": "file",
           "bytes": 2558,
-          "mtime": "2026-06-25T12:21:20",
-          "sha256": "7210FBBD89E8A6AB04C9784F2A1A44DBCEF77009FCE37C8C183CF24762C3428C"
+          "mtime": "2026-06-25T12:36:08",
+          "sha256": "585B0D4E2CACF187C99867FFFAB075863652B97C0D464D71C5E36EE6629101CB"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_completion_status.json",
           "exists": true,
           "kind": "file",
           "bytes": 3566,
-          "mtime": "2026-06-25T12:21:20",
-          "sha256": "519091ED674A4303AEA99907F0AE6A15138457212634F14677A1858721B95A9E"
+          "mtime": "2026-06-25T12:36:08",
+          "sha256": "C2452AFF1C91FB396B15F8CDDFBEE2D23CF5E1F862BB9A1A259D4CAD17B07436"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_delivery_audit.json",
           "exists": true,
           "kind": "file",
           "bytes": 10572,
-          "mtime": "2026-06-25T12:21:20",
-          "sha256": "63E34C3BBED490B5D018BBEF7D1C691B02CED198CD99698884846EAFB85076CA"
+          "mtime": "2026-06-25T12:36:08",
+          "sha256": "C70A009D704CD09439B38CC5A05C17A45416D031781AA9F9399868621BD8F752"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
           "exists": true,
           "kind": "file",
           "bytes": 3498,
-          "mtime": "2026-06-25T12:21:20",
-          "sha256": "C944A71BE315F861A7A7D7938DEAC2BF8A034A2A36BBDEB6082766B5B3C9DEFA"
+          "mtime": "2026-06-25T12:36:08",
+          "sha256": "5BE73FF25EC66510D545B917FBFDAF68C1705CC43967EC18C706A8F0D227956B"
         }
       ]
     },
@@ -291,17 +291,17 @@
           "path": "docs/x4_board_result_report_20260625.md",
           "exists": true,
           "kind": "file",
-          "bytes": 4395,
-          "mtime": "2026-06-25T12:20:36",
-          "sha256": "9BC6CB3976FC63D2F661B3BE13CA2F709277741AFBAAAB5940075803EC1B2F5D"
+          "bytes": 4486,
+          "mtime": "2026-06-25T12:34:59",
+          "sha256": "427D0C29BBEBE12B7D8A5D1A04C81649B791C114FD4A8FB418E5232FB891F3C9"
         },
         {
           "path": "docs/x4_quality_improvement_plan.md",
           "exists": true,
           "kind": "file",
-          "bytes": 5941,
-          "mtime": "2026-06-25T12:20:58",
-          "sha256": "D4F7A5FC46F61BAF7FD4091844FE011986AF2750442090D4A4E5824798537EBA"
+          "bytes": 3531,
+          "mtime": "2026-06-25T12:34:59",
+          "sha256": "54302D2717DCC2612ABF65274DBDBC460253FEA4DB87C4669EF3B9A16F880433"
         },
         {
           "path": "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md",
