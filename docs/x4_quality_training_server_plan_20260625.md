@@ -144,6 +144,28 @@ python train/distill_tinyspan_video.py \
 
 ## Quality Evaluation After Training
 
+Preferred path: start the watcher before training finishes. It waits for the
+cloud X4 training process to exit, verifies that `student_last.pt` exists and
+the expected step count was reached, then runs the full REDS HR software quality
+gate and packages the candidate evidence. It does not run Vivado, JTAG, XSCT,
+board access, quantization, or RTL export.
+
+```powershell
+$env:SEETA_PASS = "<ssh-password>"
+python scripts\cloud\watch_x4_training_then_eval.py `
+  --host connect.westc.seetacloud.com `
+  --port 48335 `
+  --user root `
+  --poll-seconds 600 `
+  --wait-seconds 172800 `
+  --min-steps 79200 `
+  --max-images 0 `
+  --download-artifact-dir artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\x4_quality_candidates\x4_quality_hr060_edge006_20260625_cloud_eval
+Remove-Item Env:\SEETA_PASS -ErrorAction SilentlyContinue
+```
+
+`--max-images 0` means full REDS `val_sharp`, not a smoke subset.
+
 After `student_last.pt` is written, run the REDS HR quality gate on the same server:
 
 ```bash
