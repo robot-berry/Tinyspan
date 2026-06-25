@@ -5,8 +5,16 @@ param(
   [int]$BatchSize = 6,
   [int]$Epochs = 50,
   [int]$MaxPairs = 24000,
+  [int]$MaxSteps = 0,
   [int]$SaveEverySteps = 500,
   [string]$ResumeStudent = "",
+  [double]$LearningRate = 0.0001,
+  [double]$DistillWeight = 1.0,
+  [double]$HrWeight = 0.2,
+  [double]$EdgeWeight = 0.02,
+  [double]$TemporalWeight = 0.2,
+  [int]$NumWorkers = 0,
+  [int]$Seed = 42,
   [switch]$NoAmp
 )
 
@@ -44,7 +52,15 @@ try {
     "-BatchSize", [string]$BatchSize,
     "-Epochs", [string]$Epochs,
     "-MaxPairs", [string]$MaxPairs,
-    "-SaveEverySteps", [string]$SaveEverySteps
+    "-MaxSteps", [string]$MaxSteps,
+    "-SaveEverySteps", [string]$SaveEverySteps,
+    "-LearningRate", ([string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0}", $LearningRate)),
+    "-DistillWeight", ([string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0}", $DistillWeight)),
+    "-HrWeight", ([string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0}", $HrWeight)),
+    "-EdgeWeight", ([string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0}", $EdgeWeight)),
+    "-TemporalWeight", ([string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0}", $TemporalWeight)),
+    "-NumWorkers", [string]$NumWorkers,
+    "-Seed", [string]$Seed
   )
   if ($ResumeStudent -ne "") {
     $argList += @("-ResumeStudent", $ResumeStudent)

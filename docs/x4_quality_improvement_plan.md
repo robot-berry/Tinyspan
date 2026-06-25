@@ -89,3 +89,16 @@
 ## 当前执行策略
 
 当前提交节点先提交 X4 安全基线。PSNR 30dB 画质提升作为后续独立候选，不阻塞当前 X4 子任务提交，也不替代当前已闭合 bitstream。
+
+## 服务器训练入口
+
+X4 画质提升候选的服务器配置和启动命令见：
+
+- `docs/x4_quality_training_server_plan_20260625.md`
+- `configs/distill_tinyspan_video_x4_quality_30db.json`
+- `scripts/start_tinyspan_c32b4_x4_quality_training.ps1`
+
+默认第一组候选使用 `1x RTX 4090D/4090 24GB`，从
+`model/checkpoints/c32b4_30fps_frozen_20260613/student_30fps_candidate.pt`
+继续 fine-tune。该候选只改变训练目标权重，不改变 `c32/b4` 硬件拓扑；只有重新通过量化、RTL、bitstream、
+真实板卡 `0 mismatch` 和 `>=30fps` 后，才允许替换当前 X4 提交基线。

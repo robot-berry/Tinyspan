@@ -8,6 +8,13 @@ param(
   [int]$MaxSteps = 0,
   [int]$SaveEverySteps = 500,
   [string]$ResumeStudent = "",
+  [double]$LearningRate = 0.0001,
+  [double]$DistillWeight = 1.0,
+  [double]$HrWeight = 0.2,
+  [double]$EdgeWeight = 0.02,
+  [double]$TemporalWeight = 0.2,
+  [int]$NumWorkers = 0,
+  [int]$Seed = 42,
   [switch]$Smoke,
   [switch]$NoAmp
 )
@@ -43,6 +50,13 @@ try {
     "--epochs", [string]$Epochs,
     "--max-steps", [string]$MaxSteps,
     "--max-pairs", [string]$MaxPairs,
+    "--lr", ([string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0}", $LearningRate)),
+    "--distill-weight", ([string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0}", $DistillWeight)),
+    "--hr-weight", ([string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0}", $HrWeight)),
+    "--edge-weight", ([string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0}", $EdgeWeight)),
+    "--temporal-weight", ([string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0}", $TemporalWeight)),
+    "--num-workers", [string]$NumWorkers,
+    "--seed", [string]$Seed,
     "--output", $Output
   )
 

@@ -1,0 +1,41 @@
+{
+  "candidate": "x4_quality_30db_finetune_c32b4_hr060_edge006",
+  "purpose": "Improve X4 REDS HR PSNR without changing the current X4 submission baseline.",
+  "baseline_checkpoint": "model/checkpoints/c32b4_30fps_frozen_20260613/student_30fps_candidate.pt",
+  "baseline_status": "X4_SUBMIT_20260625_CURRENT_BASELINE remains the safe deliverable until this candidate passes quantization, RTL, bitstream, board equality, and >=30fps.",
+  "recommended_server": {
+    "gpu": "1x RTX 4090D or RTX 4090",
+    "vram_gb": 24,
+    "cpu_cores_min": 12,
+    "ram_gb_min": 48,
+    "data_disk_gb_recommended": 200,
+    "image": "PyTorch, Python 3.10, CUDA 12.1 or CUDA 12.4"
+  },
+  "training": {
+    "scale": 4,
+    "channels": 32,
+    "num_blocks": 4,
+    "train_frames": "G:/REDS/train_sharp",
+    "output": "runs/tinyspan_distill/video_x4_c32_b4_quality_hr060_edge006_20260625",
+    "patch_size": 192,
+    "batch_size": 6,
+    "epochs": 20,
+    "max_pairs": 24000,
+    "save_every_steps": 500,
+    "learning_rate": 0.00005,
+    "distill_weight": 0.7,
+    "hr_weight": 0.6,
+    "edge_weight": 0.06,
+    "temporal_weight": 0.2,
+    "num_workers": 4,
+    "amp": true
+  },
+  "start_command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_tinyspan_c32b4_x4_quality_training.ps1 -TrainFrames G:/REDS/train_sharp",
+  "stage_gates": [
+    "Student-vs-HR REDS validation average PSNR must exceed the current X4 fixed-vs-HR sample trend and bicubic baseline.",
+    "If claiming 30dB, report multi-image REDS val average PSNR/SSIM, not a single-image or PyTorch-vs-fixed number.",
+    "Freeze candidate checkpoint and export a new X4 W8A8 quant plan.",
+    "Generate a new hardware-tiled fixed reference from the same candidate checkpoint and quant plan.",
+    "Regenerate bitstream, pass timing/resource/power, pass real board 0 mismatch, and keep >=30fps."
+  ]
+}
