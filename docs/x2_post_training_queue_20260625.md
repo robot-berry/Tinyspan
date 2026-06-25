@@ -10,6 +10,7 @@ Date: `2026-06-25`
 - Cloud quality-resume run after X4 package: `/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x2_c32_b4_quality_after_x4_20260625`
 - Local original `student_latest.pt` is only used as the cloud X2 resume checkpoint source.
 - Cloud watcher: `scripts/cloud/watch_x4_package_then_start_x2_training.py`
+- Cloud post-training evaluator: `scripts/cloud/watch_x2_training_then_eval.py`
 - Watcher tag after freeze: `x2_quality_after_x4_20260625`
 - Target steps: `51480`
 - Local X2 resume training was stopped before completion per the no-local-training decision.
@@ -40,6 +41,33 @@ Expected watcher behavior:
 - Upload the local X2 resume checkpoint to the cloud if the remote resume checkpoint is missing.
 - Start cloud X2 training with `scale=2`, `channels=32`, `num_blocks=4`, `epochs=13`, `max_pairs=24000`.
 - Exit after confirming the cloud X2 process has been launched.
+
+Cloud X2 completion/evaluation watcher:
+
+```powershell
+$env:SEETA_PASS = "<ssh-password>"
+python scripts\cloud\watch_x2_training_then_eval.py `
+  --host connect.westc.seetacloud.com `
+  --port 48335 `
+  --user root `
+  --run-dir runs/tinyspan_distill/video_x2_c32_b4_quality_after_x4_20260625 `
+  --quality-dir runs/tinyspan_quality/x2_quality_after_x4_reds_val `
+  --candidate-id x2_quality_after_x4_20260625 `
+  --poll-seconds 600 `
+  --wait-seconds 259200 `
+  --min-steps 51480 `
+  --max-images 0 `
+  --download-artifact-dir artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\x2_quality_candidates\x2_quality_after_x4_20260625_cloud_eval
+Remove-Item Env:\SEETA_PASS -ErrorAction SilentlyContinue
+```
+
+Expected evaluator behavior:
+
+- It may be started before cloud X2 exists; it waits for the X2 run to appear.
+- It waits until X2 training exits after at least `51480` steps and `student_last.pt` exists.
+- It runs full REDS `val_sharp` software quality evaluation with `scale=2`, `border=2`, `max_images=0`.
+- It packages a software-only X2 quality candidate with PSNR gate `>=30dB`.
+- It does not start Vivado, JTAG, XSCT, board access, quantization, or RTL export.
 
 Post-training prep dry-run after the cloud X2 run is copied/mirrored back locally:
 

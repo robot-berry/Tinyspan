@@ -205,6 +205,32 @@ target_quality=REDS val student_vs_hr >= 30dB
 The watcher only starts the cloud training process. It does not run Vivado,
 JTAG, XSCT, board access, quantization, or RTL export.
 
+Start the X2 completion/evaluation watcher alongside it so the X2 run is also
+packaged automatically after training:
+
+```powershell
+$env:SEETA_PASS = "<ssh-password>"
+python scripts\cloud\watch_x2_training_then_eval.py `
+  --host connect.westc.seetacloud.com `
+  --port 48335 `
+  --user root `
+  --run-dir runs/tinyspan_distill/video_x2_c32_b4_quality_after_x4_20260625 `
+  --quality-dir runs/tinyspan_quality/x2_quality_after_x4_reds_val `
+  --candidate-id x2_quality_after_x4_20260625 `
+  --poll-seconds 600 `
+  --wait-seconds 259200 `
+  --min-steps 51480 `
+  --max-images 0 `
+  --download-artifact-dir artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\x2_quality_candidates\x2_quality_after_x4_20260625_cloud_eval
+Remove-Item Env:\SEETA_PASS -ErrorAction SilentlyContinue
+```
+
+The X2 evaluator waits for the run to start if X2 has not been launched yet.
+It runs the full REDS `val_sharp` software quality gate with `scale=2`,
+`border=2`, and packages the X2 candidate with a `>=30dB` PSNR gate. It is also
+file/SSH only and does not start Vivado, JTAG, XSCT, board access,
+quantization, or RTL export.
+
 After `student_last.pt` is written, run the REDS HR quality gate on the same server:
 
 ```bash

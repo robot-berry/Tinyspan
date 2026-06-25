@@ -1,9 +1,9 @@
-"""Package an X4 quality-training candidate for review.
+"""Package a TinySPAN quality-training candidate for review.
 
-This script is file-only. It copies a cloud/local X4 training checkpoint,
+This script is file-only. It copies a cloud/local TinySPAN training checkpoint,
 training logs, and REDS HR quality metrics into an auditable candidate package.
-It does not run training, quantization, RTL export, Vivado, JTAG, XSCT, or board
-access.
+It does not run training, quantization, RTL export, Vivado, JTAG, XSCT, or
+board access.
 """
 
 from __future__ import annotations
@@ -85,11 +85,13 @@ def latest_existing(candidates: list[Path]) -> Path | None:
 def write_markdown(path: Path, manifest: dict[str, Any]) -> None:
     decision = manifest["decision"]
     quality = manifest["quality_summary"]
+    scale = manifest.get("scale", 4)
     lines = [
-        "# TinySPAN X4 Quality Candidate Package",
+        f"# TinySPAN X{scale} Quality Candidate Package",
         "",
         f"- candidate: `{manifest['candidate_id']}`",
         f"- status: `{manifest['status']}`",
+        f"- scale: `X{scale}`",
         f"- generated at: `{manifest['generated_at']}`",
         f"- checkpoint SHA256: `{manifest['checkpoint_sha256']}`",
         f"- image count: `{quality.get('image_count', '')}`",
@@ -122,6 +124,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--quality-dir", type=Path, default=DEFAULT_QUALITY_DIR)
     parser.add_argument("--artifact-dir", type=Path, default=Path(""))
     parser.add_argument("--checkpoint", type=Path, default=Path(""))
+    parser.add_argument("--scale", type=int, default=4)
     parser.add_argument("--min-psnr-db", type=float, default=28.0)
     parser.add_argument("--min-psnr-gain-db", type=float, default=0.0)
     parser.add_argument("--target-psnr-db", type=float, default=30.0)
@@ -202,6 +205,7 @@ def main() -> int:
     }
     manifest = {
         "candidate_id": args.candidate_id,
+        "scale": args.scale,
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "status": "PASS_SOFTWARE_QUALITY_GATE" if software_quality_gate_pass else "INCOMPLETE_OR_REJECTED",
         "software_quality_gate_pass": software_quality_gate_pass,
@@ -224,9 +228,9 @@ def main() -> int:
         "copied": copied,
         "missing_required": missing,
         "boundary": [
-            "This package is only an X4 software quality candidate gate.",
-            "It does not replace X4_SUBMIT_20260625_CURRENT_BASELINE.",
-            "Replacing the X4 baseline still requires new quantization, RTL/export checks, bitstream, real board-vs-fixed equality, and >=30fps evidence.",
+            f"This package is only an X{args.scale} software quality candidate gate.",
+            "It does not replace an accepted hardware submission baseline by itself.",
+            f"Replacing or accepting the X{args.scale} baseline still requires matching quantization, RTL/export checks, bitstream, real board-vs-fixed equality, and >=30fps evidence.",
             "This script is file-only and does not start training, Vivado, JTAG, XSCT, board access, quantization, or RTL export.",
         ],
     }

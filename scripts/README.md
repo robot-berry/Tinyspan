@@ -49,6 +49,9 @@ Current folders:
   - `cloud/watch_x4_package_then_start_x2_training.py`: waits for the cloud X4
     candidate package manifest, then starts cloud X2 improvement training. It
     does not run local training or start Vivado/JTAG/XSCT.
+  - `cloud/watch_x2_training_then_eval.py`: waits for cloud X2 training to
+    start and finish, runs the full REDS HR X2 software quality evaluation, and
+    packages the X2 candidate. It does not start Vivado/JTAG/XSCT.
 - `run_tinyspan_c32b4_post_training_prep.ps1`: common X2/X4 post-training
   entrypoint. Use `-Scale 2` for the independent X2 route and `-Scale 4` for
   X4. It refuses to freeze a still-running training checkpoint unless only
