@@ -22,10 +22,10 @@ Write-Output ("WORKER_PIDS={0}" -f ($WorkerPids -join ","))
 
 while ($true) {
     $alive = @()
-    foreach ($pid in $WorkerPids) {
-        $proc = Get-Process -Id $pid -ErrorAction SilentlyContinue
+    foreach ($workerPid in $WorkerPids) {
+        $proc = Get-Process -Id $workerPid -ErrorAction SilentlyContinue
         if ($proc) {
-            $alive += $pid
+            $alive += $workerPid
         }
     }
     if ($alive.Count -eq 0) {
