@@ -118,6 +118,15 @@ board output == software fixed-point reference
    - 独立 X2 量化/RTL/bitstream/board output
    - `640x360 -> 1280x720`
 
+7. REDS HR / SD 卡实际场景图质量验证
+   - REDS 训练/验证图仍作为正式数据集来源；当前训练使用 `G:\REDS\train_sharp`
+   - SD 卡图用于实际会议场景、人像、文档或屏幕共享展示验证，不替代 REDS 训练集
+   - 如果输入是 HR 图，先按目标倍率生成 LR 输入，再由 TinySPAN tile 路线输出 SR，最后用 HR 图作为 reference
+   - 如果输入已经是 LR 图，则用同一 checkpoint/quant/tile contract 生成 software tiled fixed reference，并与板上输出逐字节比较
+   - 质量指标由 `tools/image_validation/evaluate_sr_quality.py` 生成，包含 PSNR、SSIM、MAE 和 max diff
+   - 当前 X4 REDS HR 样例：
+     `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/reds_val_quality_x4_00000000_tile64_20260625`
+
 ## 输出材料
 
 每个最终验收 run 至少保留：
@@ -137,11 +146,14 @@ board output == software fixed-point reference
 - `throughput.json`
 - `tinyspan_x4_quality_metrics.json`
 - `tinyspan_x4_quality_metrics.md`
+- `reds_hr_quality_metrics.json`
+- `reds_hr_quality_metrics.md`
 - `resource_gate.json`
 - timing/utilization/power report
 
 画质指标入口使用 `tools/image_validation/evaluate_sr_quality.py`。当前 X4 已生成
 `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_metrics_20260625/tinyspan_x4_quality_metrics.json`，
 其中包含 student-vs-teacher、PyTorch-vs-tile 定点和 full-integer-vs-tile 定点的 PSNR/SSIM/MAE。
-注意 student-vs-teacher 是官方 SPAN teacher 一致性指标；若要报告 REDS HR 真值指标，必须把 REDS HR
-图像作为 reference 重新生成质量报告。
+注意 student-vs-teacher 是官方 SPAN teacher 一致性指标。REDS HR 真值指标使用 REDS HR 图像作为
+reference，例如当前 X4 样例的 `reds_hr_quality_metrics.json` 同时报告 `x4_tile64_fixed_vs_reds_hr`
+和 `bicubic_lr_vs_reds_hr`，便于判断 TinySPAN 相对 bicubic baseline 的还原度。

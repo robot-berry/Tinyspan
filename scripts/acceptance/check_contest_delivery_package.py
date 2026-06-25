@@ -150,6 +150,9 @@ def build_check(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
     x4_quality, x4_quality_path = latest_json(
         repo_root, f"{artifact_dir.as_posix()}/x4_quality_metrics*/tinyspan_x4_quality_metrics.json"
     )
+    x4_reds_quality, x4_reds_quality_path = latest_json(
+        repo_root, f"{artifact_dir.as_posix()}/reds_val_quality_x4_*/reds_hr_quality_metrics.json"
+    )
     x2_manifest, x2_manifest_path = find_x2_manifest(repo_root, artifact_dir)
 
     checks: list[dict[str, Any]] = []
@@ -161,6 +164,7 @@ def build_check(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
         "docs/hardware_design.md",
         "docs/verification_plan.md",
         "docs/ppa_analysis.md",
+        "docs/sd_card_x4_board_validation_plan.md",
         "docs/gate_status.md",
         "docs/contest_delivery_audit.md",
         "docs/contest_delivery_index.md",
@@ -286,6 +290,33 @@ def build_check(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
             ),
             "X4 student-vs-teacher、PyTorch-vs-tiled fixed 和 full-integer-vs-tiled fixed 的 PSNR/SSIM/MAE 指标存在",
             "运行 tools/image_validation/evaluate_sr_quality.py 生成 X4 画质指标",
+        )
+    )
+
+    x4_reds_quality_pairs = {
+        str(item.get("label")): item for item in (x4_reds_quality or {}).get("pairs", [])
+    }
+    required_x4_reds_pairs = [
+        "x4_tile64_fixed_vs_reds_hr",
+        "bicubic_lr_vs_reds_hr",
+    ]
+    missing_x4_reds_pairs = [
+        label
+        for label in required_x4_reds_pairs
+        if label not in x4_reds_quality_pairs or x4_reds_quality_pairs[label].get("psnr_db") is None
+    ]
+    x4_reds_quality_ok = bool(x4_reds_quality and not missing_x4_reds_pairs)
+    checks.append(
+        row(
+            "x4_reds_hr_quality",
+            "X4 REDS HR 真值质量指标齐备",
+            pass_if(x4_reds_quality_ok, "MISSING"),
+            (
+                f"metrics={rel(repo_root, x4_reds_quality_path)}, "
+                f"pairs={list(x4_reds_quality_pairs)}, missing={missing_x4_reds_pairs}"
+            ),
+            "X4 tile64 fixed-vs-REDS HR 与 bicubic baseline-vs-REDS HR 的 PSNR/SSIM/MAE 指标存在",
+            "用 REDS HR 或 SD 卡 HR 展示图作为 reference 运行 evaluate_sr_quality.py",
         )
     )
 

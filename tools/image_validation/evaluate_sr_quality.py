@@ -52,9 +52,17 @@ def psnr_db(mse: float) -> float:
     return 10.0 * math.log10((255.0 * 255.0) / mse)
 
 
-def metric_pair(label: str, sr_path: Path, ref_path: Path, border: int) -> dict[str, Any]:
-    sr_raw = read_rgb(sr_path)
-    ref_raw = read_rgb(ref_path)
+def metric_pair(label: str, sr_path: Path, ref_path: Path, border: int, resize_sr_to_reference: bool) -> dict[str, Any]:
+    sr_image = Image.open(sr_path).convert("RGB")
+    ref_image = Image.open(ref_path).convert("RGB")
+    sr_original_size = sr_image.size
+    ref_size = ref_image.size
+    sr_resized_for_metric = False
+    if sr_image.size != ref_image.size and resize_sr_to_reference:
+        sr_image = sr_image.resize(ref_image.size, Image.Resampling.BICUBIC)
+        sr_resized_for_metric = True
+    sr_raw = np.asarray(sr_image, dtype=np.float32)
+    ref_raw = np.asarray(ref_image, dtype=np.float32)
     if sr_raw.shape != ref_raw.shape:
         raise ValueError(f"{label}: image shapes differ: sr={sr_raw.shape}, ref={ref_raw.shape}")
 
@@ -77,6 +85,11 @@ def metric_pair(label: str, sr_path: Path, ref_path: Path, border: int) -> dict[
         "sr_sha256": sha256_file(sr_path),
         "reference": str(ref_path),
         "reference_sha256": sha256_file(ref_path),
+        "sr_original_width": int(sr_original_size[0]),
+        "sr_original_height": int(sr_original_size[1]),
+        "reference_width": int(ref_size[0]),
+        "reference_height": int(ref_size[1]),
+        "sr_resized_for_metric": sr_resized_for_metric,
         "width": int(sr.shape[1]),
         "height": int(sr.shape[0]),
         "channels": int(sr.shape[2]),
@@ -98,15 +111,16 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
         "",
         f"- generated at: `{report['generated_at']}`",
         f"- border crop: `{report['border']}` px",
+        f"- resize SR to reference: `{'yes' if report['resize_sr_to_reference'] else 'no'}`",
         "",
-        "| Pair | PSNR | SSIM | MAE/255 | Max diff | Mismatch bytes |",
-        "| --- | ---: | ---: | ---: | ---: | ---: |",
+        "| Pair | PSNR | SSIM | MAE/255 | Max diff | Mismatch bytes | Resized |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for item in report["pairs"]:
         ssim_value = item.get("ssim")
         ssim_text = "" if ssim_value is None else f"{ssim_value:.6f}"
         lines.append(
-            "| `{label}` | `{psnr:.6f} dB` | `{ssim}` | `{mae:.6f}` | `{max_diff}` | `{mismatch}/{total}` |".format(
+            "| `{label}` | `{psnr:.6f} dB` | `{ssim}` | `{mae:.6f}` | `{max_diff}` | `{mismatch}/{total}` | `{resized}` |".format(
                 label=item["label"],
                 psnr=item["psnr_db"],
                 ssim=ssim_text,
@@ -114,6 +128,7 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
                 max_diff=item["max_channel_diff"],
                 mismatch=item["mismatch_bytes"],
                 total=item["total_bytes"],
+                resized="yes" if item.get("sr_resized_for_metric") else "no",
             )
         )
 
@@ -142,6 +157,11 @@ def parse_args() -> argparse.Namespace:
         help="Image pair to evaluate. Repeat for multiple pairs.",
     )
     parser.add_argument("--border", type=int, default=0, help="Pixels to crop from all sides before metrics.")
+    parser.add_argument(
+        "--resize-sr-to-reference",
+        action="store_true",
+        help="If SR and reference sizes differ, bicubic-resize SR to reference size before metrics.",
+    )
     parser.add_argument("--json-out", type=Path, required=True)
     parser.add_argument("--md-out", type=Path, required=True)
     return parser.parse_args()
@@ -150,12 +170,13 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     pairs = [
-        metric_pair(label, Path(sr).resolve(), Path(ref).resolve(), args.border)
+        metric_pair(label, Path(sr).resolve(), Path(ref).resolve(), args.border, args.resize_sr_to_reference)
         for label, sr, ref in args.pair
     ]
     report = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "border": args.border,
+        "resize_sr_to_reference": args.resize_sr_to_reference,
         "pair_count": len(pairs),
         "pairs": pairs,
     }

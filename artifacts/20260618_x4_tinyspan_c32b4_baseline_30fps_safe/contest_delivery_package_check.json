@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T11:51:58",
+  "generated_at": "2026-06-25T12:06:53",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "status": "NOT_COMPLETE",
@@ -63,6 +63,15 @@
       "evidence": "metrics=artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_metrics_20260625/tinyspan_x4_quality_metrics.json, pairs=['student_vs_teacher', 'pytorch_vs_tiled_fixed', 'full_integer_vs_tiled_fixed', 'pytorch_vs_full_integer'], missing=[]",
       "expected": "X4 student-vs-teacher、PyTorch-vs-tiled fixed 和 full-integer-vs-tiled fixed 的 PSNR/SSIM/MAE 指标存在",
       "action": "运行 tools/image_validation/evaluate_sr_quality.py 生成 X4 画质指标"
+    },
+    {
+      "id": "x4_reds_hr_quality",
+      "name": "X4 REDS HR 真值质量指标齐备",
+      "status": "PASS",
+      "required": true,
+      "evidence": "metrics=artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/reds_val_quality_x4_00000000_tile64_20260625/reds_hr_quality_metrics.json, pairs=['x4_tile64_fixed_vs_reds_hr', 'bicubic_lr_vs_reds_hr'], missing=[]",
+      "expected": "X4 tile64 fixed-vs-REDS HR 与 bicubic baseline-vs-REDS HR 的 PSNR/SSIM/MAE 指标存在",
+      "action": "用 REDS HR 或 SD 卡 HR 展示图作为 reference 运行 evaluate_sr_quality.py"
     },
     {
       "id": "x2_training_freeze",
