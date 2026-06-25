@@ -48,6 +48,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--connect-retry-delay", type=float, default=15.0)
     parser.add_argument("--min-steps", type=int, default=51480)
     parser.add_argument("--max-images", type=int, default=0, help="0 means full REDS val.")
+    parser.add_argument(
+        "--save-image-count",
+        type=int,
+        default=16,
+        help="Save only the first N per-image PNG groups during full-val scoring; 0 means save all.",
+    )
     parser.add_argument("--border", type=int, default=2)
     parser.add_argument("--no-amp", action="store_true")
     parser.add_argument("--force-eval", action="store_true")
@@ -192,6 +198,7 @@ python tools/image_validation/evaluate_tinyspan_checkpoint_reds_hr.py \
   --channels 32 \
   --num-blocks 4 \
   --max-images {args.max_images} \
+  --save-image-count {args.save_image_count} \
   --border {args.border}{amp}
 python scripts/acceptance/package_x4_quality_candidate.py \
   --scale 2 \

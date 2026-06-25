@@ -160,6 +160,8 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
         f"- checkpoint: `{report['checkpoint']}`",
         f"- checkpoint SHA256: `{report['checkpoint_sha256']}`",
         f"- image count: `{report['image_count']}`",
+        f"- saved image count: `{report.get('saved_image_count', '')}`",
+        f"- save image count setting: `{report.get('save_image_count', '')}`",
         f"- scale: `X{report['scale']}`",
         f"- border: `{report['border']}`",
         "",
@@ -207,6 +209,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", choices=("auto", "cuda", "cpu"), default="auto")
     parser.add_argument("--amp", action="store_true")
     parser.add_argument("--preview-count", type=int, default=3)
+    parser.add_argument(
+        "--save-image-count",
+        type=int,
+        default=0,
+        help="0 saves all per-image PNGs; a positive value saves only the first N while still scoring all images.",
+    )
     return parser.parse_args()
 
 
@@ -228,7 +236,9 @@ def main() -> int:
     model = load_model(repo_root, checkpoint, args.scale, args.channels, args.num_blocks, device)
     images = list_images(val_frames, args.max_images)
     sr_dir = out_dir / "sr_images"
-    sr_dir.mkdir(parents=True, exist_ok=True)
+    save_all_images = args.save_image_count <= 0
+    if save_all_images or args.save_image_count > 0:
+        sr_dir.mkdir(parents=True, exist_ok=True)
 
     rows: list[dict[str, Any]] = []
     preview_rows: list[dict[str, Any]] = []
@@ -249,29 +259,32 @@ def main() -> int:
         student_sr = tensor_to_rgb_image(student)
 
         stem = f"{index:04d}_{hr_path.stem}"
+        should_save_images = save_all_images or index <= args.save_image_count
         hr_out = sr_dir / f"{stem}_hr.png"
         lr_out = sr_dir / f"{stem}_lr.png"
         bicubic_out = sr_dir / f"{stem}_bicubic_sr.png"
         student_out = sr_dir / f"{stem}_student_sr.png"
-        hr.save(hr_out)
-        lr.save(lr_out)
-        bicubic_sr.save(bicubic_out)
-        student_sr.save(student_out)
+        if should_save_images:
+            hr.save(hr_out)
+            lr.save(lr_out)
+            bicubic_sr.save(bicubic_out)
+            student_sr.save(student_out)
 
         student_metrics = image_metrics(student_sr, hr, args.border)
         bicubic_metrics = image_metrics(bicubic_sr, hr, args.border)
         row = {
             "index": index,
             "source": str(hr_path),
-            "hr": str(hr_out),
-            "lr": str(lr_out),
-            "bicubic_sr": str(bicubic_out),
-            "student_sr": str(student_out),
+            "saved_images": should_save_images,
+            "hr": str(hr_out) if should_save_images else "",
+            "lr": str(lr_out) if should_save_images else "",
+            "bicubic_sr": str(bicubic_out) if should_save_images else "",
+            "student_sr": str(student_out) if should_save_images else "",
             "student_vs_hr": student_metrics,
             "bicubic_vs_hr": bicubic_metrics,
         }
         rows.append(row)
-        if len(preview_rows) < args.preview_count:
+        if should_save_images and len(preview_rows) < args.preview_count:
             preview_rows.append(row)
 
     def summarize(key: str) -> dict[str, Any]:
@@ -303,6 +316,8 @@ def main() -> int:
         "border": args.border,
         "device": str(device),
         "amp": bool(args.amp),
+        "save_image_count": args.save_image_count,
+        "saved_image_count": int(sum(1 for row in rows if row.get("saved_images"))),
         "summary": summary,
         "decision": {
             "student_psnr_gain_over_bicubic_db": float(gain),
