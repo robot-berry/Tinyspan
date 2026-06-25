@@ -38,6 +38,11 @@ Main documents:
   verification plan and remaining full-frame/X2 tests.
 - [docs/ppa_analysis.md](docs/ppa_analysis.md): resource, timing, power, and
   throughput evidence.
+- [docs/contest_delivery_index.md](docs/contest_delivery_index.md): current
+  contest delivery evidence index with SHA256 hashes.
+- [docs/contest_delivery_package_check.md](docs/contest_delivery_package_check.md):
+  read-only final delivery check; it must pass without `--allow-incomplete`
+  before claiming full contest completion.
 - [workflows/tinyspan_720p30_acceptance.yaml](workflows/tinyspan_720p30_acceptance.yaml):
   machine-readable workflow checklist.
 - [artifacts/README.md](artifacts/README.md): where future generated outputs

@@ -832,6 +832,18 @@ tile 尺寸不再锁死为 `32x32`，只要求是 LR 帧内的正尺寸，因此
 训练完成后仍不能直接宣告通过；post-training prep 只补齐冻结、量化和 RTL 导出入口。后续仍需完成对应倍率的
 RTL 仿真、bitstream、真实板上输出、board-vs-fixed 逐字节一致性、可视化预览和 `>=30fps` 实测吞吐。
 
+最终交付前必须运行只读交付包校验。当前 X2 未闭合时可以使用 `-AllowIncomplete` 对应的脚本参数
+`--allow-incomplete` 生成 `NOT_COMPLETE` 报告；真正提交赛题时必须去掉该参数，且脚本退出码为 `0`：
+
+```powershell
+python .\scripts\acceptance\check_contest_delivery_package.py `
+  --repo-root . `
+  --artifact-dir artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe
+```
+
+该校验只读取 `contest_completion_status.json`、`contest_delivery_audit.json`、`contest_delivery_index.json`、
+X2/X4 Gate H manifest、图像验证材料和文档/源码索引，不启动 Vivado、JTAG、XSCT、板卡或训练流程。
+
 ## 11. 完成定义
 
 只有当 X2 和 X4 所需模式都具备完整 TinySPAN 证据包，并满足以下条件时，任务才算完成：

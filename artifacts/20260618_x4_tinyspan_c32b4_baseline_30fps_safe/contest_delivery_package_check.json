@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-06-25T11:31:32",
+  "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
+  "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
+  "status": "NOT_COMPLETE",
+  "required_failed_count": 3,
+  "failed_requirements": [
+    "x2_training_freeze",
+    "x2_gate_h",
+    "final_audit"
+  ],
+  "checks": [
+    {
+      "id": "docs",
+      "name": "交付文档齐备",
+      "status": "PASS",
+      "required": true,
+      "evidence": "all required docs exist",
+      "expected": "README、工作流、模型/训练/量化/硬件/验证/PPA/状态审计文档均存在",
+      "action": "补齐缺失文档"
+    },
+    {
+      "id": "source_tree",
+      "name": "训练、量化、RTL 和验收源代码齐备",
+      "status": "PASS",
+      "required": true,
+      "evidence": "all required source roots exist",
+      "expected": "模型、训练、量化、RTL、转换工具和验收脚本均存在",
+      "action": "补齐缺失源码或脚本"
+    },
+    {
+      "id": "status_artifacts",
+      "name": "交付审计 artifact 齐备",
+      "status": "PASS",
+      "required": true,
+      "evidence": "completion=True, audit=True, index=True",
+      "expected": "contest_completion_status、contest_delivery_audit、contest_delivery_index 均存在",
+      "action": "运行 refresh_tinyspan_delivery_status.ps1"
+    },
+    {
+      "id": "x4_gate_h",
+      "name": "X4 720p30 板上正确性与吞吐闭合",
+      "status": "PASS",
+      "required": true,
+      "evidence": "manifest=artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/manifest.json, fps=30.409639424076744, mismatch=0/2764800, max_diff=0, bitstream=A94DC9B1417B35D05C9D57176109155BCBAFB5939C5E9EA9DC570C8184FD8232",
+      "expected": "X4 scale=4，1280x720，fps>=30，mismatch=0，max diff=0，同一 bitstream/quant/checkpoint",
+      "action": "补齐 X4 Gate H manifest 或重新验收 X4"
+    },
+    {
+      "id": "x4_images",
+      "name": "X4 可视化验证材料齐备",
+      "status": "PASS",
+      "required": true,
+      "evidence": "software reference, preview, heatmap exist",
+      "expected": "software_tiled_fixed_point_sr、comparison_preview、diff_heatmap 均存在",
+      "action": "补生成 X4 可视化材料"
+    },
+    {
+      "id": "x2_training_freeze",
+      "name": "X2 独立训练冻结与量化/RTL 准备闭合",
+      "status": "PARTIAL",
+      "required": true,
+      "evidence": "training=artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json, gate=PARTIAL, readiness=PARTIAL, blockers=['x2_quant_plan_exists', 'x2_rtl_manifest_exists']",
+      "expected": "X2 gate=PASS，readiness=PASS，无量化/RTL manifest 缺口",
+      "action": "等待 X2 训练完成并运行 post-training prep"
+    },
+    {
+      "id": "x2_gate_h",
+      "name": "X2 720p30 板上正确性与吞吐闭合",
+      "status": "MISSING",
+      "required": true,
+      "evidence": "manifest=, fps=None, mismatch=None/None, missing=['finished/frozen X2 TinySPAN checkpoint', 'X2 W8A8 quant plan', 'X2 fixed-point/tiled reference', 'X2 RTL export and simulation', 'X2 bitstream', 'real X2 board output', 'board-vs-software byte-exact comparison', 'measured >=30fps throughput']",
+      "expected": "X2 scale=2，1280x720，fps>=30，mismatch=0，max diff=0，同一 bitstream/quant/checkpoint",
+      "action": "生成 X2 bitstream 并完成真实板上输出、board-vs-fixed 和吞吐验收"
+    },
+    {
+      "id": "final_audit",
+      "name": "整赛题交付审计通过",
+      "status": "NOT_COMPLETE",
+      "required": true,
+      "evidence": "accepted=False, status=NOT_COMPLETE",
+      "expected": "contest_delivery_audit accepted=true",
+      "action": "X2/X4 全部闭合后重新运行交付审计"
+    }
+  ],
+  "boundary": [
+    "该校验只读取现有证据，不启动 Vivado/JTAG/板卡/训练。",
+    "当前如果返回 NOT_COMPLETE，是交付状态结论，不代表脚本失败。",
+    "只有所有 required check 为 PASS，才可把整赛题标为可交付。"
+  ]
+}

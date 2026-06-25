@@ -8,6 +8,8 @@ param(
   [string]$ContestAuditMd = "docs\contest_delivery_audit.md",
   [string]$ContestIndexJson = "artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\contest_delivery_index.json",
   [string]$ContestIndexMd = "docs\contest_delivery_index.md",
+  [string]$ContestPackageCheckJson = "artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\contest_delivery_package_check.json",
+  [string]$ContestPackageCheckMd = "docs\contest_delivery_package_check.md",
   [int]$TotalSteps = 198000,
   [switch]$SkipX2TrainingRefresh
 )
@@ -72,6 +74,16 @@ try {
     --md-out $ContestIndexMd
   if ($LASTEXITCODE -ne 0) {
     throw "make_contest_delivery_index.py failed with exit code $LASTEXITCODE"
+  }
+
+  python scripts\acceptance\check_contest_delivery_package.py `
+    --repo-root $TinyspanRoot `
+    --artifact-dir $ArtifactDir `
+    --json-out $ContestPackageCheckJson `
+    --md-out $ContestPackageCheckMd `
+    --allow-incomplete
+  if ($LASTEXITCODE -ne 0) {
+    throw "check_contest_delivery_package.py failed with exit code $LASTEXITCODE"
   }
 
   Write-Host "TINYSPAN_DELIVERY_REFRESH_DONE=$((Get-Date).ToString('o'))"
