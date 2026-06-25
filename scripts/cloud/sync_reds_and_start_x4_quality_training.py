@@ -51,6 +51,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-train-sequences", type=int, default=0, help="0 means all train_sharp sequences")
     parser.add_argument("--sequence-start", type=int, default=1, help="1-based sequence start after sorting")
     parser.add_argument("--sequence-end", type=int, default=0, help="1-based inclusive sequence end; 0 means all")
+    parser.add_argument("--skip-train", action="store_true", help="Skip train_sharp sync")
     parser.add_argument("--include-val", action="store_true", help="Also sync val_sharp")
     parser.add_argument("--start-training", action="store_true")
     parser.add_argument("--train-max-pairs", type=int, default=24000)
@@ -212,8 +213,7 @@ def upload_split_sequence_tars(
 ) -> UploadStats:
     stats = UploadStats(started_at=time.time())
     sequences = selected_sequences(local_reds_root, split, max_train_sequences)
-    if split == "train_sharp":
-        sequences = apply_sequence_range(sequences, sequence_start, sequence_end)
+    sequences = apply_sequence_range(sequences, sequence_start, sequence_end)
     totals = [sequence_size_and_count(seq) for seq in sequences]
     total_files = sum(count for count, _bytes in totals)
     total_bytes = sum(_bytes for _count, _bytes in totals)
@@ -374,9 +374,13 @@ def main() -> int:
                     args.dry_run,
                     args.progress_every,
                 )
-            summary = {"train_sharp": upload_fn("train_sharp", args.max_train_sequences).__dict__}
+            summary = {}
+            if not args.skip_train:
+                summary["train_sharp"] = upload_fn("train_sharp", args.max_train_sequences).__dict__
             if args.include_val:
                 summary["val_sharp"] = upload_fn("val_sharp", 0).__dict__
+            if not summary:
+                raise SystemExit("Nothing to sync: train_sharp is skipped and --include-val was not set.")
         finally:
             sftp.close()
 

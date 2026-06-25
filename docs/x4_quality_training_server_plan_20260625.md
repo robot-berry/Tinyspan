@@ -93,6 +93,18 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cloud/run_x4_full_re
 Remove-Item Env:\SEETA_PASS
 ```
 
+While the full `train_sharp` workers are still running, `val_sharp` can be pre-uploaded in parallel because it
+uses a separate REDS split and the final full wrapper will skip already-matching remote sequences:
+
+```powershell
+$env:SEETA_PASS = "<server password>"
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cloud/run_x4_val_reds_parallel_sequence_tar_sync.ps1 `
+  -Workers 4
+Remove-Item Env:\SEETA_PASS
+```
+
+This helper only syncs `val_sharp`; it does not start training by itself.
+
 For a quick smoke test before a full run:
 
 ```bash
