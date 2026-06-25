@@ -1,7 +1,7 @@
 name: tinyspan_720p30_acceptance
 name_zh: TinySPAN 720p30 X2/X4 上板验收
-version: 7
-updated: 2026-06-24
+version: 8
+updated: 2026-06-25
 
 project_paths:
   description_zh: 当前工程与 TinySPAN 工作流文件的固定存放位置。
@@ -244,8 +244,8 @@ run_directory_pattern: "{date}_{scale}_tinyspan_{model}_{tile}_{freq}_{tag}"
 run_directory_pattern_zh: 每次运行使用一个独立目录，例如 20260618_x4_tinyspan_c32b4_tile32_h21_f50_origboard。
 
 current_status_zh:
-  date: 2026-06-24
-  training: TinySPAN 训练已完成。
+  date: 2026-06-25
+  training: TinySPAN X2 独立训练仍在运行；实时进度以 docs/gate_status.md 和 artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json 为准。
   active_baseline: c32b4_30fps_frozen_20260613 已提升为当前 TinySPAN 硬件安全基线。
   software_best: c32b4_final_20260615 软件质量更好，已通过 320x180 到 1280x720 的 30fps 软件验收。
   board_safe_candidate: c32b4_30fps_frozen_20260613 目前是已证明 frozen/source 哈希一致且具备量化、整数参考和 RTL manifest 证据的 TinySPAN 硬件安全基线。
@@ -256,10 +256,13 @@ current_status_zh:
   board_side_tile_route: 最终 SD/DDR 大图或视频帧必须由板端按 32x32 LR tile 优先、64x64 LR tile 备选进行切块、halo、推理、裁剪和拼接。
   gate_full_frame_cropper_sim: sr_stream_dynamic_cropper 基础 Vivado/xsim 已通过，报告位于 sim/reports/sr_stream_dynamic_cropper_sim_20260624.md。
   tiled_fixed_reference_tool: 已新增 tools/image_validation/make_tinyspan_tiled_fixed_reference.py 和 scripts/acceptance/make_tinyspan_tiled_fixed_reference.ps1，可生成 hardware-tiled FixedPng、tile_manifest、comparison_preview 和 diff_heatmap；8x6 小图 smoke 已通过。
-  x4_full_frame_tiled_reference: 已生成 X4 320x180 到 1280x720、tile 32x32、60 tile 的 hardware-tiled fixed reference，路径为 artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile32_20260624。
+  x4_full_frame_tiled_reference: 已生成 X4 320x180 到 1280x720、tile 64x64、15 tile 的 hardware-tiled fixed reference，路径为 artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625。
   x4_full_frame_tiled_reference_hashes: checkpoint SHA256 6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938，quant-plan SHA256 EB6EEDDDE9360F61E6FC30141B2A1E6539E519CB226AC18B8C219B9E40092C9D。
-  gate_full_frame_shell_sim: sr_tile_tinyspan_x4_writer_shell 小帧 xsim 待 Vivado 空闲后运行，尚未作为 PASS 证据。
-  board_acceptance_boundary: 当前基线已有 32x32 tile 真实板上输出、逐字节一致性和 tile throughput；仍缺完整 SD/DDR frame tile scheduler、完整帧拼接输出、完整帧 throughput 和 X2 独立证据，不能宣告最终赛题完成。
+  x4_gate_h: X4 320x180 到 1280x720、tile 64x64、155MHz 的真实板上完整帧验收已闭合，吞吐 30.409639424076744fps，A53 in-DDR compare mismatch 0/2764800，max diff 0。
+  x2_readiness: X2 静态硬件准备为 PARTIAL，仅剩 x2_quant_plan_exists 和 x2_rtl_manifest_exists，二者需等待 X2 训练完成后由 post-training prep 生成。
+  post_training_watcher: X2 post-training watcher 已启动，等待 step >= 198000 且训练进程退出后，自动执行冻结、量化、RTL 导出和 readiness 检查；训练期间不启动 Vivado/JTAG。
+  delivery_package_check: 最终交付包校验脚本 scripts/acceptance/check_contest_delivery_package.py 已接入刷新流程；当前状态 NOT_COMPLETE，失败项仅为 x2_training_freeze、x2_gate_h、final_audit。
+  board_acceptance_boundary: X4 子任务已可交付；整赛题仍缺 X2 独立冻结、量化、RTL、bitstream、真实板上输出、board-vs-fixed 一致性和 >=30fps 吞吐证据，不能宣告最终赛题完成。
   stopped_route: W8A12 wf18d/wf18e Vivado 已停止；其结果不作为 TinySPAN 验收证据。
 
 required_artifacts:
@@ -298,6 +301,11 @@ required_artifacts:
   - baseline_upgrade_report.md
   - handoff_readiness.json
   - handoff_readiness.md
+  - contest_completion_status.json
+  - contest_delivery_audit.json
+  - contest_delivery_index.json
+  - contest_delivery_package_check.json
+  - contest_delivery_package_check.md
 
 image_validation:
   description_zh: 对比 TinySPAN 训练/浮点超分输出、软件定点参考输出和真实板上输出，生成可查看图片与量化指标。
@@ -489,3 +497,20 @@ workflow:
       - 实测吞吐大于等于 30fps
       - 资源门限通过
       - 证据包已上传到 Tinyspan/artifacts
+
+  - id: contest_delivery_package_check
+    name_zh: 赛题最终交付包只读校验
+    inputs_zh:
+      - contest_completion_status.json
+      - contest_delivery_audit.json
+      - contest_delivery_index.json
+      - X2/X4 Gate H manifest
+      - 图像验证材料
+      - README、WORKFLOW、模型、训练、量化、硬件、验证和 PPA 文档
+    command: python .\scripts\acceptance\check_contest_delivery_package.py --repo-root . --artifact-dir artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe
+    safe_during_training_zh: 使用 --allow-incomplete 只生成 NOT_COMPLETE 报告；不启动 Vivado、JTAG、XSCT、板卡或训练流程。
+    pass_when_zh:
+      - 不带 --allow-incomplete 运行时退出码为 0
+      - docs、source_tree、status_artifacts、x4_gate_h、x4_images、x2_training_freeze、x2_gate_h 和 final_audit 全部 PASS
+      - X2 与 X4 都具备独立冻结、量化、RTL、bitstream、真实板上输出、board-vs-fixed 一致性和 >=30fps 证据
+      - contest_delivery_audit accepted=true

@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-25T11:31:32",
+  "generated_at": "2026-06-25T11:36:33",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "git": {
     "branch": "main",
-    "commit": "3a9e9d7b4e183a18ec710406cd8bd2835a4c067f",
+    "commit": "efd50762f6e03c9fed8e5ba866cea767f8c71ee8",
     "remote": "https://github.com/robot-berry/Tinyspan.git"
   },
   "overall": {
@@ -26,19 +26,19 @@
     "training_status": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json",
     "latest_observed": {
       "epoch": 31,
-      "step": 119465,
+      "step": 119957,
       "total_steps": 198000,
-      "progress_percent": 60.3359,
-      "loss": 0.0272473,
-      "distill_loss": 0.01610042,
-      "hr_loss": 0.02234957,
-      "edge_loss": 0.09727088,
-      "temporal_loss": 0.02365777,
-      "teacher_psnr": 32.805933,
-      "student_psnr": 29.076557,
-      "seconds": 70641.818,
-      "steps_per_second": 1.6911,
-      "eta": "00.12:54:00",
+      "progress_percent": 60.5843,
+      "loss": 0.02067988,
+      "distill_loss": 0.01204447,
+      "hr_loss": 0.01760585,
+      "edge_loss": 0.07346856,
+      "temporal_loss": 0.01822438,
+      "teacher_psnr": 33.429875,
+      "student_psnr": 30.196403,
+      "seconds": 70942.599,
+      "steps_per_second": 1.6909,
+      "eta": "00.12:49:14",
       "stderr_error_hints": "none"
     },
     "readiness": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
@@ -84,48 +84,48 @@
           "exists": true,
           "kind": "file",
           "bytes": 3188,
-          "mtime": "2026-06-25T11:31:32",
-          "sha256": "3217DA45CE0745AE22BEFB11D49A946C5CC4F2B71091EF8BEB80FE3CFD2C176A"
+          "mtime": "2026-06-25T11:36:32",
+          "sha256": "839FC242F4BECC5B8662711A1E31D77F5F72D619806826643B3AA4E8B87845D2"
         },
         {
           "path": "docs/contest_delivery_audit.md",
           "exists": true,
           "kind": "file",
           "bytes": 5981,
-          "mtime": "2026-06-25T11:31:32",
-          "sha256": "5BDCFACC5CFEB8003FA88F87AC6B99E053CA5916F33099BA69282DD6F60A8B34"
+          "mtime": "2026-06-25T11:36:32",
+          "sha256": "11DD9C8E0210E0476F09AE4C1860DF9D76CB22CF1D8D011314CC27980AC408E0"
         },
         {
           "path": "docs/x2_hardware_readiness.md",
           "exists": true,
           "kind": "file",
           "bytes": 2558,
-          "mtime": "2026-06-25T11:31:31",
-          "sha256": "7E700A575BD6658B1C570EC511A99F21482B0DAA29AF1036D70C52D25EDA5057"
+          "mtime": "2026-06-25T11:36:32",
+          "sha256": "35B4E8107C8D0B497C2E48F69C1D0D063BDA4AE8502F0ECB53C54F51169CEC1B"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_completion_status.json",
           "exists": true,
           "kind": "file",
           "bytes": 3566,
-          "mtime": "2026-06-25T11:31:32",
-          "sha256": "4CE1A997B5D1A17E7E13BA9872AAA20E231970C164D1A3BE7C28A33C17465A24"
+          "mtime": "2026-06-25T11:36:32",
+          "sha256": "5AB60D7CF8D6CB5C3B63B1DB11B6FD769C4C4B84B555B64AF259765B6360D55B"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_delivery_audit.json",
           "exists": true,
           "kind": "file",
           "bytes": 10572,
-          "mtime": "2026-06-25T11:31:32",
-          "sha256": "AA7B71E97737A3C82D7170DF44B54D8E2F26538A48D59EB500E88CACDEE4889C"
+          "mtime": "2026-06-25T11:36:32",
+          "sha256": "569D59B411F2FA57F6DA9E682ECEB05E15CE5DFC919AA8676575CB09F2073878"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
           "exists": true,
           "kind": "file",
           "bytes": 3498,
-          "mtime": "2026-06-25T11:31:31",
-          "sha256": "99371CE47E4AB93B98E7855ED1DA59079792B5645559E0268DA137F7CB1D7315"
+          "mtime": "2026-06-25T11:36:32",
+          "sha256": "36EB36076F8883A935CDA7FEDABBB7C4B16AC6A49C1E54BA5BF951489D8F669A"
         }
       ]
     },
