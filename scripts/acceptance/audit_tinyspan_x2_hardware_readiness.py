@@ -174,6 +174,7 @@ def main() -> int:
     status = "READY" if not required_failures else "PARTIAL"
     blockers = [item["id"] for item in required_failures]
     expected_tag = "x2_frozen_auto_YYYYMMDD"
+    expected_frozen_checkpoint = f"runs/tinyspan_frozen_candidates/{expected_tag}/student_final.pt"
     expected_quant_plan = (
         f"runs/tinyspan_quant_plan/{expected_tag}_x2_c32_b4_w8a8/"
         "tinyspan_w8a8_quant_plan.json"
@@ -200,7 +201,7 @@ def main() -> int:
             ),
             "starts_vivado_or_board": False,
             "expected": [
-                "frozen X2 checkpoint and SHA256 manifest",
+                f"frozen X2 checkpoint and SHA256 manifest at {expected_frozen_checkpoint}",
                 f"X2 W8A8 quant plan at {expected_quant_plan}",
                 f"X2 RTL manifest at {expected_rtl_manifest}",
                 f"X2 hardware-tiled fixed reference at {expected_tiled_fixed_png}",
@@ -231,7 +232,7 @@ def main() -> int:
                 f"-FixedPng {expected_tiled_fixed_png} "
                 "-BoardRaw REPLACE_WITH_X2_BOARD_OUTPUT.rgb "
                 "-MeasuredFps REPLACE_WITH_MEASURED_FPS "
-                "-Checkpoint REPLACE_WITH_X2_FROZEN_CHECKPOINT.pt "
+                f"-Checkpoint {expected_frozen_checkpoint} "
                 "-QuantPlan REPLACE_WITH_X2_QUANT_PLAN.json "
                 "-Bitstream REPLACE_WITH_X2_BITSTREAM.bit "
                 "-BoardLog REPLACE_WITH_X2_BOARD_RESOURCE_OR_RUN_LOG.json "
@@ -254,6 +255,7 @@ def main() -> int:
         "x2_training_status": rel(x2_status, repo),
         "x2_quant_plan": rel(x2_quant, repo),
         "x2_rtl_manifest": rel(x2_rtl, repo),
+        "expected_x2_frozen_checkpoint_after_freeze": expected_frozen_checkpoint,
         "expected_x2_quant_plan_after_freeze": expected_quant_plan,
         "expected_x2_rtl_manifest_after_freeze": expected_rtl_manifest,
         "expected_x2_tiled_reference_after_freeze": expected_tiled_reference_dir,

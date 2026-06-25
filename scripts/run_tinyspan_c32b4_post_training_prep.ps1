@@ -67,6 +67,7 @@ try {
   }
   $safeTag = $Tag -replace "[^A-Za-z0-9_.-]", "_"
   $scaleTag = "x${Scale}"
+  $frozenCheckpoint = "runs\tinyspan_frozen_candidates\${safeTag}\student_final.pt"
 
   $normalizedRunDir = ConvertTo-NormalizedPathText $RunDir
   $normalizedRunDirLeaf = [System.IO.Path]::GetFileName($normalizedRunDir.TrimEnd("/"))
@@ -88,6 +89,7 @@ try {
   Write-Host "RUN_DIR=$RunDir"
   Write-Host "CHECKPOINT=$checkpoint"
   Write-Host "CHECKPOINT_SOURCE=$checkpointSource"
+  Write-Host "FROZEN_CHECKPOINT=$frozenCheckpoint"
   Write-Host "TAG=$safeTag"
   Write-Host "SCALE=$Scale"
   Write-Host "LATEST_EPOCH=$($latestMetric.epoch)"
@@ -134,7 +136,7 @@ try {
     "-TileWidth", $TiledReferenceTileWidth,
     "-TileHeight", $TiledReferenceTileHeight,
     "-QuantPlan", $quantPlan,
-    "-Checkpoint", $checkpoint,
+    "-Checkpoint", $frozenCheckpoint,
     "-OutDir", $TiledReferenceOutDir
   )
   $readinessArgs = @(
