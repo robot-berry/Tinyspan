@@ -166,6 +166,45 @@ Remove-Item Env:\SEETA_PASS -ErrorAction SilentlyContinue
 
 `--max-images 0` means full REDS `val_sharp`, not a smoke subset.
 
+## Cloud X2 Handoff After X4
+
+After the X4 watcher finishes full REDS evaluation and writes the X4 quality
+candidate package manifest, start X2 improvement training on the same cloud
+server. The local PC must not run training; it only watches the cloud package and
+uploads the existing X2 resume checkpoint if the remote copy is missing.
+
+```powershell
+$env:SEETA_PASS = "<ssh-password>"
+python scripts\cloud\watch_x4_package_then_start_x2_training.py `
+  --host connect.westc.seetacloud.com `
+  --port 48335 `
+  --user root `
+  --x4-artifact-dir artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hr060_edge006_20260625 `
+  --x2-run-dir runs/tinyspan_distill/video_x2_c32_b4_quality_after_x4_20260625 `
+  --local-resume-checkpoint ..\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal\student_latest.pt `
+  --poll-seconds 600 `
+  --wait-seconds 172800
+Remove-Item Env:\SEETA_PASS -ErrorAction SilentlyContinue
+```
+
+Default X2 cloud training settings:
+
+```text
+scale=2
+channels=32
+num_blocks=4
+patch_size=192
+batch_size=6
+epochs=13
+max_pairs=24000
+lr=1e-4
+loss_weights=distill 1.0, HR 0.2, edge 0.02, temporal 0.2
+target_quality=REDS val student_vs_hr >= 30dB
+```
+
+The watcher only starts the cloud training process. It does not run Vivado,
+JTAG, XSCT, board access, quantization, or RTL export.
+
 After `student_last.pt` is written, run the REDS HR quality gate on the same server:
 
 ```bash

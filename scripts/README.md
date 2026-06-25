@@ -40,6 +40,15 @@ Current folders:
     readiness audit. It verifies that PS/DDR wrappers are scale-aware and
     records the remaining X2 blockers, especially the missing X2 bicubic/core
     wrapper, without starting Vivado or board flows.
+- `cloud/`: cloud REDS sync, X4 quality training watchers, and cloud-only
+  training handoff helpers.
+  - `cloud/watch_x4_training_then_eval.py`: waits for cloud X4 training to
+    finish, runs the full REDS HR quality evaluation, packages the X4
+    candidate, and optionally downloads the package. It does not start
+    Vivado/JTAG/XSCT.
+  - `cloud/watch_x4_package_then_start_x2_training.py`: waits for the cloud X4
+    candidate package manifest, then starts cloud X2 improvement training. It
+    does not run local training or start Vivado/JTAG/XSCT.
 - `run_tinyspan_c32b4_post_training_prep.ps1`: common X2/X4 post-training
   entrypoint. Use `-Scale 2` for the independent X2 route and `-Scale 4` for
   X4. It refuses to freeze a still-running training checkpoint unless only
