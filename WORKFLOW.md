@@ -792,14 +792,15 @@ X2 正式训练完成后的主工程入口：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_tinyspan_c32b4_post_training_prep.ps1 `
-  -RunDir runs\tinyspan_distill\video_x2_c32_b4_reds_temporal `
+  -RunDir ..\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal `
   -Scale 2 `
   -Tag c32b4_x2_frozen_YYYYMMDD
 ```
 
 X4 路线使用同一个入口，只把 `-Scale` 改为 `4`，并使用对应的 X4 训练输出目录。若从
-`G:\UESTC\feitengspan1\Tinyspan` 镜像仓库内执行脚本，`-RunDir` 应使用主工程中的绝对训练目录，
-例如 `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`。
+`G:\UESTC\feitengspan1\Tinyspan` 镜像仓库内执行脚本，`-RunDir` 应使用 `..\runs\...` 或主工程中的
+绝对训练目录，例如 `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`；
+不能写成 `runs\...`，否则会误找 `G:\UESTC\feitengspan1\Tinyspan\runs\...`。
 
 训练完成后仍不能直接宣告通过；post-training prep 只补齐冻结、量化和 RTL 导出入口。后续仍需完成对应倍率的
 RTL 仿真、bitstream、真实板上输出、board-vs-fixed 逐字节一致性、可视化预览和 `>=30fps` 实测吞吐。

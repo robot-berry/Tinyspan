@@ -73,6 +73,7 @@ try {
       )
       $matchesRunDir = ($cmd -match [regex]::Escape($normalizedRunDir)) -or
         ($normalizedRunDirLeaf -ne "" -and $cmd -match [regex]::Escape($normalizedRunDirLeaf))
+      ($_.ProcessId -ne $PID) -and
       $isTrainProcess -and
       $matchesRunDir
     } |

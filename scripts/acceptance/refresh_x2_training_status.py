@@ -78,6 +78,7 @@ def find_training_processes(output_leaf: str) -> dict[str, Any]:
 $ErrorActionPreference = 'SilentlyContinue'
 Get-CimInstance Win32_Process |
   Where-Object {{
+    $_.ProcessId -ne $PID -and
     $_.CommandLine -match 'distill_tinyspan_video.py|train_tinyspan_video_x2_c32_b4.ps1' -and
     $_.CommandLine -match '{re.escape(output_leaf)}'
   }} |

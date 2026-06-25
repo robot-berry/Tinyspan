@@ -5,7 +5,8 @@ param(
   [int]$Scale = 4,
   [switch]$DryRun,
   [switch]$SkipRtlExport,
-  [switch]$SkipReadiness
+  [switch]$SkipReadiness,
+  [switch]$RequireReadinessPass
 )
 
 $ErrorActionPreference = "Stop"
@@ -65,6 +66,7 @@ try {
       )
       $matchesRunDir = ($cmd -match [regex]::Escape($normalizedRunDir)) -or
         ($normalizedRunDirLeaf -ne "" -and $cmd -match [regex]::Escape($normalizedRunDirLeaf))
+      ($_.ProcessId -ne $PID) -and
       $isTrainProcess -and
       $matchesRunDir
     } |
@@ -101,9 +103,10 @@ try {
   )
   $readinessArgs = @(
     "-ExecutionPolicy", "Bypass",
-    "-File", "scripts\check_tinyspan_30fps_board_acceptance_ready.ps1",
+    "-File", "scripts\acceptance\check_tinyspan_30fps_board_acceptance_ready.ps1",
     "-HandoffSummary", $handoffSummary,
-    "-RtlManifest", $rtlManifest
+    "-RtlManifest", $rtlManifest,
+    "-OutDir", "board_runs\tinyspan_board_acceptance\readiness_${safeTag}_${scaleTag}"
   )
 
   if ($DryRun) {
@@ -114,6 +117,9 @@ try {
     }
     if (-not $SkipReadiness) {
       Write-Host "WOULD_RUN: powershell $($readinessArgs -join ' ')"
+      if (-not $RequireReadinessPass) {
+        Write-Host "NOTE: readiness failures are recorded but non-fatal unless -RequireReadinessPass is set"
+      }
     }
     Write-Host "PASS post_training_prep_dry_run"
     return
@@ -137,8 +143,11 @@ try {
 
   if (-not $SkipReadiness) {
     & powershell @readinessArgs
-    if ($LASTEXITCODE -ne 0) {
+    $readinessExitCode = $LASTEXITCODE
+    if ($readinessExitCode -ne 0 -and $RequireReadinessPass) {
       throw "check_tinyspan_30fps_board_acceptance_ready.ps1 failed with exit code $LASTEXITCODE"
+    } elseif ($readinessExitCode -ne 0) {
+      Write-Warning "Readiness check reported incomplete evidence with exit code $readinessExitCode. This is non-fatal for post-training prep; use -RequireReadinessPass to make it fatal."
     }
   }
 
