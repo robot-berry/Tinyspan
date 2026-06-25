@@ -40,3 +40,4 @@ artifacts/**/raw/
 artifacts/**/*.dcp
 artifacts/**/*.wdb
 artifacts/**/*.zip
+artifacts/**/x2_postprep_watcher_*.log
