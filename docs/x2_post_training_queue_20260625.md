@@ -8,7 +8,7 @@ Date: `2026-06-25`
 - Training run: `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`
 - Watcher tag: `x2_frozen_auto_20260625`
 - Target steps: `198000`
-- Latest dry-run observation: step `129335`, epoch `33`, training process count `2`.
+- Latest dry-run observation: step `142887`, epoch `37`, training process count `2`.
 - Training is still running, so no freeze, Vivado, JTAG, XSCT, or board flow has been started from this queue.
 
 ## Dry-Run Verified Commands
@@ -59,6 +59,8 @@ board_runs\tinyspan_board_acceptance\readiness_x2_frozen_auto_20260625_x2
 2. Export X2 W8A8 quant plan.
 3. Export X2 RTL constants/manifest.
 4. Generate X2 `640x360 -> 1280x720` hardware-tiled fixed reference with `64x64` LR tiles.
+   The reference command may use a REDS HR PNG as the source image, but `make_tinyspan_tiled_fixed_reference.py`
+   explicitly resizes it to the declared LR input size `640x360` before TinySPAN inference.
 5. Run readiness precheck. Incomplete bitstream/board evidence is non-fatal at this stage.
 6. Only after the above exists, start X2 Vivado bitstream and board acceptance.
 7. Package the passing board acceptance into Gate H manifest with `package_tinyspan_gate_h_board_acceptance.py`.
