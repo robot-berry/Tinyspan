@@ -275,7 +275,7 @@ def build_audit(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
         "next_commands": [
             {
                 "when": "X2 训练完成后",
-                "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\run_tinyspan_c32b4_post_training_prep.ps1 -RunDir ..\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal -Scale 2 -Tag x2_frozen_YYYYMMDD",
+                "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\run_tinyspan_c32b4_post_training_prep.ps1 -RunDir ..\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625 -Scale 2 -Tag x2_quality_resume_YYYYMMDD",
             }
         ],
     }

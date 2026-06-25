@@ -10,7 +10,8 @@ param(
   [string]$ContestIndexMd = "docs\contest_delivery_index.md",
   [string]$ContestPackageCheckJson = "artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\contest_delivery_package_check.json",
   [string]$ContestPackageCheckMd = "docs\contest_delivery_package_check.md",
-  [int]$TotalSteps = 198000,
+  [string]$X2TrainingOutput = "runs\tinyspan_distill\video_x2_c32_b4_reds_temporal_quality_resume_20260625",
+  [int]$TotalSteps = 51480,
   [switch]$SkipX2TrainingRefresh
 )
 
@@ -38,6 +39,7 @@ try {
     python scripts\acceptance\refresh_x2_training_status.py `
       --workspace-root $WorkspaceRoot `
       --tinyspan-root $TinyspanRoot `
+      --output $X2TrainingOutput `
       --total-steps $TotalSteps
     if ($LASTEXITCODE -ne 0) {
       throw "refresh_x2_training_status.py failed with exit code $LASTEXITCODE"

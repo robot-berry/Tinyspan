@@ -38,114 +38,117 @@
     "started_at": "2026-06-24T15:54:01+08:00",
     "launcher": "G:\\UESTC\\feitengspan1\\scripts\\start_tinyspan_c32b4_x2_training.ps1",
     "command": "powershell -NoProfile -ExecutionPolicy Bypass -File G:\\UESTC\\feitengspan1\\scripts\\train_tinyspan_video_x2_c32_b4.ps1 -TrainFrames G:\\REDS\\train_sharp -Output runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal -PatchSize 192 -BatchSize 6 -Epochs 50 -MaxPairs 24000 -SaveEverySteps 500",
-    "output": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal",
-    "metrics": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\metrics.csv",
-    "stdout": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\train_stdout.log",
-    "stderr": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\train_stderr.log",
+    "output": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625",
+    "metrics": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625\\metrics.csv",
+    "stdout": "G:\\UESTC\\feitengspan1\\Tinyspan\\logs\\x2_quality_resume_train_20260625_170024.out.log",
+    "stderr": "G:\\UESTC\\feitengspan1\\Tinyspan\\logs\\x2_quality_resume_train_20260625_170024.err.log",
     "observed_processes": {
-      "launcher_pid": 27940,
-      "python_pid": 34236,
+      "launcher_pid": null,
+      "python_pid": 35464,
       "processes": [
         {
-          "ProcessId": 27940,
+          "ProcessId": 36288,
           "Name": "powershell.exe",
-          "CommandLine": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -ExecutionPolicy Bypass -File G:\\UESTC\\feitengspan1\\scripts\\train_tinyspan_video_x2_c32_b4.ps1 -TrainFrames G:\\REDS\\train_sharp -Output runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal -PatchSize 192 -BatchSize 6 -Epochs 50 -MaxPairs 24000 -SaveEverySteps 500 "
+          "CommandLine": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -ExecutionPolicy Bypass -Command python -u train\\distill_tinyspan_video.py --train-frames G:\\REDS\\train_sharp --scale 2 --channels 32 --num-blocks 4 --patch-size 192 --batch-size 6 --epochs 13 --max-steps 0 --max-pairs 24000 --output runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625 --save-every-steps 500 --lr 0.0001 --distill-weight 1.0 --hr-weight 0.2 --edge-weight 0.02 --temporal-weight 0.2 --resume-student runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\student_latest.pt --amp "
         },
         {
-          "ProcessId": 34236,
+          "ProcessId": 35464,
           "Name": "python.exe",
-          "CommandLine": "\"D:\\software\\anaconda\\python.exe\" train\\distill_tinyspan_video.py --train-frames G:\\REDS\\train_sharp --scale 2 --channels 32 --num-blocks 4 --patch-size 192 --batch-size 6 --epochs 50 --max-steps 0 --max-pairs 24000 --output runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal --save-every-steps 500 --amp"
+          "CommandLine": "\"D:\\software\\anaconda\\python.exe\" -u train\\distill_tinyspan_video.py --train-frames G:\\REDS\\train_sharp --scale 2 --channels 32 --num-blocks 4 --patch-size 192 --batch-size 6 --epochs 13 --max-steps 0 --max-pairs 24000 --output runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625 --save-every-steps 500 --lr 0.0001 --distill-weight 1.0 --hr-weight 0.2 --edge-weight 0.02 --temporal-weight 0.2 --resume-student runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\student_latest.pt --amp"
         }
       ]
     },
     "latest_observed": {
-      "epoch": 36,
-      "step": 142161,
-      "total_steps": 198000,
-      "progress_percent": 71.7985,
-      "loss": 0.01934105,
-      "distill_loss": 0.01126435,
-      "hr_loss": 0.01751256,
-      "edge_loss": 0.06835631,
-      "temporal_loss": 0.0160353,
-      "teacher_psnr": 32.618895,
-      "student_psnr": 29.89056,
-      "seconds": 86465.347,
-      "steps_per_second": 1.6441,
-      "eta": "00.09:26:03",
+      "epoch": 1,
+      "step": 2243,
+      "total_steps": 51480,
+      "progress_percent": 4.357,
+      "loss": 0.02425532,
+      "distill_loss": 0.01410081,
+      "hr_loss": 0.0217556,
+      "edge_loss": 0.08539322,
+      "temporal_loss": 0.02047762,
+      "teacher_psnr": 32.223941,
+      "student_psnr": 29.507838,
+      "seconds": 1593.999,
+      "steps_per_second": 1.4072,
+      "eta": "00.09:43:09",
       "stderr_error_hints": "none"
     },
     "latest_artifacts": {
       "student_latest": {
-        "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\student_latest.pt",
+        "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625\\student_latest.pt",
         "exists": true,
-        "bytes": 2156839,
-        "mtime": "2026-06-25T15:53:08",
-        "sha256": "e578a1090b5c02abbce7619bf4eb580563aedf42894e4587451a5b6a489ac87f"
+        "bytes": 2156903,
+        "mtime": "2026-06-25T17:24:11",
+        "sha256": "c0eb7099e25e37cb8237baf5762c5b4fe7e9e07e015f9b2348de331a5e9daa05"
       },
       "preview": {
-        "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\video_distill_latest_preview.png",
+        "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625\\video_distill_latest_preview.png",
         "exists": true,
-        "bytes": 311081,
-        "mtime": "2026-06-25T15:53:08",
-        "sha256": "f73d1199f0953a5b805d78cb5df1c5109745a28c74963c6a0c5a33492f46c6b1"
+        "bytes": 259702,
+        "mtime": "2026-06-25T17:24:11",
+        "sha256": "abd5ed2881ceb464b833898c4fbc2aca942e33cc6e87ec1c69283ad8d832607b"
       },
       "metrics": {
-        "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\metrics.csv",
+        "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625\\metrics.csv",
         "exists": true,
-        "bytes": 14478719,
-        "mtime": "2026-06-25T15:55:16",
-        "sha256": "265cfdcc1a43ec5dfc98c7637bd6db8242b447e118402682430222aa9c514576"
+        "bytes": 219693,
+        "mtime": "2026-06-25T17:27:08",
+        "sha256": "fdb149a7732d6a32d7992b565527587ac891d96ef28533a7c3ef73d8cd6d2177"
+      },
+      "stdout": {
+        "path": "G:\\UESTC\\feitengspan1\\Tinyspan\\logs\\x2_quality_resume_train_20260625_170024.out.log",
+        "exists": true,
+        "bytes": 0,
+        "mtime": "2026-06-25T17:00:24",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
       "stderr": {
-        "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\train_stderr.log",
+        "path": "G:\\UESTC\\feitengspan1\\Tinyspan\\logs\\x2_quality_resume_train_20260625_170024.err.log",
         "exists": true,
-        "bytes": 41471690,
-        "mtime": "2026-06-25T15:55:16",
-        "sha256": ""
+        "bytes": 640932,
+        "mtime": "2026-06-25T17:27:08",
+        "sha256": "9823090e22b05d40b3981e8a77276c261fa46a7ce219d65bd4b6b43247cf914d"
       }
     },
     "postprep_watcher": {
       "status": "RUNNING",
-      "watcher_pid": 36532,
+      "watcher_pid": 34012,
       "watcher_pids": [
-        36532
+        34012
       ],
       "processes": [
         {
-          "ProcessId": 36532,
+          "ProcessId": 34012,
           "Name": "powershell.exe",
-          "CommandLine": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\watch_tinyspan_x2_training_then_postprep.ps1 -RunDir ..\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal -Tag x2_frozen_auto_20260625 -TotalSteps 198000 -PollSeconds 3600 -WaitSeconds 172800 "
+          "CommandLine": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -ExecutionPolicy Bypass -Command & .\\scripts\\watch_tinyspan_x2_training_then_postprep.ps1 -RunDir ..\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625 -Tag x2_quality_resume_20260625 -TotalSteps 51480 -PollSeconds 3600 -WaitSeconds 172800 "
         }
       ],
       "stdout": {
-        "path": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_training_start_20260624\\x2_postprep_watcher_stdout.log",
+        "path": "G:\\UESTC\\feitengspan1\\Tinyspan\\logs\\x2_quality_resume_watcher_20260625_170112.out.log",
         "exists": true,
-        "bytes": 717,
-        "mtime": "2026-06-25T15:18:08",
-        "sha256": "32c24ae4c04204bb2a6ffc189f890d77d86c1f869a17c9125c942ebd64080b61"
+        "bytes": 472,
+        "mtime": "2026-06-25T17:01:14",
+        "sha256": "4c516cbd69e1445b173e607b59b622bd34f261eacea478cccd49ed97708cd0a8"
       },
       "stderr": {
-        "path": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_training_start_20260624\\x2_postprep_watcher_stderr.log",
+        "path": "G:\\UESTC\\feitengspan1\\Tinyspan\\logs\\x2_quality_resume_watcher_20260625_170112.err.log",
         "exists": true,
         "bytes": 0,
-        "mtime": "2026-06-25T11:18:05",
+        "mtime": "2026-06-25T17:01:12",
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
-      "latest_line": "TINYSPAN_X2_WATCH epoch=36 step=139049/198000 running=2 stopped_polls=0",
+      "latest_line": "TINYSPAN_X2_WATCH epoch=1 step=58/51480 running= stopped_polls=0",
       "stdout_tail": [
-        "TINYSPAN_X2_POSTPREP_WATCH_START=2026-06-25T11:18:06.1593346+08:00",
+        "TINYSPAN_X2_POSTPREP_WATCH_START=2026-06-25T17:01:13.5894472+08:00",
         "TINYSPAN_ROOT=G:\\UESTC\\feitengspan1\\Tinyspan",
         "WORKSPACE_ROOT=G:\\UESTC\\feitengspan1",
-        "RUN_DIR=..\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal",
-        "RUN_DIR_ABS=G:\\UESTC\\feitengspan1\\Tinyspan\\..\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal",
-        "TAG=x2_frozen_auto_20260625",
-        "TOTAL_STEPS=198000",
-        "TINYSPAN_X2_WATCH epoch=30 step=118141/198000 running=2 stopped_polls=0",
-        "TINYSPAN_X2_WATCH epoch=32 step=123671/198000 running=2 stopped_polls=0",
-        "TINYSPAN_X2_WATCH epoch=33 step=128860/198000 running=2 stopped_polls=0",
-        "TINYSPAN_X2_WATCH epoch=34 step=133988/198000 running=2 stopped_polls=0",
-        "TINYSPAN_X2_WATCH epoch=36 step=139049/198000 running=2 stopped_polls=0"
+        "RUN_DIR=..\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625",
+        "RUN_DIR_ABS=G:\\UESTC\\feitengspan1\\Tinyspan\\..\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal_quality_resume_20260625",
+        "TAG=x2_quality_resume_20260625",
+        "TOTAL_STEPS=51480",
+        "TINYSPAN_X2_WATCH epoch=1 step=58/51480 running= stopped_polls=0"
       ],
       "stderr_tail": []
     }
@@ -163,5 +166,5 @@
       "measured >=30fps throughput"
     ]
   },
-  "updated_at": "2026-06-25T15:55:14"
+  "updated_at": "2026-06-25T17:27:07"
 }

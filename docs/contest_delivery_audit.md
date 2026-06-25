@@ -1,6 +1,6 @@
 # TinySPAN 赛题交付审计
 
-生成时间：`2026-06-25T15:55:17`
+生成时间：`2026-06-25T17:27:09`
 总体结论：`NOT_COMPLETE`
 
 本审计只读取现有文件和 artifact，不启动 Vivado、JTAG、板卡或训练流程。
@@ -29,7 +29,7 @@
 - X2 训练完成后：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_tinyspan_c32b4_post_training_prep.ps1 -RunDir ..\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal -Scale 2 -Tag x2_frozen_YYYYMMDD
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_tinyspan_c32b4_post_training_prep.ps1 -RunDir ..\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal_quality_resume_20260625 -Scale 2 -Tag x2_quality_resume_YYYYMMDD
 ```
 
 ## 证据索引

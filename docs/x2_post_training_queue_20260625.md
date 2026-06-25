@@ -5,10 +5,11 @@ Date: `2026-06-25`
 ## Current State
 
 - Route: TinySPAN X2 independent delivery evidence.
-- Training run: `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`
-- Watcher tag: `x2_frozen_auto_20260625`
-- Target steps: `198000`
-- Latest dry-run observation: step `142887`, epoch `37`, training process count `2`.
+- Original training run retained as recovery source: `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`
+- Active quality-resume training run: `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal_quality_resume_20260625`
+- Watcher tag: `x2_quality_resume_20260625`
+- Target steps: `51480`
+- Latest observation after resume: step `1793`, epoch `1`, training process count `2`.
 - Training is still running, so no freeze, Vivado, JTAG, XSCT, or board flow has been started from this queue.
 
 ## Dry-Run Verified Commands
@@ -17,9 +18,9 @@ Watcher dry-run:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\watch_tinyspan_x2_training_then_postprep.ps1 `
-  -RunDir ..\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal `
-  -Tag x2_frozen_auto_20260625 `
-  -TotalSteps 198000 `
+  -RunDir ..\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal_quality_resume_20260625 `
+  -Tag x2_quality_resume_20260625 `
+  -TotalSteps 51480 `
   -PollSeconds 3600 `
   -WaitSeconds 172800 `
   -DryRun
@@ -27,7 +28,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\watch_tinyspan_x2_
 
 Expected watcher behavior:
 
-- Wait until latest metric step is at least `198000`.
+- Wait until latest metric step is at least `51480`.
 - Require training process count to remain `0` for the configured stopped-poll window.
 - Fail if training exits before target steps.
 - Then run post-training prep.
@@ -36,21 +37,21 @@ Post-training prep dry-run:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_tinyspan_c32b4_post_training_prep.ps1 `
-  -RunDir ..\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal `
+  -RunDir ..\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal_quality_resume_20260625 `
   -Scale 2 `
-  -Tag x2_frozen_auto_20260625 `
+  -Tag x2_quality_resume_20260625 `
   -DryRun
 ```
 
 Expected post-training prep outputs after real completion:
 
 ```text
-runs\tinyspan_frozen_candidates\x2_frozen_auto_20260625\student_final.pt
-runs\tinyspan_realtime_handoff\c32b4_x2_frozen_auto_20260625_summary.json
-runs\tinyspan_quant_plan\x2_frozen_auto_20260625_x2_c32_b4_w8a8\tinyspan_w8a8_quant_plan.json
-rtl\generated\tinyspan_c32b4_x2_frozen_auto_20260625_x2_w8a8\tinyspan_w8a8_rtl_manifest.json
-artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\full_frame_tiled_reference_x2_640x360_tile64x64_x2_frozen_auto_20260625
-board_runs\tinyspan_board_acceptance\readiness_x2_frozen_auto_20260625_x2
+runs\tinyspan_frozen_candidates\x2_quality_resume_20260625\student_final.pt
+runs\tinyspan_realtime_handoff\c32b4_x2_quality_resume_20260625_summary.json
+runs\tinyspan_quant_plan\x2_quality_resume_20260625_x2_c32_b4_w8a8\tinyspan_w8a8_quant_plan.json
+rtl\generated\tinyspan_c32b4_x2_quality_resume_20260625_x2_w8a8\tinyspan_w8a8_rtl_manifest.json
+artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_resume_20260625
+board_runs\tinyspan_board_acceptance\readiness_x2_quality_resume_20260625_x2
 ```
 
 ## Gate Order After Training

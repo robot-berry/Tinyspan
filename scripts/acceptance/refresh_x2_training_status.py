@@ -163,6 +163,16 @@ def tail_text(path: Path, max_lines: int = 20, tail_bytes: int = 64_000) -> list
     return text.splitlines()[-max_lines:]
 
 
+def latest_log(log_root: Path, patterns: list[str], fallback: Path) -> Path:
+    candidates: list[Path] = []
+    if log_root.is_dir():
+        for pattern in patterns:
+            candidates.extend(path for path in log_root.glob(pattern) if path.is_file())
+    if not candidates:
+        return fallback
+    return sorted(candidates, key=lambda path: path.stat().st_mtime, reverse=True)[0]
+
+
 def recent_error_hints(stderr: Path, tail_bytes: int = 256_000) -> list[str]:
     if not stderr.exists():
         return []
@@ -240,23 +250,42 @@ def main() -> int:
     status_json = (tinyspan_root / args.status_json).resolve() if not args.status_json.is_absolute() else args.status_json.resolve()
     status_md = status_json.with_suffix(".md")
     output = (workspace_root / args.output).resolve() if not args.output.is_absolute() else args.output.resolve()
-    watcher_stdout = status_json.parent / "x2_postprep_watcher_stdout.log"
-    watcher_stderr = status_json.parent / "x2_postprep_watcher_stderr.log"
+    log_root = tinyspan_root / "logs"
+    train_stdout = latest_log(
+        log_root,
+        ["x2_quality_resume_train_*.out.log", "x2_*train*.out.log"],
+        output / "train_stdout.log",
+    )
+    train_stderr = latest_log(
+        log_root,
+        ["x2_quality_resume_train_*.err.log", "x2_*train*.err.log"],
+        output / "train_stderr.log",
+    )
+    watcher_stdout = latest_log(
+        log_root,
+        ["x2_quality_resume_watcher_*.out.log", "x2_*watcher*.out.log"],
+        status_json.parent / "x2_postprep_watcher_stdout.log",
+    )
+    watcher_stderr = latest_log(
+        log_root,
+        ["x2_quality_resume_watcher_*.err.log", "x2_*watcher*.err.log"],
+        status_json.parent / "x2_postprep_watcher_stderr.log",
+    )
 
     status = read_json(status_json)
     formal = status.setdefault("formal_training", {})
     formal["status"] = "RUNNING"
     formal["output"] = str(output)
     formal["metrics"] = str(output / "metrics.csv")
-    formal["stdout"] = str(output / "train_stdout.log")
-    formal["stderr"] = str(output / "train_stderr.log")
+    formal["stdout"] = str(train_stdout)
+    formal["stderr"] = str(train_stderr)
 
     latest = read_latest_metric(output / "metrics.csv")
     speed = float(latest.get("steps_per_second") or 0.0)
     step = int(latest.get("step") or 0)
     remaining = max(0, args.total_steps - step)
     eta = timespan_text(remaining / speed) if speed > 0 else ""
-    hints = recent_error_hints(output / "train_stderr.log")
+    hints = recent_error_hints(train_stderr)
     status["status"] = "training_running"
     status["updated_at"] = datetime.now().isoformat(timespec="seconds")
     process_info = find_training_processes(output.name)
@@ -300,7 +329,8 @@ def main() -> int:
         "student_latest": file_info(output / "student_latest.pt"),
         "preview": file_info(output / "video_distill_latest_preview.png"),
         "metrics": file_info(output / "metrics.csv"),
-        "stderr": file_info(output / "train_stderr.log"),
+        "stdout": file_info(train_stdout),
+        "stderr": file_info(train_stderr),
     }
     status_json.parent.mkdir(parents=True, exist_ok=True)
     status_json.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

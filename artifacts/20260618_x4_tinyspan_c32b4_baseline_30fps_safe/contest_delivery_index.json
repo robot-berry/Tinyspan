@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-25T15:55:17",
+  "generated_at": "2026-06-25T17:27:10",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "git": {
     "branch": "main",
-    "commit": "f3c6636138b2fd3d4b9ae46d088ae57678f01d5a",
+    "commit": "0a88c3f54ddb404a69dd96867e0bc3febe073411",
     "remote": "https://github.com/robot-berry/Tinyspan.git"
   },
   "overall": {
@@ -25,20 +25,20 @@
     "status": "training_running",
     "training_status": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json",
     "latest_observed": {
-      "epoch": 36,
-      "step": 142161,
-      "total_steps": 198000,
-      "progress_percent": 71.7985,
-      "loss": 0.01934105,
-      "distill_loss": 0.01126435,
-      "hr_loss": 0.01751256,
-      "edge_loss": 0.06835631,
-      "temporal_loss": 0.0160353,
-      "teacher_psnr": 32.618895,
-      "student_psnr": 29.89056,
-      "seconds": 86465.347,
-      "steps_per_second": 1.6441,
-      "eta": "00.09:26:03",
+      "epoch": 1,
+      "step": 2243,
+      "total_steps": 51480,
+      "progress_percent": 4.357,
+      "loss": 0.02425532,
+      "distill_loss": 0.01410081,
+      "hr_loss": 0.0217556,
+      "edge_loss": 0.08539322,
+      "temporal_loss": 0.02047762,
+      "teacher_psnr": 32.223941,
+      "student_psnr": 29.507838,
+      "seconds": 1593.999,
+      "steps_per_second": 1.4072,
+      "eta": "00.09:43:09",
       "stderr_error_hints": "none"
     },
     "readiness": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
@@ -75,57 +75,57 @@
           "path": "WORKFLOW.md",
           "exists": true,
           "kind": "file",
-          "bytes": 49536,
-          "mtime": "2026-06-25T13:16:22",
-          "sha256": "78A9591C0863CD7C5CFBD046C0DBBFCBC24DD5E65AEAC36FF08FC5E7833DF6DE"
+          "bytes": 51757,
+          "mtime": "2026-06-25T17:24:33",
+          "sha256": "D4F4DBDA9170B7190FBBD1A6E3035C54E5D7ADB5B5394BB8CFEFB4BB8BB771D5"
         },
         {
           "path": "docs/gate_status.md",
           "exists": true,
           "kind": "file",
-          "bytes": 3188,
-          "mtime": "2026-06-25T15:55:17",
-          "sha256": "BE9DDB02827EF7E5FB3668DAC6CE7F9BBEB8A8A6DCBB7C4F94CEDD1E723113B0"
+          "bytes": 3178,
+          "mtime": "2026-06-25T17:27:09",
+          "sha256": "A55BC7900C29D70C2B8455B3A8100825E5296D3E4ACC49FC0054BF164F334579"
         },
         {
           "path": "docs/contest_delivery_audit.md",
           "exists": true,
           "kind": "file",
-          "bytes": 5981,
-          "mtime": "2026-06-25T15:55:17",
-          "sha256": "5D04873D7B4958F16B45C477C0D685E0EF7D331B911A3161D7A51A25B0349772"
+          "bytes": 6013,
+          "mtime": "2026-06-25T17:27:09",
+          "sha256": "B348970272A26363EFA0719B8B8D1C80624F674B8AE84CA1813EE000C8C17C3B"
         },
         {
           "path": "docs/x2_hardware_readiness.md",
           "exists": true,
           "kind": "file",
-          "bytes": 6501,
-          "mtime": "2026-06-25T15:55:16",
-          "sha256": "32CBDADA43E97738931C044861C5306F5E8F34940B11372D95CEF2A05CFC9240"
+          "bytes": 6561,
+          "mtime": "2026-06-25T17:27:09",
+          "sha256": "643009026BE8D36C14BC73734F93389BA790CBAE0FD1D8145226B8548F1CBA45"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_completion_status.json",
           "exists": true,
           "kind": "file",
-          "bytes": 3566,
-          "mtime": "2026-06-25T15:55:17",
-          "sha256": "02C0831CB2890C6D6DDC6E59E7C8D4D3F549222AE9EFC1BE5B32D78900822175"
+          "bytes": 3560,
+          "mtime": "2026-06-25T17:27:09",
+          "sha256": "059685235F742CD3EEB9DFF7369DF98113FF279A7B00D9EDAB94F1C5A638FBA4"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_delivery_audit.json",
           "exists": true,
           "kind": "file",
-          "bytes": 10572,
-          "mtime": "2026-06-25T15:55:17",
-          "sha256": "89E2190F2F481DE7115022D34DF5C943E9B6A321323E84865CF9F4CAFFFF764C"
+          "bytes": 10604,
+          "mtime": "2026-06-25T17:27:09",
+          "sha256": "DDEC8061C40390B7C59F06BDD88D0BBA3DE3A3CB120622869418101486864E29"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
           "exists": true,
           "kind": "file",
-          "bytes": 8208,
-          "mtime": "2026-06-25T15:55:16",
-          "sha256": "1C07AD1844CEA9F519A4BDE351A44459F633D8E5A2A971C2B091578745F2C505"
+          "bytes": 8283,
+          "mtime": "2026-06-25T17:27:09",
+          "sha256": "E48B93B673EA3292B027D1C11EA96907D3B5D4A17C1B8ACE21E1B942948BE469"
         }
       ]
     },
@@ -291,17 +291,17 @@
           "path": "docs/x4_board_result_report_20260625.md",
           "exists": true,
           "kind": "file",
-          "bytes": 4486,
-          "mtime": "2026-06-25T12:34:59",
-          "sha256": "427D0C29BBEBE12B7D8A5D1A04C81649B791C114FD4A8FB418E5232FB891F3C9"
+          "bytes": 4533,
+          "mtime": "2026-06-25T16:47:03",
+          "sha256": "1A9EA5DEFFCE017CA2385B0B1D0ED248070C7E78377C4A3D502622E29DAAAF53"
         },
         {
           "path": "docs/x4_quality_improvement_plan.md",
           "exists": true,
           "kind": "file",
-          "bytes": 4146,
-          "mtime": "2026-06-25T13:34:16",
-          "sha256": "BDB49B6F2E326D1E128D41B883DCBB31E0FD3247EC598F2E6A6E0B42C8E6B0F0"
+          "bytes": 4320,
+          "mtime": "2026-06-25T16:46:51",
+          "sha256": "7231D6F16F34953CE5EAA522DC244F479C1A664E2E8D99BBBACFD4F436EFCA29"
         },
         {
           "path": "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md",
