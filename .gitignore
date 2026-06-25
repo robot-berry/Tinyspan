@@ -30,6 +30,7 @@ __pycache__/
 *.pyc
 
 # Training scratch logs: keep curated metrics, commands, previews, and checkpoints only.
+logs/
 train/logs/**/*.log
 train/logs/**/student_last.pt
 train/logs/**/student_latest.pt

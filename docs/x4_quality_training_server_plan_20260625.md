@@ -47,6 +47,33 @@ After the Tinyspan repo and REDS data are available on the server:
 TRAIN_FRAMES=/data/REDS/train_sharp bash scripts/start_tinyspan_c32b4_x4_quality_training.sh
 ```
 
+Current rented server layout:
+
+```text
+repo: /root/autodl-tmp/Tinyspan
+data: /root/autodl-tmp/data/REDS
+train: /root/autodl-tmp/data/REDS/train_sharp
+val: /root/autodl-tmp/data/REDS/val_sharp
+```
+
+Use the resumable sync helper from the local Windows machine when the full REDS
+copy is not already on the server. The SSH password must be supplied through an
+environment variable, not written into the command or repository:
+
+```powershell
+$env:SEETA_PASS = "<server password>"
+python scripts/cloud/sync_reds_and_start_x4_quality_training.py `
+  --host connect.westc.seetacloud.com `
+  --port 48335 `
+  --user root `
+  --local-reds-root G:/REDS `
+  --remote-repo /root/autodl-tmp/Tinyspan `
+  --remote-data /root/autodl-tmp/data/REDS `
+  --include-val `
+  --start-training
+Remove-Item Env:\SEETA_PASS
+```
+
 For a quick smoke test before a full run:
 
 ```bash
@@ -125,6 +152,24 @@ python scripts/acceptance/package_x4_quality_candidate.py \
 
 This package is only a software quality gate. It does not replace the current X4 submission baseline until the
 candidate also passes quantization, RTL/export checks, bitstream generation, real board equality, and `>=30fps`.
+
+## Current Cloud Smoke Result
+
+The first cloud smoke used only `train_sharp/000..004` and `val_sharp/000..001` to prove that the rental
+server, official X4 teacher, REDS path, AMP training, and quality evaluator all run end-to-end:
+
+```text
+GPU: NVIDIA GeForce RTX 4090 D 24GB
+train subset: 500 frames
+val subset: 16 evaluated images
+student_vs_hr PSNR: 25.865854 dB
+bicubic_vs_hr PSNR: 25.763312 dB
+gain: +0.102542 dB
+```
+
+This smoke result is not a 30dB claim and does not replace `X4_SUBMIT_20260625_CURRENT_BASELINE`.
+The full REDS sync/train run must finish before deciding whether this quality branch is worth exporting to
+quantization and board validation.
 
 ## Cost Control
 
