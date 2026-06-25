@@ -17,6 +17,7 @@ param(
   [string]$PhysOptDirective = "Default",
   [string]$RouteDirective = "Default",
   [string]$PostRoutePhysOptDirective = "Default",
+  [string]$BitstreamOut = "",
   [switch]$UseSerialBase,
   [switch]$RequireVivadoIdle,
   [int]$WaitForVivadoIdleSeconds = 0,
@@ -88,7 +89,27 @@ try {
     Write-Warning "Vivado returned exit code $vivadoExitCode, but the fresh log contains the expected PASS marker."
   }
 
+  $bitMatch = [regex]::Match($logText, "(?m)^PS_TINYSPAN_DDR_X4_BIT=(.+)$")
+  if (-not $bitMatch.Success) {
+    throw "Vivado log does not contain PS_TINYSPAN_DDR_X4_BIT=...; see $logPath"
+  }
+  $srcBit = $bitMatch.Groups[1].Value.Trim()
+  if (-not (Test-Path $srcBit)) {
+    throw "Bitstream reported by Vivado log was not found: $srcBit"
+  }
+  if (-not [string]::IsNullOrWhiteSpace($BitstreamOut)) {
+    $bitstreamOutFull = if ([System.IO.Path]::IsPathRooted($BitstreamOut)) {
+      [System.IO.Path]::GetFullPath($BitstreamOut)
+    } else {
+      [System.IO.Path]::GetFullPath((Join-Path $root $BitstreamOut))
+    }
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $bitstreamOutFull) | Out-Null
+    Copy-Item -Path $srcBit -Destination $bitstreamOutFull -Force
+    Write-Host "BITSTREAM_OUT=$bitstreamOutFull"
+  }
+
   Write-Host "BITSTREAM_LOG=$logPath"
+  Write-Host "BITSTREAM=$srcBit"
   Write-Host "PASS run_vivado_bitstream_ps_tinyspan_ddr_x4"
 } finally {
   Pop-Location

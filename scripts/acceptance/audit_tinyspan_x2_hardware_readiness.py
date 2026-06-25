@@ -214,11 +214,11 @@ def main() -> int:
                 "powershell -NoProfile -ExecutionPolicy Bypass -File "
                 ".\\scripts\\vivado\\run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1 "
                 "-Scale 2 -ImgW 640 -ImgH 360 -TileW 64 -TileH 64 -PlFreqMhz 155 "
-                "-RequireVivadoIdle"
+                f"-BitstreamOut {expected_bitstream} -RequireVivadoIdle"
             ),
             "starts_vivado_or_board": True,
             "expected": [
-                f"X2 bitstream copied or recorded as {expected_bitstream}",
+                f"X2 bitstream copied to {expected_bitstream}",
                 "timing, utilization, power, and resource-gate evidence under the XC7Z045/ZC706 limits",
             ],
         },
@@ -233,8 +233,8 @@ def main() -> int:
                 "-BoardRaw REPLACE_WITH_X2_BOARD_OUTPUT.rgb "
                 "-MeasuredFps REPLACE_WITH_MEASURED_FPS "
                 f"-Checkpoint {expected_frozen_checkpoint} "
-                "-QuantPlan REPLACE_WITH_X2_QUANT_PLAN.json "
-                "-Bitstream REPLACE_WITH_X2_BITSTREAM.bit "
+                f"-QuantPlan {expected_quant_plan} "
+                f"-Bitstream {expected_bitstream} "
                 "-BoardLog REPLACE_WITH_X2_BOARD_RESOURCE_OR_RUN_LOG.json "
                 "-OutDir artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_tile64x64"
             ),

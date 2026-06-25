@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-25T13:05:39",
+  "generated_at": "2026-06-25T13:10:19",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "git": {
     "branch": "main",
-    "commit": "5146066b84af2a56f3c5f7a02b7754e50590f2a6",
+    "commit": "9214a8a4f49c093651e7936cf2f7fc8da77b5ebf",
     "remote": "https://github.com/robot-berry/Tinyspan.git"
   },
   "overall": {
@@ -26,19 +26,19 @@
     "training_status": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json",
     "latest_observed": {
       "epoch": 33,
-      "step": 127767,
+      "step": 128163,
       "total_steps": 198000,
-      "progress_percent": 64.5288,
-      "loss": 0.02147527,
-      "distill_loss": 0.01243172,
-      "hr_loss": 0.0190987,
-      "edge_loss": 0.07546103,
-      "temporal_loss": 0.01857292,
-      "teacher_psnr": 32.957836,
-      "student_psnr": 30.096738,
-      "seconds": 76289.014,
-      "steps_per_second": 1.6748,
-      "eta": "00.11:38:55",
+      "progress_percent": 64.7288,
+      "loss": 0.02376082,
+      "distill_loss": 0.01365573,
+      "hr_loss": 0.02116433,
+      "edge_loss": 0.08218808,
+      "temporal_loss": 0.02114232,
+      "teacher_psnr": 31.967112,
+      "student_psnr": 29.345386,
+      "seconds": 76567.977,
+      "steps_per_second": 1.6738,
+      "eta": "00.11:35:23",
       "stderr_error_hints": "none"
     },
     "readiness": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
@@ -84,48 +84,48 @@
           "exists": true,
           "kind": "file",
           "bytes": 3188,
-          "mtime": "2026-06-25T13:05:39",
-          "sha256": "05C0124919989B556502FAC93F7D6751F7825B7DEE7F4871BEF7F5C6F9B8BABC"
+          "mtime": "2026-06-25T13:10:18",
+          "sha256": "CDC0FFB9FB767076BB4282552CBD9F3B36FF3BF1CEC3EF0002588F5AFD406EA0"
         },
         {
           "path": "docs/contest_delivery_audit.md",
           "exists": true,
           "kind": "file",
           "bytes": 5981,
-          "mtime": "2026-06-25T13:05:39",
-          "sha256": "B574AEA588CA7CCB6B6974CEE8DAE644BC45566FD5A58710687642F5A151536D"
+          "mtime": "2026-06-25T13:10:18",
+          "sha256": "3358EFF37C967A59186B98D483493A3A817124978037796DC58E118D2916BD7A"
         },
         {
           "path": "docs/x2_hardware_readiness.md",
           "exists": true,
           "kind": "file",
-          "bytes": 5556,
-          "mtime": "2026-06-25T13:05:39",
-          "sha256": "356DF30E52ED25469BF778D2A6EC3DDDE2A03D3607F67FF86407261B4B8C7AC4"
+          "bytes": 5730,
+          "mtime": "2026-06-25T13:10:18",
+          "sha256": "0959D84CF178D7D507566E6C5186E2C39FF153CD91E931531B13083EB314F984"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_completion_status.json",
           "exists": true,
           "kind": "file",
           "bytes": 3566,
-          "mtime": "2026-06-25T13:05:39",
-          "sha256": "DB05C516EDC59AAB100861CB266AB1D75928AB8C1547D833CD07F53CE93C1E91"
+          "mtime": "2026-06-25T13:10:18",
+          "sha256": "482241BB31F959A4CC91A7815167B257A0F08B8FA564FB345F2605E4722A144F"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_delivery_audit.json",
           "exists": true,
           "kind": "file",
           "bytes": 10572,
-          "mtime": "2026-06-25T13:05:39",
-          "sha256": "B39D2C48E6C5F6191C89E2652470899CF1C116651A93CB887FEE8863F1D03297"
+          "mtime": "2026-06-25T13:10:18",
+          "sha256": "3FB9914CCF4FF020F39AEA00D4B466571229653C8B0F00FC880CEE6E2B703A5C"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
           "exists": true,
           "kind": "file",
-          "bytes": 7206,
-          "mtime": "2026-06-25T13:05:39",
-          "sha256": "00212A0B58B05C7202EC70E8261801A6562F141E64833BD33F408A1DCD24A7B5"
+          "bytes": 7380,
+          "mtime": "2026-06-25T13:10:18",
+          "sha256": "9717A0E9D5B01D49D940767DD38AD0FF2394CD7DF60F1123F797CBDF263E9A86"
         }
       ]
     },
@@ -261,9 +261,9 @@
           "path": "scripts/vivado/run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1",
           "exists": true,
           "kind": "file",
-          "bytes": 3507,
-          "mtime": "2026-06-25T11:02:30",
-          "sha256": "5E5677F33CC2066CA6591F8BD6AF7699F663BEC08AD6AB68A109E930C6D2806A"
+          "bytes": 4404,
+          "mtime": "2026-06-25T13:09:32",
+          "sha256": "AF615F66DB2F95938E31614D29C6E828EF8EE96D02F3E444ED001C2507B04632"
         }
       ]
     },
