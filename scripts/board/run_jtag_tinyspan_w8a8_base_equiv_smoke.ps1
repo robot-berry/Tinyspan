@@ -58,7 +58,7 @@ function Get-PowerValue {
   return $match.Matches[0].Groups[1].Value
 }
 
-$root = Resolve-Path (Join-Path $PSScriptRoot "..")
+$root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Push-Location $root
 try {
   $outDirAbs = Join-Path $root $OutDir
@@ -249,7 +249,7 @@ try {
       throw "MeasuredFps could not be derived from JTAG perf-only log. Pass -MeasuredFps or inspect $perfLog."
     }
     if (($ImgW -eq 320) -and ($ImgH -eq 180)) {
-      powershell -NoProfile -ExecutionPolicy Bypass -File scripts\run_tinyspan_720p30_board_acceptance.ps1 `
+      powershell -NoProfile -ExecutionPolicy Bypass -File scripts\acceptance\run_tinyspan_720p30_board_acceptance.ps1 `
         -InputPng $InputPng `
         -InputRaw $inputRaw `
         -InputWidth $ImgW `

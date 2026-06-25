@@ -60,6 +60,8 @@ New-Item -ItemType Directory -Force -Path $artifactDirAbs | Out-Null
 python (Join-Path $TinyspanRoot "scripts\acceptance\check_gate_h_tiledref_board_run.py") `
   --tinyspan-root $TinyspanRoot `
   --workspace-root $WorkspaceRoot `
+  --run-dir $RunDir `
+  --wait-log-dir $WaitLogDir `
   --summary-json $checkJsonRel `
   --summary-md $checkMdRel
 if ($LASTEXITCODE -ne 0) {
@@ -69,6 +71,8 @@ if ($LASTEXITCODE -ne 0) {
 python (Join-Path $TinyspanRoot "scripts\acceptance\package_gate_h_tiledref_board_run.py") `
   --tinyspan-root $TinyspanRoot `
   --workspace-root $WorkspaceRoot `
+  --run-dir $RunDir `
+  --wait-log-dir $WaitLogDir `
   --artifact-dir $ArtifactDir
 if ($LASTEXITCODE -ne 0) {
   throw "Gate H evidence packager failed with exit code $LASTEXITCODE"

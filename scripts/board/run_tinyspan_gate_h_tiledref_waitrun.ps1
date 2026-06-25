@@ -56,8 +56,8 @@ try {
       @("Bitstream", $Bitstream),
       @("SoftwarePng", $SoftwarePng),
       @("FixedPng", $FixedPng),
-      @("JtagScript", "scripts\run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1"),
-      @("AcceptanceScript", "scripts\run_tinyspan_720p30_board_acceptance.ps1"),
+      @("JtagScript", "scripts\board\run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1"),
+      @("AcceptanceScript", "scripts\acceptance\run_tinyspan_720p30_board_acceptance.ps1"),
       @("VivadoIdleScript", "scripts\check_vivado_idle.ps1")
     )) {
     $name = $required[0]
@@ -85,7 +85,7 @@ try {
   $jtagArgs = @(
     "-NoProfile",
     "-ExecutionPolicy", "Bypass",
-    "-File", "scripts\run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1",
+    "-File", "scripts\board\run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1",
     "-ImgW", "320",
     "-ImgH", "180",
     "-PlFreqMhz", "150",
@@ -98,9 +98,16 @@ try {
     "-SkipAcceptance"
   )
   Write-Host "TINYSPAN_GATE_H_JTAG_START=$((Get-Date).ToString('o'))"
-  & powershell @jtagArgs 2>&1 | Tee-Object -FilePath $jtagWrapperLog
-  if ($LASTEXITCODE -ne 0) {
-    throw "TinySPAN Gate H JTAG smoke failed with exit code $LASTEXITCODE. See $jtagWrapperLog"
+  $oldErrorActionPreference = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    & powershell @jtagArgs *>&1 | Tee-Object -FilePath $jtagWrapperLog
+    $jtagExitCode = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $oldErrorActionPreference
+  }
+  if ($jtagExitCode -ne 0) {
+    throw "TinySPAN Gate H JTAG smoke failed with exit code $jtagExitCode. See $jtagWrapperLog"
   }
   Write-Host "TINYSPAN_GATE_H_JTAG_DONE=$((Get-Date).ToString('o'))"
 
@@ -127,7 +134,7 @@ try {
   $acceptanceArgs = @(
     "-NoProfile",
     "-ExecutionPolicy", "Bypass",
-    "-File", "scripts\run_tinyspan_720p30_board_acceptance.ps1",
+    "-File", "scripts\acceptance\run_tinyspan_720p30_board_acceptance.ps1",
     "-InputPng", $InputPng,
     "-InputRaw", $inputRaw,
     "-InputWidth", "320",
@@ -149,9 +156,16 @@ try {
     "-TargetName", "TinySPAN X4 720p tiled fixed Gate H"
   )
   Write-Host "TINYSPAN_GATE_H_TILEDREF_ACCEPTANCE_START=$((Get-Date).ToString('o'))"
-  & powershell @acceptanceArgs 2>&1 | Tee-Object -FilePath $acceptanceWrapperLog
-  if ($LASTEXITCODE -ne 0) {
-    throw "TinySPAN tiled fixed acceptance failed with exit code $LASTEXITCODE. See $acceptanceWrapperLog"
+  $oldErrorActionPreference = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    & powershell @acceptanceArgs *>&1 | Tee-Object -FilePath $acceptanceWrapperLog
+    $acceptanceExitCode = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $oldErrorActionPreference
+  }
+  if ($acceptanceExitCode -ne 0) {
+    throw "TinySPAN tiled fixed acceptance failed with exit code $acceptanceExitCode. See $acceptanceWrapperLog"
   }
 
   $summaryJson = Join-Path $acceptanceDir "tinyspan_720p30_board_acceptance_summary.json"
