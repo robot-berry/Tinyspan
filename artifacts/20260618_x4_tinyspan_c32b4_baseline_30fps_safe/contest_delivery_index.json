@@ -1,0 +1,360 @@
+{
+  "generated_at": "2026-06-25T11:25:25",
+  "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
+  "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
+  "git": {
+    "branch": "main",
+    "commit": "c9807764d97004e4c555a33d195f02160ced1b71",
+    "remote": "https://github.com/robot-berry/Tinyspan.git"
+  },
+  "overall": {
+    "status": "NOT_COMPLETE",
+    "ready_for_full_contest_delivery": false,
+    "x4_deliverable": true,
+    "x2_deliverable": false
+  },
+  "x4": {
+    "status": "PASS_X4",
+    "manifest": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/manifest.json",
+    "fps": 30.409639424076744,
+    "mismatch_bytes": 0,
+    "total_bytes": 2764800,
+    "bitstream_sha256": "A94DC9B1417B35D05C9D57176109155BCBAFB5939C5E9EA9DC570C8184FD8232"
+  },
+  "x2": {
+    "status": "training_running",
+    "training_status": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json",
+    "latest_observed": {
+      "epoch": 30,
+      "step": 118786,
+      "total_steps": 198000,
+      "progress_percent": 59.9929,
+      "loss": 0.02189209,
+      "distill_loss": 0.01271172,
+      "hr_loss": 0.01950886,
+      "edge_loss": 0.07652825,
+      "temporal_loss": 0.01874012,
+      "teacher_psnr": 32.744143,
+      "student_psnr": 29.755942,
+      "seconds": 70229.297,
+      "steps_per_second": 1.6914,
+      "eta": "00.13:00:33",
+      "stderr_error_hints": "none"
+    },
+    "readiness": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
+    "readiness_status": "PARTIAL",
+    "readiness_blockers": [
+      "x2_quant_plan_exists",
+      "x2_rtl_manifest_exists"
+    ],
+    "missing_acceptance_evidence": [
+      "finished/frozen X2 TinySPAN checkpoint",
+      "X2 W8A8 quant plan",
+      "X2 fixed-point/tiled reference",
+      "X2 RTL export and simulation",
+      "X2 bitstream",
+      "real X2 board output",
+      "board-vs-software byte-exact comparison",
+      "measured >=30fps throughput"
+    ]
+  },
+  "sections": [
+    {
+      "name": "工作流与交付审计",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "README.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2353,
+          "mtime": "2026-06-24T15:37:13",
+          "sha256": "3EFC47BA4BCC3C8E85159A43F724FE825BD867BE06FF3ADCA7FE83145793CAEA"
+        },
+        {
+          "path": "WORKFLOW.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 43281,
+          "mtime": "2026-06-25T11:02:30",
+          "sha256": "883AF4F15AC2D455530ACE259D95CA2AEB358DD485FE7529F3DF75A01FC3E0AF"
+        },
+        {
+          "path": "docs/gate_status.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3188,
+          "mtime": "2026-06-25T11:24:39",
+          "sha256": "A0F12642E60202307CD46B6CE3FCE321E024AD68266020C925F4124B24E4CF9F"
+        },
+        {
+          "path": "docs/contest_delivery_audit.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 5981,
+          "mtime": "2026-06-25T11:24:39",
+          "sha256": "80943B506CC1EA72C598B5B1A06C9E901FCA5595891AEA2969B053234609338B"
+        },
+        {
+          "path": "docs/x2_hardware_readiness.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2558,
+          "mtime": "2026-06-25T11:24:39",
+          "sha256": "84091819E1C7DCBDB5F64B3B64AAF75484B1FAE4160B5DA0D8C39D3FEA4BF003"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_completion_status.json",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3566,
+          "mtime": "2026-06-25T11:24:39",
+          "sha256": "5D7EFD9938C85A8BF27E2A25E71D399982E6545C5078022EBBF15C68E096797C"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_delivery_audit.json",
+          "exists": true,
+          "kind": "file",
+          "bytes": 10572,
+          "mtime": "2026-06-25T11:24:39",
+          "sha256": "DBBB035549BEA2DD8EB86F2CBCD94840418DCC056012104CA89AFD65071BC680"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3498,
+          "mtime": "2026-06-25T11:24:39",
+          "sha256": "D42E50E03D020446F71A007B10D6DFB5DD56166C56923C46D8A3A8BC8BEDC427"
+        }
+      ]
+    },
+    {
+      "name": "AI 模型、训练和量化",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "docs/model_design.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 1866,
+          "mtime": "2026-06-24T16:28:41",
+          "sha256": "21B7163453E5588556C97FFE035FFEF88FC91720F927A206CD07A5BF9C3D73A1"
+        },
+        {
+          "path": "docs/training_quantization.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2228,
+          "mtime": "2026-06-24T07:54:42",
+          "sha256": "76CC65D423D7AAE83EC0486D12F7E0B51DAC2CB431F072D2ACB23590830E67DA"
+        },
+        {
+          "path": "train/span_model.py",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3870,
+          "mtime": "2026-06-12T17:43:52",
+          "sha256": "034353C807431D883D65D6C002B7C91A7D34CDC8127232F0C4E1F245EBF7302C"
+        },
+        {
+          "path": "train/distill_tinyspan_video.py",
+          "exists": true,
+          "kind": "file",
+          "bytes": 18318,
+          "mtime": "2026-06-14T11:25:33",
+          "sha256": "FC1BFAF8CAE4A6511DB2F9C8D505D5F47BFAC10BE1D08009653E6252E015B187"
+        },
+        {
+          "path": "configs/distill_tinyspan_video_x2_c32_b4.json",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3128,
+          "mtime": "2026-06-24T15:57:18",
+          "sha256": "EDEF41ED2C4634AB25D51A5D4A185BCF42D07675FCFC1219E1F3FF1BF1B9B6D5"
+        },
+        {
+          "path": "scripts/train_tinyspan_video_x2_c32_b4.ps1",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2254,
+          "mtime": "2026-06-24T15:52:36",
+          "sha256": "E08FE2B3A344D2BA0E2AA8E608686CD68818AF41009071B7C960B12FDDA93D4F"
+        },
+        {
+          "path": "scripts/start_tinyspan_c32b4_x2_training.ps1",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2440,
+          "mtime": "2026-06-24T15:52:36",
+          "sha256": "4B378D9C4DAC6595C821144DFDF4A8CA0E822CCCA0F376B815E0CD81CF9A17B8"
+        },
+        {
+          "path": "scripts/run_tinyspan_c32b4_post_training_prep.ps1",
+          "exists": true,
+          "kind": "file",
+          "bytes": 5499,
+          "mtime": "2026-06-25T10:57:40",
+          "sha256": "ADB34740499951980CB93017E8F2C5C14DB576C4CF73892DD354EFAE19244F97"
+        },
+        {
+          "path": "tools/model_to_hardware/export_tinyspan_w8a8_quant_plan.py",
+          "exists": true,
+          "kind": "file",
+          "bytes": 14483,
+          "mtime": "2026-06-13T02:54:34",
+          "sha256": "3ADAADB344053C0D9AB6DB109B875F599AAD5A3964B63891E90F2B86E8D66358"
+        },
+        {
+          "path": "tools/model_to_hardware/run_tinyspan_w8a8_integer_reference.py",
+          "exists": true,
+          "kind": "file",
+          "bytes": 19055,
+          "mtime": "2026-06-25T11:08:10",
+          "sha256": "0652BC0A22FE45230009C9B923BA77A25B21BD1493FA732321A91FAF2F121A52"
+        }
+      ]
+    },
+    {
+      "name": "硬件设计与模型到 RTL 转换",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "docs/hardware_design.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 5321,
+          "mtime": "2026-06-25T04:59:37",
+          "sha256": "41E60E7F9077F501C131BF9DE7DAE6C642AB37F673453A10E79FD094BD11A8CF"
+        },
+        {
+          "path": "rtl/tinyspan_core",
+          "exists": true,
+          "kind": "dir",
+          "file_count": 8,
+          "bytes": 55763
+        },
+        {
+          "path": "rtl/board_wrapper",
+          "exists": true,
+          "kind": "dir",
+          "file_count": 10,
+          "bytes": 96604
+        },
+        {
+          "path": "tools/model_to_hardware/export_tinyspan_w8a8_to_rtl.py",
+          "exists": true,
+          "kind": "file",
+          "bytes": 10636,
+          "mtime": "2026-06-13T18:19:48",
+          "sha256": "8CEFA6FAF2A059EEF2E9E7F7FF99E5DCF2D5FDB6CE970228764DA0850CF6243E"
+        },
+        {
+          "path": "scripts/vivado/create_vivado_ps_tinyspan_ddr_x4_bd_project.tcl",
+          "exists": true,
+          "kind": "file",
+          "bytes": 10078,
+          "mtime": "2026-06-25T11:07:26",
+          "sha256": "10B9D844359430FEB96845C107A6910E12AEC1D4D8D667651D3DF0951A8773E3"
+        },
+        {
+          "path": "scripts/vivado/run_vivado_bitstream_ps_tinyspan_ddr_x4.ps1",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3507,
+          "mtime": "2026-06-25T11:02:30",
+          "sha256": "5E5677F33CC2066CA6591F8BD6AF7699F663BEC08AD6AB68A109E930C6D2806A"
+        }
+      ]
+    },
+    {
+      "name": "验证方案与 PPA",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "docs/verification_plan.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 7033,
+          "mtime": "2026-06-25T04:59:37",
+          "sha256": "995B065632A195B4D6C32DA2B5DE3670CD0EF771F82EC03C7A85741EFF9A20A9"
+        },
+        {
+          "path": "docs/ppa_analysis.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 4287,
+          "mtime": "2026-06-25T05:00:16",
+          "sha256": "21BAAFCDCA899A30644700B6DCFC73902EF418E366BAD97EA048DEDE97EFB947"
+        },
+        {
+          "path": "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 4540,
+          "mtime": "2026-06-25T04:59:08",
+          "sha256": "B4FC62FE70A103DA79C4857DC5A6010D59A928C289C1398537C9FEC569B8EA7C"
+        },
+        {
+          "path": "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_a53_compare_20260625.md",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3429,
+          "mtime": "2026-06-25T04:59:08",
+          "sha256": "1B793ECD6597A4DEA401AC9457AE686694E6870AA9E94FE835936DDEABACD910"
+        }
+      ]
+    },
+    {
+      "name": "X4 Gate H 已闭合证据",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/manifest.json",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3270,
+          "mtime": "2026-06-25T10:15:50",
+          "sha256": "E58F651C3D5045F3BB8342A4CED6ED17C7F4FC3D172A1A8578406880FE367F9E"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625/software_tiled_fixed_point_sr.png",
+          "exists": true,
+          "kind": "file",
+          "bytes": 1066005,
+          "mtime": "2026-06-25T04:21:02",
+          "sha256": "A1CEC8945B9231B95B0D8F78CFD9D65F0E862937E2292A3E60856C144F5A4074"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625/comparison_preview.png",
+          "exists": true,
+          "kind": "file",
+          "bytes": 139063,
+          "mtime": "2026-06-25T04:21:03",
+          "sha256": "A53E1FE3F045327B1EBEB6E0717936EBE4E2AEB882A114814196A0FC5EE5E967"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625/diff_heatmap.png",
+          "exists": true,
+          "kind": "file",
+          "bytes": 77108,
+          "mtime": "2026-06-25T04:21:03",
+          "sha256": "8845F0B3CECDA6871AE1F7A98D704060CDDE4EDE06FC5500E37F87B9337AD668"
+        },
+        {
+          "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625/tinyspan_tiled_fixed_reference_summary.json",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3400,
+          "mtime": "2026-06-25T04:21:03",
+          "sha256": "D09912E23C3F21465359510946008554BCA31100B0B50F249C48A9482592A84A"
+        }
+      ]
+    }
+  ],
+  "boundary": [
+    "本索引只证明当前已归档证据的存在性和哈希，不会启动 Vivado/JTAG/板卡/训练流程。",
+    "X4 子任务已具备完整 720p30 板上吞吐和 board-vs-fixed 一致性证据。",
+    "整赛题仍需 X2 独立冻结、量化、RTL、bitstream、真实板上输出和 >=30fps 证据后才能宣告完成。"
+  ]
+}
