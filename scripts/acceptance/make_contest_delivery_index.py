@@ -179,6 +179,8 @@ def build_index(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
             [
                 "docs/verification_plan.md",
                 "docs/ppa_analysis.md",
+                "docs/x4_board_result_report_20260625.md",
+                "docs/x4_quality_improvement_plan.md",
                 "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md",
                 "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_a53_compare_20260625.md",
             ],

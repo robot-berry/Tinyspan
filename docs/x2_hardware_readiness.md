@@ -1,7 +1,7 @@
 # TinySPAN X2 Hardware Readiness
 
 - status: `PARTIAL`
-- generated at: `2026-06-25T12:06:52`
+- generated at: `2026-06-25T12:21:20`
 - X2 training status: `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json`
 - X2 quant plan: ``
 - X2 RTL manifest: ``

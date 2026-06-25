@@ -366,6 +366,11 @@ artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/reds_val_quality_x4_000
 当前 W8A12 或其他板卡任务结束后再启动；若仍只使用 PC 文件写入 DDR，必须标注为 DDR 路径验证，
 不能冒充为严格的板上 SD 卡读图验证。
 
+X4 当前板上资源、时序、功耗、吞吐、正确性和画质指标已汇总到
+`docs/x4_board_result_report_20260625.md`。画质提升不直接覆盖当前 X4 安全基线，而是按
+`docs/x4_quality_improvement_plan.md` 新建候选路线：先证明 REDS val 平均画质提升和量化后定点一致性，
+再重新通过 RTL、bitstream、真实板卡 `0 mismatch` 和 `>=30fps`，最后才允许替换基线。
+
 路线决策记录：
 
 - 2026-06-21：主线确认采用完整 LR 帧板端切块拼接，最终 X4 目标为 `320x180 -> 1280x720`。

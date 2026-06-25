@@ -164,6 +164,8 @@ def build_check(repo_root: Path, artifact_dir: Path) -> dict[str, Any]:
         "docs/hardware_design.md",
         "docs/verification_plan.md",
         "docs/ppa_analysis.md",
+        "docs/x4_board_result_report_20260625.md",
+        "docs/x4_quality_improvement_plan.md",
         "docs/sd_card_x4_board_validation_plan.md",
         "docs/gate_status.md",
         "docs/contest_delivery_audit.md",

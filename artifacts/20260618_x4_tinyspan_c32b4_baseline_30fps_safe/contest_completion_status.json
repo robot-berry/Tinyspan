@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T12:06:52",
+  "generated_at": "2026-06-25T12:21:20",
   "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "accepted": false,
   "acceptance_status": "NOT_COMPLETE",
@@ -74,7 +74,7 @@
       "gate": "X2",
       "name": "X2 独立证据包",
       "status": "PARTIAL",
-      "evidence": "X2 正式训练运行中；epoch `31`，step `122682/198000`，progress `61.9606%`。",
+      "evidence": "X2 正式训练运行中；epoch `32`，step `123931/198000`，progress `62.5914%`。",
       "next_action": "训练完成后冻结、量化、导出 RTL、生成 bitstream 并上板验证。"
     }
   ]

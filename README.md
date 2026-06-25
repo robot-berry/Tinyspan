@@ -38,6 +38,11 @@ Main documents:
   verification plan and remaining full-frame/X2 tests.
 - [docs/ppa_analysis.md](docs/ppa_analysis.md): resource, timing, power, and
   throughput evidence.
+- [docs/x4_board_result_report_20260625.md](docs/x4_board_result_report_20260625.md):
+  X4 board resource, timing, power, throughput, correctness, and image-quality
+  summary.
+- [docs/x4_quality_improvement_plan.md](docs/x4_quality_improvement_plan.md):
+  quality-improvement route that preserves the closed X4 safety baseline.
 - [docs/contest_delivery_index.md](docs/contest_delivery_index.md): current
   contest delivery evidence index with SHA256 hashes.
 - [docs/contest_delivery_package_check.md](docs/contest_delivery_package_check.md):
