@@ -69,8 +69,17 @@ python scripts/cloud/sync_reds_and_start_x4_quality_training.py `
   --local-reds-root G:/REDS `
   --remote-repo /root/autodl-tmp/Tinyspan `
   --remote-data /root/autodl-tmp/data/REDS `
+  --sync-mode sequence-tar `
   --include-val `
   --start-training
+Remove-Item Env:\SEETA_PASS
+```
+
+For a long unattended copy, prefer the retrying wrapper:
+
+```powershell
+$env:SEETA_PASS = "<server password>"
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cloud/run_x4_full_reds_sequence_tar_sync.ps1
 Remove-Item Env:\SEETA_PASS
 ```
 

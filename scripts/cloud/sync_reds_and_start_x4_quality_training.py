@@ -12,6 +12,8 @@ import json
 import os
 import posixpath
 import shlex
+import tarfile
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -44,6 +46,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--local-reds-root", type=Path, default=Path("G:/REDS"))
     parser.add_argument("--remote-repo", default=DEFAULT_REMOTE_REPO)
     parser.add_argument("--remote-data", default=DEFAULT_REMOTE_DATA)
+    parser.add_argument("--sync-mode", choices=("files", "sequence-tar"), default="files")
+    parser.add_argument("--local-temp-dir", type=Path, default=None)
     parser.add_argument("--max-train-sequences", type=int, default=0, help="0 means all train_sharp sequences")
     parser.add_argument("--include-val", action="store_true", help="Also sync val_sharp")
     parser.add_argument("--start-training", action="store_true")
@@ -132,6 +136,122 @@ def selected_files(local_root: Path, split: str, max_train_sequences: int) -> li
     return sorted(p for p in split_root.rglob("*") if p.is_file())
 
 
+def selected_sequences(local_root: Path, split: str, max_train_sequences: int) -> list[Path]:
+    split_root = local_root / split
+    if not split_root.is_dir():
+        raise FileNotFoundError(f"Missing local REDS split: {split_root}")
+    sequences = sorted(p for p in split_root.iterdir() if p.is_dir())
+    if split == "train_sharp" and max_train_sequences > 0:
+        return sequences[:max_train_sequences]
+    return sequences
+
+
+def sequence_size_and_count(sequence_dir: Path) -> tuple[int, int]:
+    files = [p for p in sequence_dir.rglob("*") if p.is_file()]
+    return len(files), sum(p.stat().st_size for p in files)
+
+
+def remote_tree_size_and_count(client: paramiko.SSHClient, remote_dir: str) -> tuple[int, int]:
+    command = f"""
+if [ ! -d {shlex.quote(remote_dir)} ]; then
+  echo "0 0"
+else
+  find {shlex.quote(remote_dir)} -type f ! -name '*.part' -printf '%s\\n' |
+    awk '{{count += 1; bytes += $1}} END {{printf "%d %d\\n", count, bytes}}'
+fi
+"""
+    out = run(client, command)
+    count_text, bytes_text = out.strip().split()
+    return int(count_text), int(bytes_text)
+
+
+def make_sequence_tar(local_reds_root: Path, sequence_dir: Path, temp_dir: Path) -> Path:
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        prefix=f"{sequence_dir.parent.name}_{sequence_dir.name}_",
+        suffix=".tar",
+        dir=temp_dir,
+        delete=False,
+    ) as handle:
+        tar_path = Path(handle.name)
+    try:
+        with tarfile.open(tar_path, "w") as tar:
+            for path in sorted(sequence_dir.rglob("*")):
+                if path.is_file():
+                    tar.add(path, arcname=path.relative_to(local_reds_root).as_posix())
+        return tar_path
+    except Exception:
+        tar_path.unlink(missing_ok=True)
+        raise
+
+
+def upload_split_sequence_tars(
+    client: paramiko.SSHClient,
+    sftp: paramiko.SFTPClient,
+    local_reds_root: Path,
+    remote_data: str,
+    split: str,
+    max_train_sequences: int,
+    dry_run: bool,
+    progress_every: int,
+    local_temp_dir: Path,
+) -> UploadStats:
+    stats = UploadStats(started_at=time.time())
+    sequences = selected_sequences(local_reds_root, split, max_train_sequences)
+    totals = [sequence_size_and_count(seq) for seq in sequences]
+    total_files = sum(count for count, _bytes in totals)
+    total_bytes = sum(_bytes for _count, _bytes in totals)
+    print(f"[{split}] sequences={len(sequences)} files={total_files} bytes={total_bytes}", flush=True)
+
+    ensure_remote_dir(sftp, remote_data)
+    incoming_dir = posixpath.join(remote_data, ".incoming")
+    if not dry_run:
+        ensure_remote_dir(sftp, incoming_dir)
+
+    for index, sequence_dir in enumerate(sequences, start=1):
+        local_count, local_bytes = totals[index - 1]
+        rel = sequence_dir.relative_to(local_reds_root).as_posix()
+        remote_sequence_dir = posixpath.join(remote_data, rel)
+        remote_count, remote_bytes = remote_tree_size_and_count(client, remote_sequence_dir)
+        stats.checked += local_count
+        if remote_count == local_count and remote_bytes == local_bytes:
+            stats.skipped += local_count
+        else:
+            stats.uploaded += local_count
+            stats.bytes_uploaded += local_bytes
+            if not dry_run:
+                tar_path = make_sequence_tar(local_reds_root, sequence_dir, local_temp_dir)
+                remote_tar = posixpath.join(incoming_dir, f"{split}_{sequence_dir.name}.tar")
+                remote_part = remote_tar + ".part"
+                try:
+                    sftp.put(str(tar_path), remote_part)
+                    try:
+                        sftp.remove(remote_tar)
+                    except IOError:
+                        pass
+                    sftp.rename(remote_part, remote_tar)
+                    run(client, f"tar -xf {shlex.quote(remote_tar)} -C {shlex.quote(remote_data)} && rm -f {shlex.quote(remote_tar)}")
+                    remote_count, remote_bytes = remote_tree_size_and_count(client, remote_sequence_dir)
+                    if remote_count != local_count or remote_bytes != local_bytes:
+                        raise RuntimeError(
+                            f"Remote verification failed for {rel}: "
+                            f"local=({local_count}, {local_bytes}) remote=({remote_count}, {remote_bytes})"
+                        )
+                finally:
+                    tar_path.unlink(missing_ok=True)
+
+        if index % max(progress_every, 1) == 0 or index == len(sequences):
+            elapsed = max(time.time() - stats.started_at, 1.0)
+            mbps = stats.bytes_uploaded / elapsed / 1024 / 1024
+            print(
+                f"[{split}] sequences={index}/{len(sequences)} checked_files={stats.checked}/{total_files} "
+                f"uploaded_files={stats.uploaded} skipped_files={stats.skipped} "
+                f"uploaded_gb={stats.bytes_uploaded / 1024**3:.2f} rate_mib_s={mbps:.2f}",
+                flush=True,
+            )
+    return stats
+
+
 def upload_split(
     sftp: paramiko.SFTPClient,
     local_reds_root: Path,
@@ -205,6 +325,7 @@ fi
 def main() -> int:
     args = parse_args()
     local_reds_root = args.local_reds_root.resolve()
+    local_temp_dir = (args.local_temp_dir or (local_reds_root.parent / ".tinyspan_cloud_sync_tmp")).resolve()
     if not local_reds_root.is_dir():
         raise SystemExit(f"Local REDS root not found: {local_reds_root}")
 
@@ -213,27 +334,31 @@ def main() -> int:
         print(run(client, f"mkdir -p {shlex.quote(args.remote_data)} && df -h {shlex.quote(args.remote_data)} || true"))
         sftp = client.open_sftp()
         try:
-            summary = {
-                "train_sharp": upload_split(
+            if args.sync_mode == "sequence-tar":
+                upload_fn = lambda split, max_sequences: upload_split_sequence_tars(
+                    client,
                     sftp,
                     local_reds_root,
                     args.remote_data,
-                    "train_sharp",
-                    args.max_train_sequences,
+                    split,
+                    max_sequences,
                     args.dry_run,
                     args.progress_every,
-                ).__dict__,
-            }
+                    local_temp_dir,
+                )
+            else:
+                upload_fn = lambda split, max_sequences: upload_split(
+                    sftp,
+                    local_reds_root,
+                    args.remote_data,
+                    split,
+                    max_sequences,
+                    args.dry_run,
+                    args.progress_every,
+                )
+            summary = {"train_sharp": upload_fn("train_sharp", args.max_train_sequences).__dict__}
             if args.include_val:
-                summary["val_sharp"] = upload_split(
-                    sftp,
-                    local_reds_root,
-                    args.remote_data,
-                    "val_sharp",
-                    0,
-                    args.dry_run,
-                    args.progress_every,
-                ).__dict__
+                summary["val_sharp"] = upload_fn("val_sharp", 0).__dict__
         finally:
             sftp.close()
 
