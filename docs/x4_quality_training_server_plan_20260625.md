@@ -169,7 +169,8 @@ runs/tinyspan_quality/x4_quality_hr060_edge006_reds_val/tinyspan_checkpoint_reds
 ```
 
 Only continue to quantization and board work if the multi-image `student_vs_hr` PSNR/SSIM improves over
-`bicubic_vs_hr`; claiming `30dB` requires the same multi-image REDS HR metric, not a single-image result.
+`bicubic_vs_hr`. The X4 quality target is REDS val multi-image `student_vs_hr >= 28dB`; claiming an optional
+`30dB` stretch result requires the same REDS HR metric, not a single-image result.
 
 After copying the cloud run back into this repo, package the candidate evidence:
 
@@ -198,7 +199,7 @@ bicubic_vs_hr PSNR: 25.763312 dB
 gain: +0.102542 dB
 ```
 
-This smoke result is not a 30dB claim and does not replace `X4_SUBMIT_20260625_CURRENT_BASELINE`.
+This smoke result is not a `28+dB` or `30dB` claim and does not replace `X4_SUBMIT_20260625_CURRENT_BASELINE`.
 The full REDS sync/train run must finish before deciding whether this quality branch is worth exporting to
 quantization and board validation.
 
@@ -211,7 +212,7 @@ Start with this one candidate instead of training a larger model. A single RTX 4
 This candidate must not replace `X4_SUBMIT_20260625_CURRENT_BASELINE` until all of these are true:
 
 1. REDS val multi-image PSNR/SSIM improves over the current X4 safe baseline and bicubic baseline.
-2. If the report claims `30dB`, it is a multi-image REDS val average using the same HR reference path.
+2. If the report claims `28+dB` or `30dB`, it is a multi-image REDS val average using the same HR reference path.
 3. New W8A8 quant plan comes from this candidate checkpoint.
 4. New hardware-tiled fixed reference comes from the same candidate checkpoint and quant plan.
 5. RTL/export drift check passes.

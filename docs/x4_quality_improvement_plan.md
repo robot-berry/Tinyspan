@@ -1,4 +1,4 @@
-# TinySPAN X4 PSNR 30dB 画质提升候选方案
+# TinySPAN X4 PSNR 28+dB 画质提升候选方案
 
 ## 结论
 
@@ -10,19 +10,19 @@
 - 正确性：board/A53 in-DDR compare `0 / 2764800` mismatch
 - REDS HR 单样例：`25.851911dB`
 
-如果要把 X4 REDS HR PSNR 提升到接近或达到 `30dB`，需要作为独立候选重新训练、量化、导出 RTL、生成 bitstream 并上板验证。不能直接修改已经闭合的 X4 安全基线。
+当前 X4 画质提升目标调整为 REDS HR 多图平均 PSNR `>=28dB`；`30dB` 保留为可选冲刺目标。候选必须作为独立路线重新训练、量化、导出 RTL、生成 bitstream 并上板验证，不能直接修改已经闭合的 X4 安全基线。
 
 ## PSNR 口径
 
-`30dB` 目标只对如下口径有效：
+`28+dB` 目标只对如下口径有效：
 
 | 口径 | 当前值 | 目标 |
 | --- | ---: | ---: |
-| X4 fixed SR vs REDS HR | 25.851911 dB 单样例 | 多图平均接近或达到 30dB |
+| X4 fixed SR vs REDS HR | 25.851911 dB 单样例 | 多图平均 `>=28dB`，`30dB` 作为冲刺 |
 | Student SR vs teacher | 29.459008 dB | 可辅助观察，不作为最终 HR 画质 |
 | PyTorch SR vs fixed SR | 43.171866 dB | 已满足定点一致性门槛 |
 
-因此，30dB 不能用单张简单图证明，也不能用 PyTorch-vs-fixed 的一致性 PSNR 替代。正式口径必须报告 REDS val 多图平均 PSNR/SSIM，并与 bicubic baseline 同口径比较。
+因此，`28+dB/30dB` 不能用单张简单图证明，也不能用 PyTorch-vs-fixed 的一致性 PSNR 替代。正式口径必须报告 REDS val 多图平均 PSNR/SSIM，并与 bicubic baseline 同口径比较。
 
 ## 候选路线
 
@@ -53,7 +53,7 @@
 
 ### Q2：中等模型候选
 
-如果 Q1 达不到 30dB，可尝试：
+如果 Q1 达不到 `28dB`，或已经达到 `28dB` 但还想冲刺 `30dB`，可尝试：
 
 - `c48b4`
 - `c32b6`
@@ -78,7 +78,7 @@
 候选模型只有同时满足以下条件，才能替换当前 X4 提交节点：
 
 1. REDS val 多图平均 PSNR/SSIM 高于当前安全基线和 bicubic baseline。
-2. 若声称 30dB，则必须是同一口径多图平均接近或达到 `30dB`，不是单图结果。
+2. 若声称 `28+dB` 或 `30dB`，则必须是同一口径 REDS val 多图平均结果，不是单图结果。
 3. W8A8 quant plan 来自候选 checkpoint。
 4. hardware-tiled fixed reference 来自同一候选 checkpoint 和 quant plan。
 5. RTL/export drift 检查通过。
@@ -88,7 +88,7 @@
 
 ## 当前执行策略
 
-当前提交节点先提交 X4 安全基线。PSNR 30dB 画质提升作为后续独立候选，不阻塞当前 X4 子任务提交，也不替代当前已闭合 bitstream。
+当前提交节点先提交 X4 安全基线。PSNR `28+dB` 画质提升作为后续独立候选，不阻塞当前 X4 子任务提交，也不替代当前已闭合 bitstream；`30dB` 只作为额外冲刺目标。
 
 ## 服务器训练入口
 

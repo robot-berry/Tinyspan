@@ -108,7 +108,7 @@ REDS HR 样例画质指标：
 | x4_tile64_fixed_vs_reds_hr | 25.851911 dB | 0.700177 | 0.031975 | 136 |
 | bicubic_lr_vs_reds_hr | 25.787498 dB | 0.699348 | 0.031871 | 133 |
 
-当前 X4 安全基线相对 bicubic 的 REDS HR 样例提升较小，因此它更适合作为“正确性、实时性、低资源”安全基线。当前 X4 提交节点采用本基线；PSNR `30dB` 画质提升按 `docs/x4_quality_improvement_plan.md` 作为独立候选推进，只有重新完成量化、RTL、bitstream、真实板卡 `0` mismatch 和 `>=30fps` 后才能替换本基线。
+当前 X4 安全基线相对 bicubic 的 REDS HR 样例提升较小，因此它更适合作为“正确性、实时性、低资源”安全基线。当前 X4 提交节点采用本基线；PSNR `28+dB` 画质提升按 `docs/x4_quality_improvement_plan.md` 作为独立候选推进，`30dB` 仅作为额外冲刺目标。只有重新完成量化、RTL、bitstream、真实板卡 `0` mismatch 和 `>=30fps` 后，候选才能替换本基线。
 
 ## 边界
 
