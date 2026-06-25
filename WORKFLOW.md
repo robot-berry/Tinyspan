@@ -1059,6 +1059,32 @@ X2/X4 Gate H manifest、图像验证材料和文档/源码索引，不启动 Viv
 - X4 后续画质提升可以在 X2 闭合后继续作为支线推进；已跑过的 `x4_quality_after_x2_20260625_cloud_eval` 未达到替换门槛，不替换当前 X4 submission baseline。新的 X4 提升训练只有重新完成冻结、量化、RTL/export、bitstream、真实板上 `0 mismatch` 和 `>=30fps` 后，才允许成为替代提交节点。
 - 只读交付包校验已通过：`docs/contest_delivery_package_check.md` 显示 `STATUS PASS`，`required_failed_count=0`；`contest_delivery_audit.json` 的 `accepted=true`。
 
+### 11.1 2026-06-26 X4/X2 画质提升节点
+
+本节只描述画质提升分支，不覆盖已经可提交的 X4/X2 Gate H 硬件基线。提质候选必须先通过软件全量 REDS
+`val_sharp` 质量门槛；只有软件候选达标后，才允许进入冻结、量化、RTL/export、bitstream 和真实上板替换流程。
+
+| 节点 | 状态 | 目标 | 当前证据/路径 | 通过条件 |
+| --- | --- | --- | --- | --- |
+| `QUALITY_X4_HRHEAVY_P256_20260626` | `RUNNING` | 在保持 TinySPAN `c32/b4` 硬件拓扑不变的前提下，将 X4 full REDS val PSNR 从上一轮 `26.384690521945394dB` 提升到 `>=28dB`，并记录相对 bicubic 的 gain | 云端 run：`/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x4_c32_b4_quality_hrheavy_p256_20260626`；resume：`video_x4_c32_b4_quality_after_x2_20260625/student_last.pt`；参数：`scale=4`、`patch=256`、`batch=3`、`lr=2e-5`、`distill/hr/edge/temporal=0.25/1.20/0.03/0.05`；截至远端 `2026-06-26 06:59:26`，训练约 `epoch=2`、`step=8269`、stderr 为空 | 生成 `student_last.pt`，完成 `3000` 张 REDS `val_sharp` 全量评估；`student_psnr_mean_db >= 28.0` 且 `student_psnr_gain_over_bicubic_db > 0`；候选包写入 `artifacts/.../x4_quality_candidates/x4_quality_hrheavy_p256_20260626/manifest.json` |
+| `QUALITY_X2_HRHEAVY_AFTER_X4_20260626` | `QUEUED_AFTER_X4` | 在当前 X2 已交付模型 `31.121459919373763dB` 基础上继续提升，至少保持 `>=30dB`，争取超过当前 X2 full-val PSNR | 云端待启动 run：`/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x2_c32_b4_quality_hrheavy_after_x4_20260626`；resume：`video_x2_c32_b4_quality_after_x4_20260625/student_last.pt`；由 `watch_x4_x2_hrheavy_20260626.sh` 在 X4 评估/打包后自动启动 | 生成 `student_last.pt`，完成 `3000` 张 REDS `val_sharp` 全量评估；`student_psnr_mean_db >= 30.0`，并与当前 X2 基线 `31.121459919373763dB` 比较是否真实提升；候选包写入 `artifacts/.../x2_quality_candidates/x2_quality_hrheavy_after_x4_20260626/manifest.json` |
+| `QUALITY_PROMOTE_TO_BOARD_GATE` | `WAITING_FOR_SOFTWARE_PASS` | 把达标软件候选升级为可替换硬件提交节点 | 仅当上面某个候选 full-val PASS 后触发 | 重新冻结 checkpoint、导出 quant plan、生成硬件同构 fixed reference 和 RTL/export manifest；重新生成 bitstream；真实板上 `board-vs-fixed mismatch=0`、`max diff=0`、吞吐 `>=30fps`；资源/WNS/PPA 和可查看图像材料全部归档 |
+
+远端 watcher：
+
+- 主 watcher：`/root/autodl-tmp/Tinyspan/logs/cloud/watch_x4_x2_hrheavy_20260626.out.log`。职责：等待 X4
+  训练完成，运行 X4 full-val 质量评估并打包，然后启动 X2 提质训练。
+- X2 打包兜底 watcher：`/root/autodl-tmp/Tinyspan/logs/cloud/watch_x2_quality_package_20260626.out.log`。职责：等待 X2
+  full-val JSON 和 `student_last.pt` 同时存在后，生成 X2 提质候选 manifest。
+
+硬边界：
+
+- `QUALITY_X4_HRHEAVY_P256_20260626` 即使软件 PSNR 提升，也不能自动替换
+  `X4_SUBMIT_20260625_CURRENT_BASELINE`；替换必须经过 `QUALITY_PROMOTE_TO_BOARD_GATE`。
+- `QUALITY_X2_HRHEAVY_AFTER_X4_20260626` 若只是保持 `>=30dB` 但没有超过当前 X2 `31.121459919373763dB`
+  基线，只记录为回归候选，不作为“X2 提质成功”声明。
+- 提质训练期间不启动 Vivado/JTAG/XSCT/板卡流程；只读状态、训练日志、质量 JSON 和候选 manifest。
+
 ## 12. 完成定义
 
 只有当 X2 和 X4 所需模式都具备完整 TinySPAN 证据包，并满足以下条件时，任务才算完成：
