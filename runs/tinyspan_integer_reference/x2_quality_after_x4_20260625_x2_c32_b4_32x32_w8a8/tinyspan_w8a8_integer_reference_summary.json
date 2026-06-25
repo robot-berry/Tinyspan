@@ -1,0 +1,317 @@
+{
+  "input": "runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\video_distill_latest_preview.png",
+  "quant_plan": "runs\\tinyspan_quant_plan\\x2_quality_after_x4_20260625_x2_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+  "checkpoint": "runs\\tinyspan_frozen_candidates\\x2_quality_after_x4_20260625\\student_final.pt",
+  "width": 32,
+  "height": 32,
+  "preview": "runs\\tinyspan_integer_reference\\x2_quality_after_x4_20260625_x2_c32_b4_32x32_w8a8\\tinyspan_w8a8_integer_reference_preview.png",
+  "base_reference_mode": "rtl_fixed_q14_bicubic_x2",
+  "metrics": {
+    "pytorch_vs_fake": {
+      "mismatch_bytes": 5439,
+      "total_bytes": 12288,
+      "max_channel_diff": 2,
+      "mae": 0.4454752604166667,
+      "mse": 0.451171875,
+      "psnr_db": 51.587383419515966
+    },
+    "pytorch_vs_integer": {
+      "mismatch_bytes": 7684,
+      "total_bytes": 12288,
+      "max_channel_diff": 2,
+      "mae": 0.808349609375,
+      "mse": 1.1743978261947632,
+      "psnr_db": 47.43265122172357
+    },
+    "fake_vs_integer": {
+      "mismatch_bytes": 3929,
+      "total_bytes": 12288,
+      "max_channel_diff": 3,
+      "mae": 0.640380859375,
+      "mse": 1.3402506113052368,
+      "psnr_db": 46.8589434688332
+    }
+  },
+  "stage_stats": {
+    "input": {
+      "q_min": 0,
+      "q_max": 127,
+      "zero_frac": 0.01920572854578495,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.052734375
+    },
+    "head.output": {
+      "q_min": -122,
+      "q_max": 127,
+      "zero_frac": 0.01031494140625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00933837890625
+    },
+    "blocks.0.c1.output": {
+      "q_min": -113,
+      "q_max": 127,
+      "zero_frac": 0.015350341796875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.000946044921875
+    },
+    "blocks.0.act1": {
+      "q_min": -52,
+      "q_max": 127,
+      "zero_frac": 0.015350341796875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.000946044921875
+    },
+    "blocks.0.c2.output": {
+      "q_min": -114,
+      "q_max": 127,
+      "zero_frac": 0.00897216796875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0037841796875
+    },
+    "blocks.0.act2": {
+      "q_min": -79,
+      "q_max": 127,
+      "zero_frac": 0.00897216796875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0037841796875
+    },
+    "blocks.0.c3.output": {
+      "q_min": -128,
+      "q_max": 127,
+      "zero_frac": 0.0040283203125,
+      "sat_neg_frac": 0.000244140625,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.0.residual_sum": {
+      "q_min": -38,
+      "q_max": 53,
+      "zero_frac": 0.031646728515625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.0.sim_att": {
+      "q_min": -128,
+      "q_max": 127,
+      "zero_frac": 0.0040283203125,
+      "sat_neg_frac": 0.000244140625,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.0.out": {
+      "q_min": -3,
+      "q_max": 55,
+      "zero_frac": 0.198455810546875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.c1.output": {
+      "q_min": -121,
+      "q_max": 123,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.act1": {
+      "q_min": -93,
+      "q_max": 123,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.c2.output": {
+      "q_min": -127,
+      "q_max": 86,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.act2": {
+      "q_min": -127,
+      "q_max": 115,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.c3.output": {
+      "q_min": -127,
+      "q_max": 124,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.residual_sum": {
+      "q_min": -127,
+      "q_max": 125,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.sim_att": {
+      "q_min": -127,
+      "q_max": 124,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.1.out": {
+      "q_min": 0,
+      "q_max": 127,
+      "zero_frac": 0.0338134765625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.000396728515625
+    },
+    "blocks.2.c1.output": {
+      "q_min": -120,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.001007080078125
+    },
+    "blocks.2.act1": {
+      "q_min": -93,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.001007080078125
+    },
+    "blocks.2.c2.output": {
+      "q_min": -99,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.2.act2": {
+      "q_min": -76,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.2.c3.output": {
+      "q_min": -106,
+      "q_max": 127,
+      "zero_frac": 0.001861572265625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.2.residual_sum": {
+      "q_min": -97,
+      "q_max": 127,
+      "zero_frac": 0.014404296875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.03125
+    },
+    "blocks.2.sim_att": {
+      "q_min": -106,
+      "q_max": 127,
+      "zero_frac": 0.001861572265625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.2.out": {
+      "q_min": -8,
+      "q_max": 127,
+      "zero_frac": 0.12396240234375,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.3.c1.output": {
+      "q_min": -70,
+      "q_max": 127,
+      "zero_frac": 0.0009765625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.001922607421875
+    },
+    "blocks.3.act1": {
+      "q_min": -55,
+      "q_max": 127,
+      "zero_frac": 0.0009765625,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.001922607421875
+    },
+    "blocks.3.c2.output": {
+      "q_min": -127,
+      "q_max": 123,
+      "zero_frac": 6.103515625e-05,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "blocks.3.act2": {
+      "q_min": -106,
+      "q_max": 127,
+      "zero_frac": 6.103515625e-05,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.00091552734375
+    },
+    "blocks.3.c3.output": {
+      "q_min": -97,
+      "q_max": 127,
+      "zero_frac": 0.00091552734375,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.000946044921875
+    },
+    "blocks.3.residual_sum": {
+      "q_min": -95,
+      "q_max": 127,
+      "zero_frac": 0.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0302734375
+    },
+    "blocks.3.sim_att": {
+      "q_min": -97,
+      "q_max": 127,
+      "zero_frac": 0.00091552734375,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.000946044921875
+    },
+    "blocks.3.out": {
+      "q_min": -4,
+      "q_max": 127,
+      "zero_frac": 0.03118896484375,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.000946044921875
+    },
+    "fuse_tail.output": {
+      "q_min": -123,
+      "q_max": 127,
+      "zero_frac": 0.000946044921875,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.000946044921875
+    },
+    "reconstruct.input": {
+      "q_min": -122,
+      "q_max": 127,
+      "zero_frac": 0.35761260986328125,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0023345947265625
+    },
+    "reconstruct.output": {
+      "q_min": 0,
+      "q_max": 0,
+      "zero_frac": 1.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "pixelshuffle.output": {
+      "q_min": 0,
+      "q_max": 0,
+      "zero_frac": 1.0,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    },
+    "base.input": {
+      "q_min": -15,
+      "q_max": 127,
+      "zero_frac": 0.013427734375,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0340169258415699
+    },
+    "output": {
+      "q_min": -14,
+      "q_max": 118,
+      "zero_frac": 0.013427734375,
+      "sat_neg_frac": 0.0,
+      "sat_pos_frac": 0.0
+    }
+  }
+}

@@ -3,6 +3,7 @@ param(
   [string]$Checkpoint = "",
   [string]$Tag = "",
   [string]$OutRoot = "runs\tinyspan_frozen_candidates",
+  [string]$PreviewInput = "",
   [ValidateSet(2, 4)]
   [int]$Scale = 4,
   [switch]$AllowRunning,
@@ -56,6 +57,9 @@ try {
   $outDir = Join-Path $OutRoot $safeTag
   $metrics = Join-Path $RunDir "metrics.csv"
   $preview = Join-Path $RunDir "video_distill_latest_preview.png"
+  if ([string]::IsNullOrWhiteSpace($PreviewInput)) {
+    $PreviewInput = $preview
+  }
   $frozenCheckpoint = Join-Path $outDir "student_final.pt"
   $frozenMetrics = Join-Path $outDir "metrics.csv"
   $frozenPreview = Join-Path $outDir "video_distill_latest_preview.png"
@@ -96,6 +100,22 @@ try {
   $checkpointHash = (Get-FileHash -Algorithm SHA256 -Path $Checkpoint).Hash
   $metricsHash = (Get-FileHash -Algorithm SHA256 -Path $metrics).Hash
   $previewHash = if (Test-Path $preview) { (Get-FileHash -Algorithm SHA256 -Path $preview).Hash } else { "" }
+  $latestMetricSummary = [ordered]@{
+    raw = [string]$latestMetric.raw
+    epoch = [int]$latestMetric.epoch
+    step = [int]$latestMetric.step
+    loss = [double]$latestMetric.loss
+    student_psnr = [double]$latestMetric.student_psnr
+    seconds = [double]$latestMetric.seconds
+    steps_per_second = [double]$latestMetric.steps_per_second
+  }
+  $trainingProcessSummary = @($running | ForEach-Object {
+    [ordered]@{
+      process_id = [int]$_.ProcessId
+      name = [string]$_.Name
+      command_line = [string]$_.CommandLine
+    }
+  })
 
   $summary = [ordered]@{
     passed = $true
@@ -105,6 +125,7 @@ try {
     source_checkpoint = $Checkpoint
     source_metrics = $metrics
     source_preview = $preview
+    handoff_preview_input = $PreviewInput
     frozen_dir = $outDir
     frozen_checkpoint = $frozenCheckpoint
     frozen_metrics = $frozenMetrics
@@ -112,8 +133,8 @@ try {
     source_checkpoint_sha256 = $checkpointHash
     source_metrics_sha256 = $metricsHash
     source_preview_sha256 = $previewHash
-    latest_metric = $latestMetric
-    training_processes = @($running)
+    latest_metric = $latestMetricSummary
+    training_processes = $trainingProcessSummary
     allow_running = [bool]$AllowRunning
     scale = $Scale
     run_handoff = [bool]$RunHandoff
@@ -137,6 +158,7 @@ try {
       powershell -ExecutionPolicy Bypass -File scripts\prepare_tinyspan_c32b4_realtime_handoff.ps1 `
         -Checkpoint $frozenCheckpoint `
         -Tag $safeTag `
+        -PreviewInput $PreviewInput `
         -Scale $Scale
       if ($LASTEXITCODE -ne 0) {
         throw "prepare_tinyspan_c32b4_realtime_handoff.ps1 failed with exit code $LASTEXITCODE"

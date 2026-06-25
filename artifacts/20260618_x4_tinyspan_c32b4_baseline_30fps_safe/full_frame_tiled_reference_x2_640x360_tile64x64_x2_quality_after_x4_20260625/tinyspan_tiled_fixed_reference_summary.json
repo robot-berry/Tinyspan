@@ -1,0 +1,55 @@
+{
+  "pass": true,
+  "input": "G:\\REDS\\val_sharp\\000\\00000000.png",
+  "input_sha256": "0A37F98271511DB5AB9DCD652CDC3978E5351595B531722F4D14C4B17AA99735",
+  "input_width": 640,
+  "input_height": 360,
+  "output_width": 1280,
+  "output_height": 720,
+  "scale": 2,
+  "tile_width": 64,
+  "tile_height": 64,
+  "tile_count": 60,
+  "padding_policy": "zero-pad LR edge tiles to fixed tile size before TinySPAN core",
+  "crop_policy": "crop top-left valid_w*scale by valid_h*scale region from each SR tile",
+  "checkpoint": "G:\\UESTC\\feitengspan1\\Tinyspan\\runs\\tinyspan_frozen_candidates\\x2_quality_after_x4_20260625\\student_final.pt",
+  "checkpoint_sha256": "B06E66FA8FEA066F111B94CF5629919BEA05D5465F913B36851CBA92BED4A9EB",
+  "quant_plan": "G:\\UESTC\\feitengspan1\\Tinyspan\\runs\\tinyspan_quant_plan\\x2_quality_after_x4_20260625_x2_c32_b4_w8a8\\tinyspan_w8a8_quant_plan.json",
+  "quant_plan_sha256": "8BB154CC524B5CA00A1A3D81F0E343CF0A0BA1CF8E08AB5867656B0C53D37C2F",
+  "device": "cuda",
+  "metrics": {
+    "pytorch_vs_tiled": {
+      "mismatch_bytes": 1666116,
+      "total_bytes": 2764800,
+      "max_channel_diff": 41,
+      "mae": 0.7867281539351851,
+      "mse": 2.067753791809082,
+      "psnr_db": 44.97581534968429
+    },
+    "full_integer_vs_tiled": {
+      "mismatch_bytes": 85764,
+      "total_bytes": 2764800,
+      "max_channel_diff": 41,
+      "mae": 0.13699978298611112,
+      "mse": 1.271694540977478,
+      "psnr_db": 47.086975538785616
+    },
+    "pytorch_vs_full_integer": {
+      "mismatch_bytes": 1634977,
+      "total_bytes": 2764800,
+      "max_channel_diff": 2,
+      "mae": 0.6805088975694444,
+      "mse": 0.8588176369667053,
+      "psnr_db": 48.79179406195145
+    }
+  },
+  "outputs": {
+    "lr_input_resized": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\lr_input_resized.png",
+    "pytorch_training_sr": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\pytorch_training_sr.png",
+    "software_full_frame_fixed_point_sr": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\software_full_frame_fixed_point_sr.png",
+    "software_tiled_fixed_point_sr": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\software_tiled_fixed_point_sr.png",
+    "comparison_preview": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\comparison_preview.png",
+    "diff_heatmap": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\diff_heatmap.png",
+    "tile_manifest": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x2_640x360_tile64x64_x2_quality_after_x4_20260625\\tile_manifest.json"
+  }
+}

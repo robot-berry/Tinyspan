@@ -1,0 +1,373 @@
+{
+  "source_checkpoint": "runs\\tinyspan_frozen_candidates\\x2_quality_after_x4_20260625\\student_final.pt",
+  "fused_checkpoint": "runs\\tinyspan_fusion\\x2_quality_after_x4_20260625_x2_c32_b4\\student_fused_conv3xc.pt",
+  "scale": 2,
+  "channels": 32,
+  "num_blocks": 4,
+  "fused_layers": {
+    "blocks.0.c1": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.0.c2": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.0.c3": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.1.c1": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.1.c2": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.1.c3": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.2.c1": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.2.c2": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.2.c3": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.3.c1": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.3.c2": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    },
+    "blocks.3.c3": {
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "bias_shape": [
+        32
+      ],
+      "note": "Conv3XC fused to Conv2d 3x3 C->C using interior-bias formula"
+    }
+  },
+  "model_check": [
+    {
+      "name": "full",
+      "values": 12288,
+      "max_abs": 0.0,
+      "mae": 0.0,
+      "mse": 0.0,
+      "psnr_db": 99.0
+    },
+    {
+      "name": "crop4",
+      "values": 10800,
+      "max_abs": 0.0,
+      "mae": 0.0,
+      "mse": 0.0,
+      "psnr_db": 99.0
+    },
+    {
+      "name": "crop16",
+      "values": 6912,
+      "max_abs": 0.0,
+      "mae": 0.0,
+      "mse": 0.0,
+      "psnr_db": 99.0
+    }
+  ],
+  "conv3xc_checks": [
+    {
+      "name": "blocks.0.c1.full",
+      "values": 32768,
+      "max_abs": 0.06058010458946228,
+      "mae": 0.001605768920853734,
+      "mse": 3.276255665696226e-05,
+      "psnr_db": 44.84622001647949
+    },
+    {
+      "name": "blocks.0.c1.crop1",
+      "values": 28800,
+      "max_abs": 0.0002529621124267578,
+      "mae": 4.5100499846739694e-05,
+      "mse": 3.2194378274397195e-09,
+      "psnr_db": 84.92219924926758
+    },
+    {
+      "name": "blocks.0.c2.full",
+      "values": 32768,
+      "max_abs": 0.07798731327056885,
+      "mae": 0.0017564173322170973,
+      "mse": 3.883455792674795e-05,
+      "psnr_db": 44.107818603515625
+    },
+    {
+      "name": "blocks.0.c2.crop1",
+      "values": 28800,
+      "max_abs": 0.0002465248107910156,
+      "mae": 4.634672586689703e-05,
+      "mse": 3.396702474844915e-09,
+      "psnr_db": 84.68942642211914
+    },
+    {
+      "name": "blocks.0.c3.full",
+      "values": 32768,
+      "max_abs": 0.08849090337753296,
+      "mae": 0.002571776043623686,
+      "mse": 7.745326729491353e-05,
+      "psnr_db": 41.10960006713867
+    },
+    {
+      "name": "blocks.0.c3.crop1",
+      "values": 28800,
+      "max_abs": 0.0002628937363624573,
+      "mae": 4.4822874770034105e-05,
+      "mse": 3.181889418613082e-09,
+      "psnr_db": 84.97315406799316
+    },
+    {
+      "name": "blocks.1.c1.full",
+      "values": 32768,
+      "max_abs": 0.06700718402862549,
+      "mae": 0.0018122232286259532,
+      "mse": 4.064029053552076e-05,
+      "psnr_db": 43.91043186187744
+    },
+    {
+      "name": "blocks.1.c1.crop1",
+      "values": 28800,
+      "max_abs": 0.00023299455642700195,
+      "mae": 4.50807019660715e-05,
+      "mse": 3.203288079234312e-09,
+      "psnr_db": 84.94403839111328
+    },
+    {
+      "name": "blocks.1.c2.full",
+      "values": 32768,
+      "max_abs": 0.0697745680809021,
+      "mae": 0.0019574814941734076,
+      "mse": 4.821157926926389e-05,
+      "psnr_db": 43.168487548828125
+    },
+    {
+      "name": "blocks.1.c2.crop1",
+      "values": 28800,
+      "max_abs": 0.00023868680000305176,
+      "mae": 4.510230428422801e-05,
+      "mse": 3.2129685578752287e-09,
+      "psnr_db": 84.93093490600586
+    },
+    {
+      "name": "blocks.1.c3.full",
+      "values": 32768,
+      "max_abs": 0.07204979658126831,
+      "mae": 0.001803437015041709,
+      "mse": 4.262760194251314e-05,
+      "psnr_db": 43.70308876037598
+    },
+    {
+      "name": "blocks.1.c3.crop1",
+      "values": 28800,
+      "max_abs": 0.00024143606424331665,
+      "mae": 4.63608157588169e-05,
+      "mse": 3.408179294339675e-09,
+      "psnr_db": 84.67477798461914
+    },
+    {
+      "name": "blocks.2.c1.full",
+      "values": 32768,
+      "max_abs": 0.06640797108411789,
+      "mae": 0.002241990063339472,
+      "mse": 5.6582543038530275e-05,
+      "psnr_db": 42.47317314147949
+    },
+    {
+      "name": "blocks.2.c1.crop1",
+      "values": 28800,
+      "max_abs": 0.00023289769887924194,
+      "mae": 4.654076474253088e-05,
+      "mse": 3.4193903264423398e-09,
+      "psnr_db": 84.6605110168457
+    },
+    {
+      "name": "blocks.2.c2.full",
+      "values": 32768,
+      "max_abs": 0.08231198787689209,
+      "mae": 0.0021805386058986187,
+      "mse": 5.659335874952376e-05,
+      "psnr_db": 42.47234344482422
+    },
+    {
+      "name": "blocks.2.c2.crop1",
+      "values": 28800,
+      "max_abs": 0.0002655982971191406,
+      "mae": 4.6025677875149995e-05,
+      "mse": 3.344191812360009e-09,
+      "psnr_db": 84.75708961486816
+    },
+    {
+      "name": "blocks.2.c3.full",
+      "values": 32768,
+      "max_abs": 0.06589600443840027,
+      "mae": 0.001746633555740118,
+      "mse": 3.881192969856784e-05,
+      "psnr_db": 44.1103458404541
+    },
+    {
+      "name": "blocks.2.c3.crop1",
+      "values": 28800,
+      "max_abs": 0.00023385882377624512,
+      "mae": 4.692307629738934e-05,
+      "mse": 3.479520893634458e-09,
+      "psnr_db": 84.58480834960938
+    },
+    {
+      "name": "blocks.3.c1.full",
+      "values": 32768,
+      "max_abs": 0.08675629645586014,
+      "mae": 0.0022295122034847736,
+      "mse": 6.360883708111942e-05,
+      "psnr_db": 41.964826583862305
+    },
+    {
+      "name": "blocks.3.c1.crop1",
+      "values": 28800,
+      "max_abs": 0.0002626180648803711,
+      "mae": 4.7093133616726846e-05,
+      "mse": 3.4933005377268955e-09,
+      "psnr_db": 84.56764221191406
+    },
+    {
+      "name": "blocks.3.c2.full",
+      "values": 32768,
+      "max_abs": 0.07043460011482239,
+      "mae": 0.0017303208587691188,
+      "mse": 3.7805984902661294e-05,
+      "psnr_db": 44.224395751953125
+    },
+    {
+      "name": "blocks.3.c2.crop1",
+      "values": 28800,
+      "max_abs": 0.0002624988555908203,
+      "mae": 4.738534698844887e-05,
+      "mse": 3.536118287073009e-09,
+      "psnr_db": 84.51473236083984
+    },
+    {
+      "name": "blocks.3.c3.full",
+      "values": 32768,
+      "max_abs": 0.0565527081489563,
+      "mae": 0.0015711553860455751,
+      "mse": 3.157198807457462e-05,
+      "psnr_db": 45.006980895996094
+    },
+    {
+      "name": "blocks.3.c3.crop1",
+      "values": 28800,
+      "max_abs": 0.00027251243591308594,
+      "mae": 4.508051642915234e-05,
+      "mse": 3.200231413202914e-09,
+      "psnr_db": 84.94818687438965
+    }
+  ]
+}

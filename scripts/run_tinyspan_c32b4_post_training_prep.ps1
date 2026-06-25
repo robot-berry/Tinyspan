@@ -6,6 +6,7 @@ param(
   [switch]$DryRun,
   [switch]$SkipRtlExport,
   [switch]$SkipTiledReference,
+  [string]$PreviewInput = "",
   [string]$TiledReferenceInputPng = "G:\REDS\val_sharp\000\00000000.png",
   [int]$TiledReferenceTileWidth = 64,
   [int]$TiledReferenceTileHeight = 64,
@@ -68,6 +69,9 @@ try {
   $safeTag = $Tag -replace "[^A-Za-z0-9_.-]", "_"
   $scaleTag = "x${Scale}"
   $frozenCheckpoint = "runs\tinyspan_frozen_candidates\${safeTag}\student_final.pt"
+  if ([string]::IsNullOrWhiteSpace($PreviewInput)) {
+    $PreviewInput = Join-Path $RunDir "video_distill_latest_preview.png"
+  }
 
   $normalizedRunDir = ConvertTo-NormalizedPathText $RunDir
   $normalizedRunDirLeaf = [System.IO.Path]::GetFileName($normalizedRunDir.TrimEnd("/"))
@@ -104,6 +108,7 @@ try {
     "-Checkpoint", $checkpoint,
     "-Tag", $safeTag,
     "-Scale", $Scale,
+    "-PreviewInput", $PreviewInput,
     "-RunHandoff"
   )
   $handoffSummary = "runs\tinyspan_realtime_handoff\c32b4_${safeTag}_summary.json"

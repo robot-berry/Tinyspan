@@ -150,6 +150,8 @@ def main() -> int:
     checkpoint = resolve(repo, args.checkpoint) if str(args.checkpoint) else latest_existing(
         [train_dir / "student_last.pt", train_dir / "student_latest.pt"]
     )
+    if checkpoint is not None and checkpoint.resolve() == repo:
+        checkpoint = latest_existing([train_dir / "student_last.pt", train_dir / "student_latest.pt"])
     quality_json = quality_dir / "tinyspan_checkpoint_reds_hr_quality.json"
     quality_md = quality_dir / "tinyspan_checkpoint_reds_hr_quality.md"
     quality_csv = quality_dir / "tinyspan_checkpoint_reds_hr_quality.csv"

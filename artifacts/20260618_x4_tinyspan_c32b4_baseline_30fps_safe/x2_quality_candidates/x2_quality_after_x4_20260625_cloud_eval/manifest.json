@@ -1,0 +1,95 @@
+{
+  "candidate_id": "x2_quality_after_x4_20260625",
+  "scale": 2,
+  "generated_at": "2026-06-25T23:08:59",
+  "status": "PASS_SOFTWARE_QUALITY_GATE",
+  "software_quality_gate_pass": true,
+  "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
+  "train_dir": "runs/tinyspan_distill/video_x2_c32_b4_quality_after_x4_20260625",
+  "quality_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_quality_candidates/x2_quality_after_x4_20260625_cloud_eval",
+  "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_quality_candidates/x2_quality_after_x4_20260625_cloud_eval",
+  "checkpoint": "runs/tinyspan_distill/video_x2_c32_b4_quality_after_x4_20260625/student_last.pt",
+  "checkpoint_sha256": "B06E66FA8FEA066F111B94CF5629919BEA05D5465F913B36851CBA92BED4A9EB",
+  "quality_summary": {
+    "image_count": 3000,
+    "student_psnr_mean_db": 31.121459919373763,
+    "student_ssim_mean": 0.9055147984822591,
+    "student_mae_normalized_mean": 0.01739536935168629,
+    "bicubic_psnr_mean_db": 30.853986135469682,
+    "bicubic_ssim_mean": 0.8999591733217239,
+    "bicubic_mae_normalized_mean": 0.01777845728242149
+  },
+  "decision": {
+    "software_quality_gate_pass": true,
+    "min_psnr_db": 30.0,
+    "min_psnr_gain_db": 0.0,
+    "target_psnr_db": 30.0,
+    "student_psnr_gain_over_bicubic_db": 0.26747378390408016,
+    "student_psnr_mean_ge_28db": true,
+    "student_psnr_mean_ge_30db": true,
+    "continue_to_quant_rtl_board": true
+  },
+  "copied": [
+    {
+      "source": "G:\\UESTC\\feitengspan1\\Tinyspan\\runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\student_last.pt",
+      "artifact": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\student_last.pt",
+      "bytes": 2156280,
+      "sha256": "B06E66FA8FEA066F111B94CF5629919BEA05D5465F913B36851CBA92BED4A9EB"
+    },
+    {
+      "source": "G:\\UESTC\\feitengspan1\\Tinyspan\\runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\metrics.csv",
+      "artifact": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\metrics.csv",
+      "bytes": 5165212,
+      "sha256": "6193B7E7EDF2FCC9DA52210B1F9393611CB95AF46D317BEBF8F9B92867AF7DB5"
+    },
+    {
+      "source": "G:\\UESTC\\feitengspan1\\Tinyspan\\runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\args.json",
+      "artifact": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\args.json",
+      "bytes": 644,
+      "sha256": "681CAC6B33EABA8CCCFC5F8B19D0730F89CA94994D7EE64B34EB546B07CBBAB4"
+    },
+    {
+      "source": "G:\\UESTC\\feitengspan1\\Tinyspan\\runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\video_distill_preview.png",
+      "artifact": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\video_distill_preview.png",
+      "bytes": 178677,
+      "sha256": "6DE2498C7B058832C4577C58600202B0F21A20CC41A634856D70BD3855A6504C"
+    },
+    {
+      "source": "G:\\UESTC\\feitengspan1\\Tinyspan\\runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\video_distill_latest_preview.png",
+      "artifact": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\video_distill_latest_preview.png",
+      "bytes": 178677,
+      "sha256": "6DE2498C7B058832C4577C58600202B0F21A20CC41A634856D70BD3855A6504C"
+    },
+    {
+      "source": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\tinyspan_checkpoint_reds_hr_quality.json",
+      "artifact": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\tinyspan_checkpoint_reds_hr_quality.json",
+      "bytes": 2707992,
+      "sha256": "57D6076F69A1E1D69D781200E82FDBE240F28C2AA7C9F9A1DEE3ADA727F90B53"
+    },
+    {
+      "source": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\tinyspan_checkpoint_reds_hr_quality.md",
+      "artifact": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\tinyspan_checkpoint_reds_hr_quality.md",
+      "bytes": 928,
+      "sha256": "F4055A79AC25E44A6E5483DBD1BAB09D3371BAE4E34DC9C632CCF6C807F040C3"
+    },
+    {
+      "source": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\tinyspan_checkpoint_reds_hr_quality.csv",
+      "artifact": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\tinyspan_checkpoint_reds_hr_quality.csv",
+      "bytes": 359011,
+      "sha256": "625B1D0EDBCCAA35239BB6216C828FA80032DAA2B1BFAF7837751F34968E11F6"
+    },
+    {
+      "source": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\tinyspan_checkpoint_reds_hr_quality_preview.png",
+      "artifact": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_quality_candidates\\x2_quality_after_x4_20260625_cloud_eval\\tinyspan_checkpoint_reds_hr_quality_preview.png",
+      "bytes": 459332,
+      "sha256": "E1F39DE20FFC97FF77752E31F90AD0D19E13B0CA56C3D93968BDD99EBD6A5BBB"
+    }
+  ],
+  "missing_required": [],
+  "boundary": [
+    "This package is only an X2 software quality candidate gate.",
+    "It does not replace an accepted hardware submission baseline by itself.",
+    "Replacing or accepting the X2 baseline still requires matching quantization, RTL/export checks, bitstream, real board-vs-fixed equality, and >=30fps evidence.",
+    "This script is file-only and does not start training, Vivado, JTAG, XSCT, board access, quantization, or RTL export."
+  ]
+}

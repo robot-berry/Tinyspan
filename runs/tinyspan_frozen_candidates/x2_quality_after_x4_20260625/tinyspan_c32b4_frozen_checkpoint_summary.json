@@ -1,0 +1,33 @@
+﻿{
+    "passed":  true,
+    "dry_run":  false,
+    "tag":  "x2_quality_after_x4_20260625",
+    "run_dir":  "runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625",
+    "source_checkpoint":  "runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\student_last.pt",
+    "source_metrics":  "runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\metrics.csv",
+    "source_preview":  "runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\video_distill_latest_preview.png",
+    "handoff_preview_input":  "runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\video_distill_latest_preview.png",
+    "frozen_dir":  "runs\\tinyspan_frozen_candidates\\x2_quality_after_x4_20260625",
+    "frozen_checkpoint":  "runs\\tinyspan_frozen_candidates\\x2_quality_after_x4_20260625\\student_final.pt",
+    "frozen_metrics":  "runs\\tinyspan_frozen_candidates\\x2_quality_after_x4_20260625\\metrics.csv",
+    "frozen_preview":  "runs\\tinyspan_frozen_candidates\\x2_quality_after_x4_20260625\\video_distill_latest_preview.png",
+    "source_checkpoint_sha256":  "B06E66FA8FEA066F111B94CF5629919BEA05D5465F913B36851CBA92BED4A9EB",
+    "source_metrics_sha256":  "6193B7E7EDF2FCC9DA52210B1F9393611CB95AF46D317BEBF8F9B92867AF7DB5",
+    "source_preview_sha256":  "6DE2498C7B058832C4577C58600202B0F21A20CC41A634856D70BD3855A6504C",
+    "latest_metric":  {
+                          "raw":  "13,51480,0.02459388,0.01438861,0.02097610,0.08884007,0.02116622,32.424415,28.901343,5163.560,9.9699",
+                          "epoch":  13,
+                          "step":  51480,
+                          "loss":  0.02459388,
+                          "student_psnr":  32.424415,
+                          "seconds":  5163.56,
+                          "steps_per_second":  9.9699
+                      },
+    "training_processes":  [
+
+                           ],
+    "allow_running":  false,
+    "scale":  2,
+    "run_handoff":  true,
+    "handoff_summary":  "runs\\tinyspan_realtime_handoff\\c32b4_x2_quality_after_x4_20260625_summary.json"
+}

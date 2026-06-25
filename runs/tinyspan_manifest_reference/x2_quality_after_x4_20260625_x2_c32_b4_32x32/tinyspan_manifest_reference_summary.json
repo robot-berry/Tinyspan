@@ -1,0 +1,305 @@
+{
+  "input": "runs\\tinyspan_distill\\video_x2_c32_b4_quality_after_x4_20260625\\video_distill_latest_preview.png",
+  "checkpoint": "runs\\tinyspan_frozen_candidates\\x2_quality_after_x4_20260625\\student_final.pt",
+  "manifest": "rtl\\generated\\tinyspan_x2_c32_b4_x2_quality_after_x4_20260625_fused\\tinyspan_manifest.json",
+  "out_dir": "runs\\tinyspan_manifest_reference\\x2_quality_after_x4_20260625_x2_c32_b4_32x32",
+  "scale": 2,
+  "channels": 32,
+  "num_blocks": 4,
+  "device": "cuda",
+  "mode": "weight-ref",
+  "activation_bits": 8,
+  "activation_scales": null,
+  "preview": "runs\\tinyspan_manifest_reference\\x2_quality_after_x4_20260625_x2_c32_b4_32x32\\tinyspan_manifest_reference_preview.png",
+  "metrics": {
+    "image_pytorch_vs_fused": {
+      "mismatch_bytes": 0,
+      "total_bytes": 12288,
+      "max_channel_diff": 0,
+      "mae": 0.0,
+      "mse": 0.0,
+      "psnr_db": Infinity
+    },
+    "image_fused_vs_manifest": {
+      "mismatch_bytes": 0,
+      "total_bytes": 12288,
+      "max_channel_diff": 0,
+      "mae": 0.0,
+      "mse": 0.0,
+      "psnr_db": Infinity
+    },
+    "image_pytorch_vs_manifest": {
+      "mismatch_bytes": 0,
+      "total_bytes": 12288,
+      "max_channel_diff": 0,
+      "mae": 0.0,
+      "mse": 0.0,
+      "psnr_db": Infinity
+    },
+    "tensor_pytorch_vs_fused": {
+      "full": {
+        "values": 12288,
+        "max_abs": 0.0,
+        "mae": 0.0,
+        "mse": 0.0,
+        "psnr_db": Infinity
+      },
+      "crop8": {
+        "values": 6912,
+        "max_abs": 0.0,
+        "mae": 0.0,
+        "mse": 0.0,
+        "psnr_db": Infinity
+      }
+    },
+    "tensor_fused_vs_manifest": {
+      "full": {
+        "values": 12288,
+        "max_abs": 0.0,
+        "mae": 0.0,
+        "mse": 0.0,
+        "psnr_db": Infinity
+      },
+      "crop8": {
+        "values": 6912,
+        "max_abs": 0.0,
+        "mae": 0.0,
+        "mse": 0.0,
+        "psnr_db": Infinity
+      }
+    },
+    "tensor_pytorch_vs_manifest": {
+      "full": {
+        "values": 12288,
+        "max_abs": 0.0,
+        "mae": 0.0,
+        "mse": 0.0,
+        "psnr_db": Infinity
+      },
+      "crop8": {
+        "values": 6912,
+        "max_abs": 0.0,
+        "mae": 0.0,
+        "mse": 0.0,
+        "psnr_db": Infinity
+      }
+    }
+  },
+  "scale_order": [
+    "input",
+    "head.input",
+    "head.output",
+    "blocks.0.c1.input",
+    "blocks.0.c1.output",
+    "blocks.0.act1",
+    "blocks.0.c2.input",
+    "blocks.0.c2.output",
+    "blocks.0.act2",
+    "blocks.0.c3.input",
+    "blocks.0.c3.output",
+    "blocks.0.residual_sum",
+    "blocks.0.sim_att",
+    "blocks.0.out",
+    "blocks.1.c1.input",
+    "blocks.1.c1.output",
+    "blocks.1.act1",
+    "blocks.1.c2.input",
+    "blocks.1.c2.output",
+    "blocks.1.act2",
+    "blocks.1.c3.input",
+    "blocks.1.c3.output",
+    "blocks.1.residual_sum",
+    "blocks.1.sim_att",
+    "blocks.1.out",
+    "blocks.2.c1.input",
+    "blocks.2.c1.output",
+    "blocks.2.act1",
+    "blocks.2.c2.input",
+    "blocks.2.c2.output",
+    "blocks.2.act2",
+    "blocks.2.c3.input",
+    "blocks.2.c3.output",
+    "blocks.2.residual_sum",
+    "blocks.2.sim_att",
+    "blocks.2.out",
+    "blocks.3.c1.input",
+    "blocks.3.c1.output",
+    "blocks.3.act1",
+    "blocks.3.c2.input",
+    "blocks.3.c2.output",
+    "blocks.3.act2",
+    "blocks.3.c3.input",
+    "blocks.3.c3.output",
+    "blocks.3.residual_sum",
+    "blocks.3.sim_att",
+    "blocks.3.out",
+    "fuse_tail.input",
+    "fuse_tail.output",
+    "reconstruct.input",
+    "reconstruct.output",
+    "pixelshuffle.output",
+    "output"
+  ],
+  "scales": {
+    "input": {
+      "enabled": false
+    },
+    "head.input": {
+      "enabled": false
+    },
+    "head.output": {
+      "enabled": false
+    },
+    "blocks.0.c1.input": {
+      "enabled": false
+    },
+    "blocks.0.c1.output": {
+      "enabled": false
+    },
+    "blocks.0.act1": {
+      "enabled": false
+    },
+    "blocks.0.c2.input": {
+      "enabled": false
+    },
+    "blocks.0.c2.output": {
+      "enabled": false
+    },
+    "blocks.0.act2": {
+      "enabled": false
+    },
+    "blocks.0.c3.input": {
+      "enabled": false
+    },
+    "blocks.0.c3.output": {
+      "enabled": false
+    },
+    "blocks.0.residual_sum": {
+      "enabled": false
+    },
+    "blocks.0.sim_att": {
+      "enabled": false
+    },
+    "blocks.0.out": {
+      "enabled": false
+    },
+    "blocks.1.c1.input": {
+      "enabled": false
+    },
+    "blocks.1.c1.output": {
+      "enabled": false
+    },
+    "blocks.1.act1": {
+      "enabled": false
+    },
+    "blocks.1.c2.input": {
+      "enabled": false
+    },
+    "blocks.1.c2.output": {
+      "enabled": false
+    },
+    "blocks.1.act2": {
+      "enabled": false
+    },
+    "blocks.1.c3.input": {
+      "enabled": false
+    },
+    "blocks.1.c3.output": {
+      "enabled": false
+    },
+    "blocks.1.residual_sum": {
+      "enabled": false
+    },
+    "blocks.1.sim_att": {
+      "enabled": false
+    },
+    "blocks.1.out": {
+      "enabled": false
+    },
+    "blocks.2.c1.input": {
+      "enabled": false
+    },
+    "blocks.2.c1.output": {
+      "enabled": false
+    },
+    "blocks.2.act1": {
+      "enabled": false
+    },
+    "blocks.2.c2.input": {
+      "enabled": false
+    },
+    "blocks.2.c2.output": {
+      "enabled": false
+    },
+    "blocks.2.act2": {
+      "enabled": false
+    },
+    "blocks.2.c3.input": {
+      "enabled": false
+    },
+    "blocks.2.c3.output": {
+      "enabled": false
+    },
+    "blocks.2.residual_sum": {
+      "enabled": false
+    },
+    "blocks.2.sim_att": {
+      "enabled": false
+    },
+    "blocks.2.out": {
+      "enabled": false
+    },
+    "blocks.3.c1.input": {
+      "enabled": false
+    },
+    "blocks.3.c1.output": {
+      "enabled": false
+    },
+    "blocks.3.act1": {
+      "enabled": false
+    },
+    "blocks.3.c2.input": {
+      "enabled": false
+    },
+    "blocks.3.c2.output": {
+      "enabled": false
+    },
+    "blocks.3.act2": {
+      "enabled": false
+    },
+    "blocks.3.c3.input": {
+      "enabled": false
+    },
+    "blocks.3.c3.output": {
+      "enabled": false
+    },
+    "blocks.3.residual_sum": {
+      "enabled": false
+    },
+    "blocks.3.sim_att": {
+      "enabled": false
+    },
+    "blocks.3.out": {
+      "enabled": false
+    },
+    "fuse_tail.input": {
+      "enabled": false
+    },
+    "fuse_tail.output": {
+      "enabled": false
+    },
+    "reconstruct.input": {
+      "enabled": false
+    },
+    "reconstruct.output": {
+      "enabled": false
+    },
+    "pixelshuffle.output": {
+      "enabled": false
+    },
+    "output": {
+      "enabled": false
+    }
+  },
+  "note": "PyTorch-level fused manifest reference; integer requantization RTL constants are still a later export step."
+}
