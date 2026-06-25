@@ -59,20 +59,20 @@
       ]
     },
     "latest_observed": {
-      "epoch": 33,
-      "step": 128884,
+      "epoch": 36,
+      "step": 142161,
       "total_steps": 198000,
-      "progress_percent": 65.0929,
-      "loss": 0.03247668,
-      "distill_loss": 0.01856129,
-      "hr_loss": 0.03067245,
-      "edge_loss": 0.1116768,
-      "temporal_loss": 0.02773683,
-      "teacher_psnr": 29.132652,
-      "student_psnr": 26.991863,
-      "seconds": 77055.99,
-      "steps_per_second": 1.6726,
-      "eta": "00.11:28:42",
+      "progress_percent": 71.7985,
+      "loss": 0.01934105,
+      "distill_loss": 0.01126435,
+      "hr_loss": 0.01751256,
+      "edge_loss": 0.06835631,
+      "temporal_loss": 0.0160353,
+      "teacher_psnr": 32.618895,
+      "student_psnr": 29.89056,
+      "seconds": 86465.347,
+      "steps_per_second": 1.6441,
+      "eta": "00.09:26:03",
       "stderr_error_hints": "none"
     },
     "latest_artifacts": {
@@ -80,28 +80,28 @@
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\student_latest.pt",
         "exists": true,
         "bytes": 2156839,
-        "mtime": "2026-06-25T13:14:02",
-        "sha256": "23e90d7cd33acbd997820edf0d6fb59749084e7c61e5966844b5b95b22f6b64f"
+        "mtime": "2026-06-25T15:53:08",
+        "sha256": "e578a1090b5c02abbce7619bf4eb580563aedf42894e4587451a5b6a489ac87f"
       },
       "preview": {
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\video_distill_latest_preview.png",
         "exists": true,
-        "bytes": 268099,
-        "mtime": "2026-06-25T13:14:02",
-        "sha256": "868de9d029599ad826b556a4a8c94d0c4d321b97cef3d6600b1f6fe4bc9effcd"
+        "bytes": 311081,
+        "mtime": "2026-06-25T15:53:08",
+        "sha256": "f73d1199f0953a5b805d78cb5df1c5109745a28c74963c6a0c5a33492f46c6b1"
       },
       "metrics": {
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\metrics.csv",
         "exists": true,
-        "bytes": 13111188,
-        "mtime": "2026-06-25T13:18:26",
-        "sha256": "a99fcb023a27adc8b7d43352afa0ca1cc1071a2719b0d8fb48b94c4c6a1433af"
+        "bytes": 14478719,
+        "mtime": "2026-06-25T15:55:16",
+        "sha256": "265cfdcc1a43ec5dfc98c7637bd6db8242b447e118402682430222aa9c514576"
       },
       "stderr": {
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\train_stderr.log",
         "exists": true,
-        "bytes": 37584617,
-        "mtime": "2026-06-25T13:18:26",
+        "bytes": 41471690,
+        "mtime": "2026-06-25T15:55:16",
         "sha256": ""
       }
     },
@@ -121,9 +121,9 @@
       "stdout": {
         "path": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_training_start_20260624\\x2_postprep_watcher_stdout.log",
         "exists": true,
-        "bytes": 573,
-        "mtime": "2026-06-25T13:18:07",
-        "sha256": "d971ef377c0d1e8ceb3ff69c428dfc19c19d5904578b96cd1870d49cb0f25196"
+        "bytes": 717,
+        "mtime": "2026-06-25T15:18:08",
+        "sha256": "32c24ae4c04204bb2a6ffc189f890d77d86c1f869a17c9125c942ebd64080b61"
       },
       "stderr": {
         "path": "G:\\UESTC\\feitengspan1\\Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_training_start_20260624\\x2_postprep_watcher_stderr.log",
@@ -132,7 +132,7 @@
         "mtime": "2026-06-25T11:18:05",
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
-      "latest_line": "TINYSPAN_X2_WATCH epoch=33 step=128860/198000 running=2 stopped_polls=0",
+      "latest_line": "TINYSPAN_X2_WATCH epoch=36 step=139049/198000 running=2 stopped_polls=0",
       "stdout_tail": [
         "TINYSPAN_X2_POSTPREP_WATCH_START=2026-06-25T11:18:06.1593346+08:00",
         "TINYSPAN_ROOT=G:\\UESTC\\feitengspan1\\Tinyspan",
@@ -143,7 +143,9 @@
         "TOTAL_STEPS=198000",
         "TINYSPAN_X2_WATCH epoch=30 step=118141/198000 running=2 stopped_polls=0",
         "TINYSPAN_X2_WATCH epoch=32 step=123671/198000 running=2 stopped_polls=0",
-        "TINYSPAN_X2_WATCH epoch=33 step=128860/198000 running=2 stopped_polls=0"
+        "TINYSPAN_X2_WATCH epoch=33 step=128860/198000 running=2 stopped_polls=0",
+        "TINYSPAN_X2_WATCH epoch=34 step=133988/198000 running=2 stopped_polls=0",
+        "TINYSPAN_X2_WATCH epoch=36 step=139049/198000 running=2 stopped_polls=0"
       ],
       "stderr_tail": []
     }
@@ -161,5 +163,5 @@
       "measured >=30fps throughput"
     ]
   },
-  "updated_at": "2026-06-25T13:18:25"
+  "updated_at": "2026-06-25T15:55:14"
 }

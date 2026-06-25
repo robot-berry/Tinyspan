@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-25T13:18:27",
+  "generated_at": "2026-06-25T15:55:17",
   "repo_root": "G:\\UESTC\\feitengspan1\\Tinyspan",
   "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
   "git": {
     "branch": "main",
-    "commit": "8252726e9efdd5fd92c33ccc38aa1a3169d4f6b0",
+    "commit": "f3c6636138b2fd3d4b9ae46d088ae57678f01d5a",
     "remote": "https://github.com/robot-berry/Tinyspan.git"
   },
   "overall": {
@@ -25,20 +25,20 @@
     "status": "training_running",
     "training_status": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json",
     "latest_observed": {
-      "epoch": 33,
-      "step": 128884,
+      "epoch": 36,
+      "step": 142161,
       "total_steps": 198000,
-      "progress_percent": 65.0929,
-      "loss": 0.03247668,
-      "distill_loss": 0.01856129,
-      "hr_loss": 0.03067245,
-      "edge_loss": 0.1116768,
-      "temporal_loss": 0.02773683,
-      "teacher_psnr": 29.132652,
-      "student_psnr": 26.991863,
-      "seconds": 77055.99,
-      "steps_per_second": 1.6726,
-      "eta": "00.11:28:42",
+      "progress_percent": 71.7985,
+      "loss": 0.01934105,
+      "distill_loss": 0.01126435,
+      "hr_loss": 0.01751256,
+      "edge_loss": 0.06835631,
+      "temporal_loss": 0.0160353,
+      "teacher_psnr": 32.618895,
+      "student_psnr": 29.89056,
+      "seconds": 86465.347,
+      "steps_per_second": 1.6441,
+      "eta": "00.09:26:03",
       "stderr_error_hints": "none"
     },
     "readiness": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
@@ -84,48 +84,48 @@
           "exists": true,
           "kind": "file",
           "bytes": 3188,
-          "mtime": "2026-06-25T13:18:26",
-          "sha256": "1DE8CAE48F909FFC3D5B1FF6A145FE915653532F9B94F4371A4314D9C4BB9E34"
+          "mtime": "2026-06-25T15:55:17",
+          "sha256": "BE9DDB02827EF7E5FB3668DAC6CE7F9BBEB8A8A6DCBB7C4F94CEDD1E723113B0"
         },
         {
           "path": "docs/contest_delivery_audit.md",
           "exists": true,
           "kind": "file",
           "bytes": 5981,
-          "mtime": "2026-06-25T13:18:27",
-          "sha256": "E69D0BBC7A12C3E8963489602B4A0E9FF3D74B86BD787BDFC9580489A15B849B"
+          "mtime": "2026-06-25T15:55:17",
+          "sha256": "5D04873D7B4958F16B45C477C0D685E0EF7D331B911A3161D7A51A25B0349772"
         },
         {
           "path": "docs/x2_hardware_readiness.md",
           "exists": true,
           "kind": "file",
           "bytes": 6501,
-          "mtime": "2026-06-25T13:18:26",
-          "sha256": "59DEFC4A7CA3C5F14EFD584BA29B16178EEBEEB8688B1157B0874ACE05B26337"
+          "mtime": "2026-06-25T15:55:16",
+          "sha256": "32CBDADA43E97738931C044861C5306F5E8F34940B11372D95CEF2A05CFC9240"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_completion_status.json",
           "exists": true,
           "kind": "file",
           "bytes": 3566,
-          "mtime": "2026-06-25T13:18:26",
-          "sha256": "1C722900ADCC5984F394A0BF2B650AC3A0B576ED9A9FD841A9EF13BF2F1E55C5"
+          "mtime": "2026-06-25T15:55:17",
+          "sha256": "02C0831CB2890C6D6DDC6E59E7C8D4D3F549222AE9EFC1BE5B32D78900822175"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/contest_delivery_audit.json",
           "exists": true,
           "kind": "file",
           "bytes": 10572,
-          "mtime": "2026-06-25T13:18:27",
-          "sha256": "0EB133397CD6CFF5A41E0F131B7A1CC6B7022C13B0BBB9DD8B31DBE1B3982A82"
+          "mtime": "2026-06-25T15:55:17",
+          "sha256": "89E2190F2F481DE7115022D34DF5C943E9B6A321323E84865CF9F4CAFFFF764C"
         },
         {
           "path": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_hardware_readiness.json",
           "exists": true,
           "kind": "file",
           "bytes": 8208,
-          "mtime": "2026-06-25T13:18:26",
-          "sha256": "9354C040943B209FF2D50CDABD87F099E34E2CC88F22483E71D3F3C0DF29C1BB"
+          "mtime": "2026-06-25T15:55:16",
+          "sha256": "1C07AD1844CEA9F519A4BDE351A44459F633D8E5A2A971C2B091578745F2C505"
         }
       ]
     },
@@ -299,9 +299,9 @@
           "path": "docs/x4_quality_improvement_plan.md",
           "exists": true,
           "kind": "file",
-          "bytes": 3531,
-          "mtime": "2026-06-25T12:34:59",
-          "sha256": "54302D2717DCC2612ABF65274DBDBC460253FEA4DB87C4669EF3B9A16F880433"
+          "bytes": 4146,
+          "mtime": "2026-06-25T13:34:16",
+          "sha256": "BDB49B6F2E326D1E128D41B883DCBB31E0FD3247EC598F2E6A6E0B42C8E6B0F0"
         },
         {
           "path": "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md",
