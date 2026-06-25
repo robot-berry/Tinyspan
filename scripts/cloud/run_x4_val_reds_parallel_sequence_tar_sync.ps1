@@ -58,11 +58,19 @@ for ($worker = 0; $worker -lt $Workers; $worker++) {
 
 $failed = $false
 foreach ($item in $procs) {
-    Wait-Process -Id $item.Process.Id
+    Wait-Process -Id $item.Process.Id -ErrorAction SilentlyContinue
     $proc = $item.Process
     $proc.Refresh()
-    Write-Output ("FINISHED val_worker={0} pid={1} range={2}-{3} exit={4}" -f $item.Worker, $proc.Id, $item.Start, $item.End, $proc.ExitCode)
-    if ($proc.ExitCode -ne 0) {
+    $exitCode = $proc.ExitCode
+    if ($null -eq $exitCode) {
+        $stderrBytes = 0
+        if (Test-Path $item.ErrLog) {
+            $stderrBytes = (Get-Item $item.ErrLog).Length
+        }
+        $exitCode = if ($stderrBytes -gt 0) { 1 } else { 0 }
+    }
+    Write-Output ("FINISHED val_worker={0} pid={1} range={2}-{3} exit={4}" -f $item.Worker, $proc.Id, $item.Start, $item.End, $exitCode)
+    if ($exitCode -ne 0) {
         $failed = $true
     }
 }
