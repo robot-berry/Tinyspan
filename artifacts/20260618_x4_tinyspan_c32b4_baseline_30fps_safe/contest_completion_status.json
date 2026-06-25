@@ -1,82 +1,81 @@
 {
-  "generated_at": "2026-06-24T17:41:21",
-  "artifact_dir": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
-  "gate_d_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_rtl_gate_summary.json",
-  "gate_e_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_e_bitstream_x4_320x180_f150_prew_20260620\\manifest.json",
-  "gate_f_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_f_board_x4_32x32_f150_tile32_20260621\\acceptance\\tinyspan_board_acceptance_summary.json",
-  "x4_tiled_reference_summary": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\full_frame_tiled_reference_x4_320x180_tile32_20260624\\tinyspan_tiled_fixed_reference_summary.json",
-  "gate_h_board_summary": "",
-  "x2_training_status": "Tinyspan\\artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_training_start_20260624\\x2_training_status.json",
+  "generated_at": "2026-06-25T10:18:31",
+  "artifact_dir": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe",
+  "accepted": false,
+  "acceptance_status": "NOT_COMPLETE",
+  "x4_gate_h_status": "PASS_X4",
+  "gate_h_board_summary": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625\\manifest.json",
+  "x2_training_status": "artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\x2_training_start_20260624\\x2_training_status.json",
   "gates": [
     {
       "gate": "A0",
       "name": "TinySPAN 硬件安全基线预检",
       "status": "PASS",
-      "evidence": "baseline_manifest.json / baseline_decision.md",
-      "next_action": "继续沿 c32b4_30fps_frozen_20260613 推进"
+      "evidence": "已锁定 `c32b4_30fps_frozen_20260613` 作为硬件安全基线。",
+      "next_action": "继续基于该基线推进 X4 交付和 X2 独立证据。"
     },
     {
       "gate": "A",
       "name": "冻结 TinySPAN 模型",
       "status": "PASS",
-      "evidence": "frozen checkpoint SHA256 已固定",
-      "next_action": "禁止使用仍在变化的 checkpoint"
+      "evidence": "checkpoint SHA256 `6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938`。",
+      "next_action": "禁止用仍在变化的 checkpoint 替代冻结证据。"
     },
     {
       "gate": "B",
       "name": "TinySPAN 量化与软件定点参考",
       "status": "PASS",
-      "evidence": "W8A8 quant plan + integer reference summary；X4 full-frame tiled FixedPng ready，tiles 60",
-      "next_action": "后续 board 输出必须对齐同一软件定点参考"
+      "evidence": "X4 W8A8 quant plan、定点参考和 tile64 整帧固定点参考已归档。",
+      "next_action": "X2 训练完成后导出 X2 W8A8 quant plan 与 X2 定点参考。"
     },
     {
       "gate": "C",
       "name": "TinySPAN RTL 导出",
       "status": "PASS",
-      "evidence": "Gate C re-export + TinySPAN W8A8 RTL manifest",
-      "next_action": "进入 RTL 仿真与实现前检查"
+      "evidence": "TinySPAN W8A8 RTL 导出和 manifest 已归档。",
+      "next_action": "X2 freeze 后复用同一入口生成 X2 RTL manifest。"
     },
     {
       "gate": "D",
       "name": "TinySPAN RTL 仿真",
       "status": "PASS",
-      "evidence": "当前 artifacts 中 Gate D RTL gate rerun PASS",
-      "next_action": "进入 Gate E bitstream 生成前检查"
+      "evidence": "RTL gate summary `artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_d_rtl_gate_rerun_20260618\\tinyspan_w8a8_rtl_gate_summary.json`。",
+      "next_action": "保持 RTL 仿真作为后续 X2/X4 回归门禁。"
     },
     {
       "gate": "E",
       "name": "TinySPAN 实现与资源约束",
       "status": "PASS",
-      "evidence": "X4 320x180 Gate E bitstream/resource PASS；WNS 0.074ns，理论 31.0015fps",
-      "next_action": "继续接入完整帧板端 tile scheduler"
+      "evidence": "X4 bitstream/resource/timing PASS；WNS `0.074ns`，理论 throughput `31.0015fps`。",
+      "next_action": "X2 完成后补 X2 bitstream/resource/timing 证据。"
     },
     {
       "gate": "F",
       "name": "TinySPAN 板卡冒烟测试",
       "status": "PASS",
-      "evidence": "X4 32x32 真实板卡 smoke PASS；fps 1831.14409883295，LUT 5943，DSP 78",
-      "next_action": "扩展到 SD/DDR 完整帧板端切块和回写"
+      "evidence": "X4 32x32 上板 smoke PASS；perf-only `1831.14409883295fps`，mismatch `0/49152`。",
+      "next_action": "保留 32x32 smoke 作为小图回归门禁。"
     },
     {
       "gate": "G",
       "name": "TinySPAN 图像一致性可视化验证",
       "status": "PASS",
-      "evidence": "X4 32x32 board-vs-fixed byte-exact；mismatch 0/49152，max diff 0",
-      "next_action": "扩展到完整帧拼接可视化和 diff heatmap"
+      "evidence": "X4 32x32 board-vs-fixed byte-exact，并已生成整帧 tile64 固定点预览/heatmap。",
+      "next_action": "展示材料可继续补 board PNG、显示输出或 SD 写回图。"
     },
     {
       "gate": "H",
-      "name": "TinySPAN 最终 720p30 验收",
-      "status": "BLOCKED",
-      "evidence": "32x32 tile 已 PASS；X4 整帧 tiled FixedPng 已准备；缺真实完整帧板上输出和实测 720p30",
-      "next_action": "完成完整帧 tile controller、bitstream、板上回读和吞吐验收"
+      "name": "TinySPAN X4 最终 720p30 验收",
+      "status": "PASS_X4",
+      "evidence": "X4 整帧上板验收闭合：`30.409639424076744fps`，mismatch `0/2764800`，max diff `0`。",
+      "next_action": "X4 子任务可交付；整赛题继续补 X2 独立证据。"
     },
     {
       "gate": "X2",
       "name": "X2 独立证据包",
       "status": "PARTIAL",
-      "evidence": "X2 TinySPAN smoke PASS，正式训练运行中；epoch 3 step 9792",
-      "next_action": "等待 X2 训练完成，再冻结、量化、导出 RTL、上板验证"
+      "evidence": "X2 正式训练运行中；epoch `29`，step `112445/198000`，progress `56.7904%`。",
+      "next_action": "训练完成后冻结、量化、导出 RTL、生成 bitstream 并上板验证。"
     }
   ]
 }

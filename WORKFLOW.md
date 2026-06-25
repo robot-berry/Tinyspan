@@ -747,7 +747,10 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 - 当前仍缺 X2 独立证据和可展示 board PNG/显示/SD 写回材料；X4 完整帧吞吐已有
   tile64 FIFO f155 SKIP-read `30.4096394240767fps @155MHz` 真实板卡证据，完整帧一致性已有
   A53 in-DDR compare `0 / 2764800` mismatch 证据，
-  不能宣告最终上板验收完成。
+  因此 X4 子任务已经达到可交付状态。X4 Gate H 的精简可审计 manifest 已归档到
+  `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/manifest.json`。
+  但整赛题仍不能宣告最终完成，因为 X2 独立冻结、量化、RTL、bitstream、真实板上输出和
+  `>=30fps` 证据尚未闭合。
 - W8A12 DDR tile writer 相关结果仅作为历史参考，不再作为本工作流主线。
 - 2026-06-18 曾启动的 W8A12 `wf18d/wf18e` Vivado 已按路线修正停止，不能作为 TinySPAN 验收结果。
 - 2026-06-18 Gate E bitstream 重试已修复 TinySPAN source-list 问题；旧 fast base 的 16 读口全帧 RAM 在 `320x180` 综合时无法推断为 BRAM。
@@ -777,7 +780,7 @@ TinySPAN 输出固定 SR tile 后只裁剪左上角有效区域，再拼接回 `
 10. 对 DDR 输出完整帧运行图像一致性验证；当前 A53 in-DDR compare 已证明 byte-exact，
     若需要展示，再补最终板上 `board_sr.png`、`comparison_preview.png` 和 `diff_heatmap.png`。
 11. 记录完整帧实测板上 throughput，并与理论吞吐、32x32 tile throughput 分开标注。
-12. X4 完整帧正确性与吞吐已闭合，继续补齐 X2 的独立证据包。
+12. X4 完整帧正确性与吞吐已闭合，X4 子任务可交付；继续补齐 X2 的独立证据包。
 13. `c32b4_final_20260615` 暂时只作为质量提升候选；只有修复 fused/export 漂移并通过基线预检后，才能替换当前硬件基线。
 
 ### 10.1 训练完成后的固定入口

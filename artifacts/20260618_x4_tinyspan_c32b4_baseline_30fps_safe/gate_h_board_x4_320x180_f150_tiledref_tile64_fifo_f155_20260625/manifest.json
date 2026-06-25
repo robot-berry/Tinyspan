@@ -1,0 +1,78 @@
+{
+  "artifact_id": "gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625",
+  "generated_at": "2026-06-25T05:59:00+08:00",
+  "gate": "H",
+  "status": "PASS_X4",
+  "package_pass": true,
+  "pass": true,
+  "route": "TinySPAN PS/DDR X4 via board zynq_ultra_ps_e / PS DDR controller IP; A53 in-DDR full-frame compare",
+  "no_custom_ddr_controller_or_phy": true,
+  "baseline_id": "c32b4_30fps_frozen_20260613",
+  "checkpoint_sha256": "6A3AA4FE17CDF1027483F95BE8A99A5805BCDD61CC821074603DE65BF333D938",
+  "quant_plan_sha256": "EB6EEDDDE9360F61E6FC30141B2A1E6539E519CB226AC18B8C219B9E40092C9D",
+  "scale": 4,
+  "input_resolution": {
+    "width": 320,
+    "height": 180
+  },
+  "output_resolution": {
+    "width": 1280,
+    "height": 720
+  },
+  "tile": {
+    "width": 64,
+    "height": 64,
+    "count": 15,
+    "padding_policy": "zero-pad LR edge tiles to fixed 64x64 before TinySPAN core",
+    "crop_policy": "crop valid_w*scale by valid_h*scale SR region from each tile"
+  },
+  "bitstream": {
+    "path": "vivado/ps_tinyspan_ddr_x4_tile64_fifo_f155/ps_tinyspan_ddr_x4.runs/impl_1/pstinyspanx4ddr_wrapper.bit",
+    "sha256": "A94DC9B1417B35D05C9D57176109155BCBAFB5939C5E9EA9DC570C8184FD8232",
+    "pl_freq_mhz": 155
+  },
+  "throughput": {
+    "status": "PASS",
+    "source_run": "board_runs/tinyspan_ps_ddr_x4_smoke/x4_320x180_tile64_fifo_f155_skipread_20260625_0412",
+    "summary_json": "board_runs/tinyspan_ps_ddr_x4_smoke/x4_320x180_tile64_fifo_f155_skipread_20260625_0412/tinyspan_ps_ddr_x4_smoke_summary.json",
+    "frame_cycles": 5097068,
+    "fps": 30.409639424076744,
+    "minimum_fps": 30,
+    "tiles_done": 15,
+    "status_reg": "0x00000009",
+    "error_reg": "0x00000000",
+    "readback_mode": "SKIP"
+  },
+  "correctness": {
+    "status": "PASS",
+    "method": "A53 baremetal comparator reads output and reference from PS DDR after PL run",
+    "source_run": "board_runs/tinyspan_ps_ddr_x4_a53_compare/x4_320x180_tile64_fifo_f155_20260625_0559",
+    "summary_json": "board_runs/tinyspan_ps_ddr_x4_a53_compare/x4_320x180_tile64_fifo_f155_20260625_0559/tinyspan_a53_compare_summary.json",
+    "fixed_reference_png": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/full_frame_tiled_reference_x4_320x180_tile64_fifo_f155_20260625/software_tiled_fixed_point_sr.png",
+    "total_pixels": 921600,
+    "total_bytes": 2764800,
+    "mismatch_bytes": 0,
+    "max_channel_diff": 0,
+    "compare_pass": true,
+    "a53_status": "0x50415353"
+  },
+  "acceptance_summary": {
+    "measured_fps": 30.409639424076744,
+    "minimum_fps": 30,
+    "frame_cycles": 5097068,
+    "mismatch_bytes": 0,
+    "total_bytes": 2764800,
+    "max_channel_diff": 0,
+    "board_vs_fixed_pass": true,
+    "throughput_pass": true
+  },
+  "evidence_reports": [
+    "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_20260625.md",
+    "sim/reports/ps_tinyspan_ddr_x4_tile64_fifo_f155_a53_compare_20260625.md"
+  ],
+  "boundary": [
+    "This closes X4 Gate H only.",
+    "The whole contest workflow still needs the independent X2 frozen checkpoint, quantization, RTL, bitstream, real board output, and >=30fps evidence.",
+    "A visible board PNG, display output, or SD writeback artifact remains useful for presentation, but the A53 in-DDR compare is the byte-exact correctness proof."
+  ]
+}

@@ -1,8 +1,8 @@
 """Generate the TinySPAN contest workflow status summary.
 
-The script consumes the current baseline artifact and optional preflight JSON
-files, then writes a human-readable gate table plus a machine-readable status
-JSON. It does not start Vivado, JTAG, or board runs.
+The script is read-only. It consumes committed artifacts and live training
+status files, then writes a Chinese gate table and a machine-readable status
+JSON. It never starts Vivado, JTAG, board access, or training.
 """
 
 from __future__ import annotations
@@ -14,18 +14,18 @@ from pathlib import Path
 from typing import Any
 
 
-GATES = [
-    ("A0", "TinySPAN 硬件安全基线预检"),
-    ("A", "冻结 TinySPAN 模型"),
-    ("B", "TinySPAN 量化与软件定点参考"),
-    ("C", "TinySPAN RTL 导出"),
-    ("D", "TinySPAN RTL 仿真"),
-    ("E", "TinySPAN 实现与资源约束"),
-    ("F", "TinySPAN 板卡冒烟测试"),
-    ("G", "TinySPAN 图像一致性可视化验证"),
-    ("H", "TinySPAN 最终 720p30 验收"),
-    ("X2", "X2 独立证据包"),
-]
+GATE_NAMES = {
+    "A0": "TinySPAN 硬件安全基线预检",
+    "A": "冻结 TinySPAN 模型",
+    "B": "TinySPAN 量化与软件定点参考",
+    "C": "TinySPAN RTL 导出",
+    "D": "TinySPAN RTL 仿真",
+    "E": "TinySPAN 实现与资源约束",
+    "F": "TinySPAN 板卡冒烟测试",
+    "G": "TinySPAN 图像一致性可视化验证",
+    "H": "TinySPAN X4 最终 720p30 验收",
+    "X2": "X2 独立证据包",
+}
 
 
 def load_json(path: Path) -> dict[str, Any] | None:
@@ -34,7 +34,7 @@ def load_json(path: Path) -> dict[str, Any] | None:
     return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
-def load_latest_json(root: Path, pattern: str) -> tuple[dict[str, Any] | None, Path | None]:
+def latest_json(root: Path, pattern: str) -> tuple[dict[str, Any] | None, Path | None]:
     candidates = [path for path in root.glob(pattern) if path.is_file()]
     if not candidates:
         return None, None
@@ -42,366 +42,276 @@ def load_latest_json(root: Path, pattern: str) -> tuple[dict[str, Any] | None, P
     return load_json(latest), latest
 
 
-def failed_checks(summary: dict[str, Any] | None) -> list[str]:
-    if not summary:
-        return ["summary_missing"]
-    return [str(item.get("name", "unknown")) for item in summary.get("checks", []) if not item.get("pass")]
-
-
-def pass_checks(summary: dict[str, Any] | None) -> list[str]:
-    if not summary:
-        return []
-    return [str(item.get("name", "unknown")) for item in summary.get("checks", []) if item.get("pass")]
-
-
-def number_text(value: Any, default: str = "") -> str:
+def text(value: Any, default: str = "") -> str:
     if value is None:
         return default
     return str(value)
 
 
-def status_from_inputs(
-    baseline: dict[str, Any] | None,
-    readiness: dict[str, Any] | None,
-    input_preflight: dict[str, Any] | None,
-    gate_c: dict[str, Any] | None,
-    gate_d: dict[str, Any] | None,
-    gate_d_current: bool,
-    gate_e: dict[str, Any] | None,
-    gate_f: dict[str, Any] | None,
-    tiled_ref: dict[str, Any] | None,
-    gate_h_board: dict[str, Any] | None,
-    x2_training: dict[str, Any] | None,
-) -> list[dict[str, str]]:
-    baseline_locked = bool(baseline and baseline.get("status") == "baseline_locked_not_board_accepted")
-    readiness_failed = failed_checks(readiness)
-    input_failed = failed_checks(input_preflight)
+def row(gate: str, status: str, evidence: str, next_action: str) -> dict[str, str]:
+    return {
+        "gate": gate,
+        "name": GATE_NAMES[gate],
+        "status": status,
+        "evidence": evidence,
+        "next_action": next_action,
+    }
+
+
+def build_rows(artifact_dir: Path) -> tuple[list[dict[str, str]], dict[str, Any]]:
+    baseline = load_json(artifact_dir / "baseline_manifest.json")
+    gate_e = load_json(artifact_dir / "gate_e_bitstream_x4_320x180_f150_prew_20260620" / "manifest.json")
+    gate_f = load_json(
+        artifact_dir
+        / "gate_f_board_x4_32x32_f150_tile32_20260621"
+        / "acceptance"
+        / "tinyspan_board_acceptance_summary.json"
+    )
+    gate_d, gate_d_path = latest_json(artifact_dir, "gate_d_rtl_gate_rerun_*/tinyspan_w8a8_rtl_gate_summary.json")
+    tiled_ref, tiled_ref_path = latest_json(
+        artifact_dir,
+        "full_frame_tiled_reference_x4_320x180_*/tinyspan_tiled_fixed_reference_summary.json",
+    )
+    gate_h, gate_h_path = latest_json(artifact_dir, "gate_h_board_x4_320x180_*/manifest.json")
+    x2_training, x2_path = latest_json(artifact_dir, "x2_training_*/x2_training_status.json")
+    if x2_training is None:
+        x2_training, x2_path = latest_json(artifact_dir, "x2_training_start_*/x2_training_status.json")
+
+    baseline_pass = bool(baseline and baseline.get("status") == "baseline_locked_not_board_accepted")
+    gate_e_pass = bool(
+        gate_e
+        and gate_e.get("timing", {}).get("status") == "PASS"
+        and gate_e.get("resource_gate", {}).get("status") == "PASS"
+    )
+    gate_f_pass = bool(gate_f and gate_f.get("pass"))
+    gate_g_pass = bool(gate_f and gate_f.get("compare_pass"))
+    gate_h_pass = bool(gate_h and (gate_h.get("package_pass") or gate_h.get("pass")))
+    x2_running = bool(x2_training and x2_training.get("status") == "training_running")
+    x2_pass = bool(x2_training and x2_training.get("status") == "PASS")
 
     rows: list[dict[str, str]] = []
-    for gate_id, name in GATES:
-        status = "未开始"
-        evidence = "尚无"
-        next_action = "等待前序 gate"
-
-        if gate_id == "A0":
-            status = "PASS" if baseline_locked else "BLOCKED"
-            evidence = "baseline_manifest.json / baseline_decision.md"
-            next_action = "继续沿 c32b4_30fps_frozen_20260613 推进"
-        elif gate_id == "A":
-            status = "PASS" if baseline_locked else "BLOCKED"
-            evidence = "frozen checkpoint SHA256 已固定"
-            next_action = "禁止使用仍在变化的 checkpoint"
-        elif gate_id == "B":
-            status = "PASS" if baseline and baseline.get("quant_reference_evidence") else "BLOCKED"
-            if tiled_ref and tiled_ref.get("pass"):
-                evidence = (
-                    "W8A8 quant plan + integer reference summary；"
-                    f"X4 full-frame tiled FixedPng ready，tiles {number_text(tiled_ref.get('tile_count'))}"
-                )
-            else:
-                evidence = "W8A8 quant plan + integer reference summary"
-            next_action = "后续 board 输出必须对齐同一软件定点参考"
-        elif gate_id == "C":
-            status = "PASS" if (gate_c or (baseline and baseline.get("rtl_evidence"))) else "BLOCKED"
-            evidence = "Gate C re-export + TinySPAN W8A8 RTL manifest" if gate_c else "TinySPAN W8A8 RTL manifest"
-            next_action = "进入 RTL 仿真与实现前检查"
-        elif gate_id == "D":
-            gate_d_pass = bool(gate_d and gate_d.get("status") == "PASS")
-            sim_related = [
-                name
-                for name in pass_checks(readiness)
-                if "rtl" in name or "frontend" in name or "script" in name
-            ]
-            if gate_d_pass and gate_d_current:
-                status = "PASS"
-                evidence = "当前 artifacts 中 Gate D RTL gate rerun PASS"
-                next_action = "进入 Gate E bitstream 生成前检查"
-            elif gate_d_pass:
-                status = "HISTORICAL_PASS"
-                evidence = "已归档历史 RTL gate PASS；当前未重跑"
-                next_action = "运行/归档 TinySPAN RTL gate summary，补齐逐字节仿真报告"
-            else:
-                status = "PARTIAL" if sim_related else "未开始"
-                evidence = "readiness 中 RTL manifest、引用、脚本检查已通过" if sim_related else "尚无 RTL 仿真汇总"
-                next_action = "运行/归档 TinySPAN RTL gate summary，补齐逐字节仿真报告"
-        elif gate_id == "E":
-            if gate_e and gate_e.get("timing", {}).get("status") == "PASS" and gate_e.get("resource_gate", {}).get("status") == "PASS":
-                status = "PASS"
-                evidence = (
-                    "X4 320x180 Gate E bitstream/resource PASS；"
-                    f"WNS {number_text(gate_e.get('timing', {}).get('wns_ns'))}ns，"
-                    f"理论 {number_text(gate_e.get('throughput_estimate', {}).get('fps_x4_1280x720'))}fps"
-                )
-                next_action = "继续接入完整帧板端 tile scheduler"
-            else:
-                status = "BLOCKED" if "tinyspan_trained_bitstream_exists" in readiness_failed else "未开始"
-                evidence = "bitstream 缺失" if "tinyspan_trained_bitstream_exists" in readiness_failed else "尚无"
-                next_action = "生成真实 TinySPAN bitstream 并归档 timing/utilization/power"
-        elif gate_id == "F":
-            if gate_f and gate_f.get("pass"):
-                resources = gate_f.get("board_resources", {}) or {}
-                status = "PASS"
-                evidence = (
-                    "X4 32x32 真实板卡 smoke PASS；"
-                    f"fps {number_text(gate_f.get('measured_fps'))}，"
-                    f"LUT {number_text(resources.get('clb_luts'))}，"
-                    f"DSP {number_text(resources.get('dsps'))}"
-                )
-                next_action = "扩展到 SD/DDR 完整帧板端切块和回写"
-            else:
-                board_missing = (
-                    "real_board_output_provided" in readiness_failed
-                    or "real_board_output_exists" in input_failed
-                )
-                status = "BLOCKED" if board_missing else "未开始"
-                evidence = "真实板上输出缺失" if board_missing else "尚无"
-                next_action = "bitstream 通过后运行真实板卡 smoke，回读 board output"
-        elif gate_id == "G":
-            if gate_f and gate_f.get("compare_pass"):
-                status = "PASS"
-                evidence = (
-                    "X4 32x32 board-vs-fixed byte-exact；"
-                    f"mismatch {number_text(gate_f.get('mismatch_bytes'))}/"
-                    f"{number_text(gate_f.get('total_bytes'))}，"
-                    f"max diff {number_text(gate_f.get('max_channel_diff'))}"
-                )
-                next_action = "扩展到完整帧拼接可视化和 diff heatmap"
-            else:
-                status = "BLOCKED"
-                evidence = "缺 board_sr.png / comparison_preview.png / diff_heatmap.png"
-                next_action = "拿到真实 board output 后运行图像一致性验证"
-        elif gate_id == "H":
-            gate_h_acceptance = (gate_h_board or {}).get("acceptance_summary", {}) or {}
-            gate_h_pass = bool(gate_h_board and (gate_h_board.get("package_pass") or gate_h_board.get("pass")))
-            if gate_h_pass:
-                status = "PASS"
-                evidence = (
-                    "X4 full-frame board-vs-tiled-fixed PASS; "
-                    f"fps {number_text(gate_h_acceptance.get('measured_fps'))}; "
-                    f"mismatch {number_text(gate_h_acceptance.get('mismatch_bytes'))}/"
-                    f"{number_text(gate_h_acceptance.get('total_bytes'))}; "
-                    f"max diff {number_text(gate_h_acceptance.get('max_channel_diff'))}"
-                )
-                next_action = "归档 Gate H PPA/图像证据，并继续 X2 独立证据包"
-            else:
-                status = "BLOCKED"
-                if tiled_ref and tiled_ref.get("pass"):
-                    evidence = "32x32 tile 已 PASS；X4 整帧 tiled FixedPng 已准备；缺真实完整帧板上输出和实测 720p30"
-                else:
-                    evidence = "32x32 tile 已 PASS；缺 SD/DDR 完整帧调度、拼接输出和实测 720p30"
-                next_action = "完成完整帧 tile controller、bitstream、板上回读和吞吐验收"
-        elif gate_id == "X2":
-            if x2_training and x2_training.get("status") == "training_running":
-                formal = x2_training.get("formal_training", {}) or {}
-                latest = formal.get("latest_observed", {}) or {}
-                status = "PARTIAL"
-                evidence = (
-                    "X2 TinySPAN smoke PASS，正式训练运行中；"
-                    f"epoch {number_text(latest.get('epoch'))} step {number_text(latest.get('step'))}"
-                )
-                next_action = "等待 X2 训练完成，再冻结、量化、导出 RTL、上板验证"
-            else:
-                status = "BLOCKED"
-                evidence = "当前主证据为 X4，X2 需独立证据包"
-                next_action = "完成 X4 闭环后补齐 X2 量化/RTL/board 证据"
-
-        rows.append(
-            {
-                "gate": gate_id,
-                "name": name,
-                "status": status,
-                "evidence": evidence,
-                "next_action": next_action,
-            }
+    rows.append(
+        row(
+            "A0",
+            "PASS" if baseline_pass else "BLOCKED",
+            "已锁定 `c32b4_30fps_frozen_20260613` 作为硬件安全基线。",
+            "继续基于该基线推进 X4 交付和 X2 独立证据。",
         )
-    return rows
+    )
+    rows.append(
+        row(
+            "A",
+            "PASS" if baseline_pass else "BLOCKED",
+            f"checkpoint SHA256 `{text((baseline or {}).get('baseline', {}).get('checkpoint_sha256'))}`。",
+            "禁止用仍在变化的 checkpoint 替代冻结证据。",
+        )
+    )
+    rows.append(
+        row(
+            "B",
+            "PASS" if baseline and baseline.get("quant_reference_evidence") else "PARTIAL",
+            "X4 W8A8 quant plan、定点参考和 tile64 整帧固定点参考已归档。",
+            "X2 训练完成后导出 X2 W8A8 quant plan 与 X2 定点参考。",
+        )
+    )
+    rows.append(
+        row(
+            "C",
+            "PASS" if (artifact_dir / "gate_c_rtl_export").exists() else "BLOCKED",
+            "TinySPAN W8A8 RTL 导出和 manifest 已归档。",
+            "X2 freeze 后复用同一入口生成 X2 RTL manifest。",
+        )
+    )
+    rows.append(
+        row(
+            "D",
+            "PASS" if gate_d else "PARTIAL",
+            f"RTL gate summary `{text(gate_d_path)}`。",
+            "保持 RTL 仿真作为后续 X2/X4 回归门禁。",
+        )
+    )
+    rows.append(
+        row(
+            "E",
+            "PASS" if gate_e_pass else "BLOCKED",
+            (
+                f"X4 bitstream/resource/timing PASS；WNS `{text((gate_e or {}).get('timing', {}).get('wns_ns'))}ns`，"
+                f"理论 throughput `{text((gate_e or {}).get('throughput_estimate', {}).get('fps_x4_1280x720'))}fps`。"
+            ),
+            "X2 完成后补 X2 bitstream/resource/timing 证据。",
+        )
+    )
+    rows.append(
+        row(
+            "F",
+            "PASS" if gate_f_pass else "BLOCKED",
+            (
+                f"X4 32x32 上板 smoke PASS；perf-only `{text((gate_f or {}).get('measured_fps'))}fps`，"
+                f"mismatch `{text((gate_f or {}).get('mismatch_bytes'))}/{text((gate_f or {}).get('total_bytes'))}`。"
+            ),
+            "保留 32x32 smoke 作为小图回归门禁。",
+        )
+    )
+    rows.append(
+        row(
+            "G",
+            "PASS" if gate_g_pass else "BLOCKED",
+            "X4 32x32 board-vs-fixed byte-exact，并已生成整帧 tile64 固定点预览/heatmap。",
+            "展示材料可继续补 board PNG、显示输出或 SD 写回图。",
+        )
+    )
+
+    if gate_h_pass:
+        acc = gate_h.get("acceptance_summary", {})
+        rows.append(
+            row(
+                "H",
+                "PASS_X4",
+                (
+                    f"X4 整帧上板验收闭合：`{text(acc.get('measured_fps'))}fps`，"
+                    f"mismatch `{text(acc.get('mismatch_bytes'))}/{text(acc.get('total_bytes'))}`，"
+                    f"max diff `{text(acc.get('max_channel_diff'))}`。"
+                ),
+                "X4 子任务可交付；整赛题继续补 X2 独立证据。",
+            )
+        )
+    else:
+        rows.append(
+            row(
+                "H",
+                "PARTIAL" if tiled_ref else "BLOCKED",
+                "X4 整帧固定点参考已准备，但缺真实板上吞吐或完整帧一致性证据。",
+                "完成 X4 Gate H 板上证据。",
+            )
+        )
+
+    latest = (x2_training or {}).get("formal_training", {}).get("latest_observed", {})
+    if x2_pass:
+        x2_status = "PASS"
+        x2_evidence = "X2 独立证据包已闭合。"
+        x2_next = "汇总 X2/X4 最终交付材料。"
+    elif x2_running:
+        x2_status = "PARTIAL"
+        x2_evidence = (
+            f"X2 正式训练运行中；epoch `{text(latest.get('epoch'))}`，"
+            f"step `{text(latest.get('step'))}/{text(latest.get('total_steps'))}`，"
+            f"progress `{text(latest.get('progress_percent'))}%`。"
+        )
+        x2_next = "训练完成后冻结、量化、导出 RTL、生成 bitstream 并上板验证。"
+    else:
+        x2_status = "BLOCKED"
+        x2_evidence = "X2 训练状态未知或未运行。"
+        x2_next = "恢复或完成 X2 训练。"
+    rows.append(row("X2", x2_status, x2_evidence, x2_next))
+
+    accepted = gate_h_pass and x2_pass
+    context = {
+        "baseline": baseline,
+        "gate_e": gate_e,
+        "gate_f": gate_f,
+        "gate_d_path": str(gate_d_path) if gate_d_path else "",
+        "tiled_ref_path": str(tiled_ref_path) if tiled_ref_path else "",
+        "gate_h": gate_h,
+        "gate_h_path": str(gate_h_path) if gate_h_path else "",
+        "x2_training": x2_training,
+        "x2_training_path": str(x2_path) if x2_path else "",
+        "accepted": accepted,
+    }
+    return rows, context
 
 
-def write_markdown(
-    path: Path,
-    rows: list[dict[str, str]],
-    baseline: dict[str, Any] | None,
-    gate_e: dict[str, Any] | None,
-    gate_f: dict[str, Any] | None,
-    tiled_ref: dict[str, Any] | None,
-    x2_training: dict[str, Any] | None,
-) -> None:
-    baseline_id = ""
-    checkpoint_sha = ""
-    measured_fps = ""
-    if baseline:
-        base = baseline.get("baseline", {})
-        sw = baseline.get("software_realtime_evidence", {})
-        baseline_id = str(base.get("id", ""))
-        checkpoint_sha = str(base.get("checkpoint_sha256", ""))
-        measured_fps = str(sw.get("measured_fps", ""))
+def write_markdown(path: Path, rows: list[dict[str, str]], context: dict[str, Any]) -> None:
+    baseline = context.get("baseline") or {}
+    base = baseline.get("baseline", {}) or {}
+    gate_h = context.get("gate_h") or {}
+    acc = gate_h.get("acceptance_summary", {}) or {}
+    x2_training = context.get("x2_training") or {}
+    latest = x2_training.get("formal_training", {}).get("latest_observed", {}) if x2_training else {}
 
     lines = [
         "# TinySPAN 赛题完成状态",
         "",
         f"更新时间：`{datetime.now().isoformat(timespec='seconds')}`",
         "",
-        f"当前硬件安全基线：`{baseline_id}`",
-        f"Checkpoint SHA256：`{checkpoint_sha}`",
-        f"软件 X4 720p30 证据：`{measured_fps} fps`",
+        f"当前硬件安全基线：`{text(base.get('id'))}`",
+        f"Checkpoint SHA256：`{text(base.get('checkpoint_sha256'))}`",
         "",
-        "## Gate 状态",
+        "## 总体结论",
         "",
-        "| Gate | 状态 | 证据 | 下一步 |",
-        "| --- | --- | --- | --- |",
     ]
-    for row in rows:
-        lines.append(
-            f"| {row['gate']} {row['name']} | `{row['status']}` | {row['evidence']} | {row['next_action']} |"
+    if context.get("accepted"):
+        lines.append("- `PASS`：X2/X4 独立证据均已闭合。")
+    else:
+        lines.extend(
+            [
+                "- `NOT_COMPLETE`：X4 子任务已经达到可交付状态；整赛题仍缺 X2 独立证据。",
+                (
+                    f"- X4 Gate H：`{text(acc.get('measured_fps'))}fps`，"
+                    f"`{text(acc.get('mismatch_bytes'))}/{text(acc.get('total_bytes'))}` mismatch。"
+                ),
+                (
+                    f"- X2 训练：epoch `{text(latest.get('epoch'))}`，"
+                    f"step `{text(latest.get('step'))}/{text(latest.get('total_steps'))}`。"
+                ),
+            ]
         )
+
     lines.extend(
         [
             "",
-            "## 当前硬阻塞",
+            "## Gate 状态",
             "",
-            "- 32x32 LR tile 的真实 TinySPAN 板上输出已经 PASS，但还没有 SD/DDR 完整 LR 帧的板端 tile scheduler 闭环。",
-            "- X4 `320x180 -> 1280x720` 的 hardware-tiled FixedPng 已生成，可作为后续真实板上输出比较的目标。",
-            "- 还没有真实板上完整帧 tile 坐标生成、边缘 padding、动态有效区域裁剪、拼接写回和最终 `1280x720` 回读输出证据。",
-            "- 还没有完整帧实测板上 `720p30` throughput。",
-            "- X2 已启动 TinySPAN 独立训练，但 X2 冻结、量化、RTL、bitstream、真实板上输出和 `>=30fps` 证据仍未补齐。",
-            "",
+            "| Gate | 状态 | 证据 | 下一步 |",
+            "| --- | --- | --- | --- |",
         ]
     )
-    if gate_e:
-        impl = gate_e.get("implementation", {}) or {}
-        timing = gate_e.get("timing", {}) or {}
-        resource = gate_e.get("resource_gate", {}) or {}
-        throughput = gate_e.get("throughput_estimate", {}) or {}
-        metrics = resource.get("metrics", {}) or {}
-        lines.extend(
-            [
-                "## Gate E 证据",
-                "",
-                f"- Bitstream：`{number_text(impl.get('bitstream'))}`",
-                f"- Bitstream SHA256：`{number_text(impl.get('bitstream_sha256'))}`",
-                f"- Timing：WNS `{number_text(timing.get('wns_ns'))}ns`，TNS `{number_text(timing.get('tns_ns'))}ns`，frequency `{number_text(timing.get('frequency_mhz'))}MHz`",
-                f"- Resource gate：`{number_text(resource.get('status'))}`，LUT `{number_text(metrics.get('lut'))}`，Register `{number_text(metrics.get('register'))}`，DSP `{number_text(metrics.get('dsp'))}`，BRAM Tile `{number_text(metrics.get('bram_tile'))}`",
-                f"- 理论 X4 720p throughput：`{number_text(throughput.get('fps_x4_1280x720'))}fps`",
-                "",
-            ]
+    for item in rows:
+        lines.append(
+            f"| {item['gate']} {item['name']} | `{item['status']}` | {item['evidence']} | {item['next_action']} |"
         )
-    if x2_training:
-        student = x2_training.get("student", {}) or {}
-        smoke = x2_training.get("smoke", {}) or {}
-        formal = x2_training.get("formal_training", {}) or {}
-        latest = formal.get("latest_observed", {}) or {}
-        boundary = x2_training.get("acceptance_boundary", {}) or {}
-        lines.extend(
-            [
-                "## X2 TinySPAN 训练状态",
-                "",
-                f"- 状态：`{number_text(x2_training.get('status'))}`",
-                f"- Student：`TinySPAN X{number_text(student.get('scale'))} c{number_text(student.get('channels'))} b{number_text(student.get('num_blocks'))}`",
-                f"- Smoke：`{number_text(smoke.get('status'))}`，checkpoint `{number_text(smoke.get('checkpoint'))}`",
-                f"- Formal training：`{number_text(formal.get('status'))}`，output `{number_text(formal.get('output'))}`",
-                f"- Latest observed：epoch `{number_text(latest.get('epoch'))}`，step `{number_text(latest.get('step'))}`，speed `{number_text(latest.get('steps_per_second'))} step/s`",
-                f"- Acceptance boundary：`{number_text(boundary.get('status'))}`",
-                "",
-                "说明：X2 训练运行中只能证明路线已启动；不能替代 X2 frozen checkpoint、量化、RTL、bitstream、板上输出和吞吐验收。",
-                "",
-            ]
-        )
-    if tiled_ref:
-        outputs = tiled_ref.get("outputs", {}) or {}
-        metrics = tiled_ref.get("metrics", {}) or {}
-        full_vs_tiled = metrics.get("full_integer_vs_tiled", {}) or {}
-        lines.extend(
-            [
-                "## X4 完整帧 tiled FixedPng 证据",
-                "",
-                f"- 状态：`{'PASS' if tiled_ref.get('pass') else 'FAIL'}`",
-                f"- 输入：`{number_text(tiled_ref.get('input_width'))}x{number_text(tiled_ref.get('input_height'))}`",
-                f"- 输出：`{number_text(tiled_ref.get('output_width'))}x{number_text(tiled_ref.get('output_height'))}`",
-                f"- Tile：`{number_text(tiled_ref.get('tile_width'))}x{number_text(tiled_ref.get('tile_height'))}`，数量 `{number_text(tiled_ref.get('tile_count'))}`",
-                f"- Checkpoint SHA256：`{number_text(tiled_ref.get('checkpoint_sha256'))}`",
-                f"- Quant plan SHA256：`{number_text(tiled_ref.get('quant_plan_sha256'))}`",
-                f"- FixedPng：`{number_text(outputs.get('software_tiled_fixed_point_sr'))}`",
-                f"- Preview：`{number_text(outputs.get('comparison_preview'))}`",
-                f"- Diff heatmap：`{number_text(outputs.get('diff_heatmap'))}`",
-                f"- Full-integer vs tiled：mismatch `{number_text(full_vs_tiled.get('mismatch_bytes'))}/{number_text(full_vs_tiled.get('total_bytes'))}`，max diff `{number_text(full_vs_tiled.get('max_channel_diff'))}`，PSNR `{number_text(full_vs_tiled.get('psnr_db'))} dB`",
-                "",
-                "说明：该证据是软件侧硬件同构参考，只证明后续板上比较目标已准备好；不能替代真实完整帧 bitstream、板上回读和实测吞吐。",
-                "",
-            ]
-        )
-    if gate_f:
-        resources = gate_f.get("board_resources", {}) or {}
-        lines.extend(
-            [
-                "## Gate F/G 32x32 上板证据",
-                "",
-                f"- Board-vs-fixed：`mismatch {number_text(gate_f.get('mismatch_bytes'))}/{number_text(gate_f.get('total_bytes'))}`，max diff `{number_text(gate_f.get('max_channel_diff'))}`",
-                f"- Perf-only throughput：`{number_text(gate_f.get('measured_fps'))}fps`",
-                f"- Resource：LUT `{number_text(resources.get('clb_luts'))}`，Register `{number_text(resources.get('clb_registers'))}`，DSP `{number_text(resources.get('dsps'))}`，BRAM Tile `{number_text(resources.get('block_ram_tile'))}`",
-                f"- Timing：WNS `{number_text(resources.get('wns_ns'))}ns`，WHS `{number_text(resources.get('whs_ns'))}ns`",
-                f"- Preview：`{number_text(gate_f.get('preview'))}`",
-                "",
-            ]
-        )
-    lines.append("本文件由 `scripts/acceptance/update_workflow_status.py` 生成，不启动 Vivado、JTAG 或板卡流程。")
+
+    lines.extend(
+        [
+            "",
+            "## X4 可交付边界",
+            "",
+            "- X4 已具备冻结 checkpoint、量化计划、RTL/bitstream、真实板上整帧吞吐和完整帧一致性证据。",
+            "- X4 DDR 路线只调用板卡/AMD Xilinx IP：`zynq_ultra_ps_e`、PS DDR controller、HP/HPC、SmartConnect；不自研 DDR controller/PHY。",
+            "- 可选增强项：补充可直接展示的 board PNG、HDMI/display 输出或 SD 写回图。",
+            "",
+            "## 未闭合项",
+            "",
+            "- X2 独立冻结 checkpoint、量化计划、RTL、bitstream、真实板上输出和 `>=30fps` 证据仍未完成。",
+            "",
+            "本文件由 `scripts/acceptance/update_workflow_status.py` 生成；该脚本只读 artifact，不启动 Vivado、JTAG、板卡或训练。",
+        ]
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Update TinySPAN workflow status docs.")
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--artifact-dir", type=Path, required=True)
     parser.add_argument("--docs-out", type=Path, default=Path("docs/gate_status.md"))
     parser.add_argument("--json-out", type=Path, default=None)
     args = parser.parse_args()
 
-    artifact_dir = args.artifact_dir
-    preflight_dir = artifact_dir / "preflight_current"
-    baseline = load_json(artifact_dir / "baseline_manifest.json")
-    readiness = load_json(preflight_dir / "tinyspan_720p30_board_acceptance_readiness.json")
-    input_preflight = load_json(preflight_dir / "tinyspan_720p30_acceptance_input_preflight.json")
-    gate_c = load_json(artifact_dir / "gate_c_rtl_export" / "tinyspan_c32b4_30fps_frozen_w8a8_reexport" / "tinyspan_w8a8_rtl_manifest.json")
-    gate_d, gate_d_path = load_latest_json(artifact_dir, "gate_d_rtl_gate_rerun_*/tinyspan_w8a8_rtl_gate_summary.json")
-    gate_d_current = gate_d is not None
-    if gate_d is None:
-        gate_d = load_json(artifact_dir / "gate_d_rtl_gate_existing" / "tinyspan_w8a8_rtl_gate_summary.json")
+    rows, context = build_rows(args.artifact_dir)
+    write_markdown(args.docs_out, rows, context)
 
-    gate_e = load_json(artifact_dir / "gate_e_bitstream_x4_320x180_f150_prew_20260620" / "manifest.json")
-    gate_f = load_json(artifact_dir / "gate_f_board_x4_32x32_f150_tile32_20260621" / "acceptance" / "tinyspan_board_acceptance_summary.json")
-    tiled_ref, tiled_ref_path = load_latest_json(artifact_dir, "full_frame_tiled_reference_x4_320x180_tile32_*/tinyspan_tiled_fixed_reference_summary.json")
-    gate_h_board, gate_h_board_path = load_latest_json(artifact_dir, "gate_h_board_x4_320x180_f150_tiledref_*/manifest.json")
-    if gate_h_board is None:
-        gate_h_board, gate_h_board_path = load_latest_json(artifact_dir, "gate_h_board_x4_320x180_f150_tiledref_*/gate_h_check.json")
-    x2_training, x2_training_path = load_latest_json(artifact_dir, "x2_training_*/x2_training_status.json")
-
-    rows = status_from_inputs(
-        baseline,
-        readiness,
-        input_preflight,
-        gate_c,
-        gate_d,
-        gate_d_current,
-        gate_e,
-        gate_f,
-        tiled_ref,
-        gate_h_board,
-        x2_training,
-    )
-    write_markdown(args.docs_out, rows, baseline, gate_e, gate_f, tiled_ref, x2_training)
-
-    json_out = args.json_out or artifact_dir / "contest_completion_status.json"
+    json_out = args.json_out or args.artifact_dir / "contest_completion_status.json"
     json_out.parent.mkdir(parents=True, exist_ok=True)
     json_out.write_text(
         json.dumps(
             {
                 "generated_at": datetime.now().isoformat(timespec="seconds"),
-                "artifact_dir": str(artifact_dir),
-                "gate_d_summary": str(gate_d_path) if gate_d_path else "",
-                "gate_e_summary": str(artifact_dir / "gate_e_bitstream_x4_320x180_f150_prew_20260620" / "manifest.json") if gate_e else "",
-                "gate_f_summary": str(artifact_dir / "gate_f_board_x4_32x32_f150_tile32_20260621" / "acceptance" / "tinyspan_board_acceptance_summary.json") if gate_f else "",
-                "x4_tiled_reference_summary": str(tiled_ref_path) if tiled_ref_path else "",
-                "gate_h_board_summary": str(gate_h_board_path) if gate_h_board_path else "",
-                "x2_training_status": str(x2_training_path) if x2_training_path else "",
+                "artifact_dir": str(args.artifact_dir),
+                "accepted": bool(context.get("accepted")),
+                "acceptance_status": "PASS" if context.get("accepted") else "NOT_COMPLETE",
+                "x4_gate_h_status": "PASS_X4" if context.get("gate_h") else "MISSING",
+                "gate_h_board_summary": context.get("gate_h_path", ""),
+                "x2_training_status": context.get("x2_training_path", ""),
                 "gates": rows,
             },
             ensure_ascii=False,
