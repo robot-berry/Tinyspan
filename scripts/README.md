@@ -39,6 +39,10 @@ Current folders:
   entrypoint. Use `-Scale 2` for the independent X2 route and `-Scale 4` for
   X4. It refuses to freeze a still-running training checkpoint unless only
   `-DryRun` is requested.
+- `watch_tinyspan_x2_training_then_postprep.ps1`: optional X2 completion
+  watcher. It waits until the X2 run reaches the target step count and the
+  training process has exited, then runs the post-training prep entrypoint. If
+  training stops early it fails instead of freezing a partial checkpoint.
 - `acceptance/run_tinyspan_720p30_board_acceptance.ps1` and
   `acceptance/check_tinyspan_720p30_acceptance_inputs.ps1`: scale-aware 720p30
   evidence gates. Use `-Scale 2` for `640x360 -> 1280x720` and `-Scale 4` for

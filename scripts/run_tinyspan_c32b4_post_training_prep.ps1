@@ -51,7 +51,7 @@ try {
 
   $latestMetric = Get-LatestMetric $metrics
   if ($Tag -eq "") {
-    $Tag = "c32b4_step$($latestMetric.step)_" + (Get-Date -Format "yyyyMMdd_HHmmss")
+    $Tag = "step$($latestMetric.step)_" + (Get-Date -Format "yyyyMMdd_HHmmss")
   }
   $safeTag = $Tag -replace "[^A-Za-z0-9_.-]", "_"
 
