@@ -907,6 +907,24 @@ X4 路线使用同一个入口，只把 `-Scale` 改为 `4`，并使用对应的
 `-Scale 2` 要求 `640x360 -> 1280x720`，`-Scale 4` 要求 `320x180 -> 1280x720`；
 tile 尺寸不再锁死为 `32x32`，只要求是 LR 帧内的正尺寸，因此兼容 X4 tile64 和后续 X2 tile 方案。
 
+720p30 板上验收通过后，统一用只读打包脚本生成 Gate H 交付 manifest。该脚本只整理已有
+summary、图片预览、diff heatmap、checkpoint/quant/bitstream 哈希和吞吐/正确性结果，不启动
+Vivado、JTAG、XSCT、板卡或训练流程：
+
+```powershell
+python .\scripts\acceptance\package_tinyspan_gate_h_board_acceptance.py `
+  --repo-root . `
+  --acceptance-dir artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_h_board_x2_640x360_tile64x64 `
+  --scale 2 `
+  --input-width 640 `
+  --input-height 360 `
+  --tile-width 64 `
+  --tile-height 64 `
+  --tile-count 60 `
+  --status PASS_X2 `
+  --route "TinySPAN PS/DDR X2 via board zynq_ultra_ps_e / PS DDR controller IP"
+```
+
 训练完成后仍不能直接宣告通过；post-training prep 只补齐冻结、量化和 RTL 导出入口。后续仍需完成对应倍率的
 RTL 仿真、bitstream、真实板上输出、board-vs-fixed 逐字节一致性、可视化预览和 `>=30fps` 实测吞吐。
 

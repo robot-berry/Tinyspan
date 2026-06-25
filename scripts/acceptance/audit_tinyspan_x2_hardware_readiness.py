@@ -246,6 +246,23 @@ def main() -> int:
                 "board_sr.png, comparison_preview.png, and diff_heatmap.png for visual review",
             ],
         },
+        {
+            "gate": "x2_package_manifest",
+            "command": (
+                "python .\\scripts\\acceptance\\package_tinyspan_gate_h_board_acceptance.py "
+                "--repo-root . "
+                "--acceptance-dir artifacts\\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\\gate_h_board_x2_640x360_tile64x64 "
+                "--scale 2 --input-width 640 --input-height 360 --tile-width 64 --tile-height 64 --tile-count 60 "
+                "--status PASS_X2 "
+                "--route \"TinySPAN PS/DDR X2 via board zynq_ultra_ps_e / PS DDR controller IP\""
+            ),
+            "starts_vivado_or_board": False,
+            "expected": [
+                "manifest.json with checkpoint, quant plan, bitstream, throughput, correctness, and copied image evidence",
+                "run_summary.md for review without opening the raw logs",
+                "package_pass true only after board-vs-fixed equality, >=30fps, and required evidence are present",
+            ],
+        },
     ]
 
     audit = {

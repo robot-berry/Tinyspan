@@ -1,7 +1,7 @@
 # TinySPAN X2 Hardware Readiness
 
 - status: `PARTIAL`
-- generated at: `2026-06-25T13:10:18`
+- generated at: `2026-06-25T13:18:26`
 - X2 training status: `artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x2_training_start_20260624/x2_training_status.json`
 - X2 quant plan: ``
 - X2 RTL manifest: ``
@@ -67,6 +67,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\acceptance\run_tin
 - expected: A53/DDR or board-side compare mismatch 0 and max channel diff 0
 - expected: measured full-frame throughput >=30fps
 - expected: board_sr.png, comparison_preview.png, and diff_heatmap.png for visual review
+
+4. `x2_package_manifest`
+
+```powershell
+python .\scripts\acceptance\package_tinyspan_gate_h_board_acceptance.py --repo-root . --acceptance-dir artifacts\20260618_x4_tinyspan_c32b4_baseline_30fps_safe\gate_h_board_x2_640x360_tile64x64 --scale 2 --input-width 640 --input-height 360 --tile-width 64 --tile-height 64 --tile-count 60 --status PASS_X2 --route "TinySPAN PS/DDR X2 via board zynq_ultra_ps_e / PS DDR controller IP"
+```
+
+- starts Vivado/board flow: `False`
+- expected: manifest.json with checkpoint, quant plan, bitstream, throughput, correctness, and copied image evidence
+- expected: run_summary.md for review without opening the raw logs
+- expected: package_pass true only after board-vs-fixed equality, >=30fps, and required evidence are present
 
 ## Boundary
 
