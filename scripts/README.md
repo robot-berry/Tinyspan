@@ -34,6 +34,11 @@ Current folders:
   entrypoint. Use `-Scale 2` for the independent X2 route and `-Scale 4` for
   X4. It refuses to freeze a still-running training checkpoint unless only
   `-DryRun` is requested.
+- `acceptance/run_tinyspan_720p30_board_acceptance.ps1` and
+  `acceptance/check_tinyspan_720p30_acceptance_inputs.ps1`: scale-aware 720p30
+  evidence gates. Use `-Scale 2` for `640x360 -> 1280x720` and `-Scale 4` for
+  `320x180 -> 1280x720`; tile size is parameterized for tile32/tile64 and X2
+  tile experiments.
 - `prepare_tinyspan_c32b4_realtime_handoff.ps1`: common C32/B4 handoff chain
   for Conv3XC fusion, manifest reference, activation calibration, W8A8 quant
   plan export, and integer reference generation.

@@ -11,6 +11,8 @@ param(
   [string]$FixedPng,
   [string]$BoardRaw = "",
   [string]$BoardPng = "",
+  [ValidateSet(2, 4)]
+  [int]$Scale = 4,
   [int]$OutputWidth = 1280,
   [int]$OutputHeight = 720,
   [string]$OutDir = "board_runs\tinyspan_720p30_board_acceptance\latest",
@@ -19,8 +21,8 @@ param(
   [string]$QuantPlan = "",
   [string]$Bitstream = "",
   [string]$BoardLog = "",
-  [string]$PreflightScript = "scripts\check_tinyspan_720p30_acceptance_inputs.ps1",
-  [string]$TargetName = "TinySPAN 720p30 tile32",
+  [string]$PreflightScript = "scripts\acceptance\check_tinyspan_720p30_acceptance_inputs.ps1",
+  [string]$TargetName = "TinySPAN 720p30",
   [int]$DiffGain = 8,
   [int]$MaxAllowedDiff = 0,
   [int]$MaxAllowedMismatchBytes = 0
@@ -30,14 +32,16 @@ $ErrorActionPreference = "Stop"
 $root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Push-Location $root
 try {
-  if ($InputWidth -ne 320 -or $InputHeight -ne 180) {
-    throw "TinySPAN 720p30 acceptance expects LR input 320x180. Got ${InputWidth}x${InputHeight}."
-  }
   if ($OutputWidth -ne 1280 -or $OutputHeight -ne 720) {
     throw "TinySPAN 720p30 acceptance expects SR output 1280x720. Got ${OutputWidth}x${OutputHeight}."
   }
-  if ($TileWidth -ne 32 -or $TileHeight -ne 32) {
-    throw "TinySPAN 720p30 acceptance is locked to 32x32 board tiles. Got ${TileWidth}x${TileHeight}."
+  $expectedInputWidth = [int]($OutputWidth / $Scale)
+  $expectedInputHeight = [int]($OutputHeight / $Scale)
+  if (($OutputWidth % $Scale) -ne 0 -or ($OutputHeight % $Scale) -ne 0 -or $InputWidth -ne $expectedInputWidth -or $InputHeight -ne $expectedInputHeight) {
+    throw "TinySPAN 720p30 X${Scale} acceptance expects LR input ${expectedInputWidth}x${expectedInputHeight}. Got ${InputWidth}x${InputHeight}."
+  }
+  if ($TileWidth -le 0 -or $TileHeight -le 0 -or $TileWidth -gt $InputWidth -or $TileHeight -gt $InputHeight) {
+    throw "TinySPAN 720p30 acceptance expects a positive tile within ${InputWidth}x${InputHeight}. Got ${TileWidth}x${TileHeight}."
   }
   if ($MeasuredFps -lt 30.0) {
     throw "MeasuredFps must be >= 30.0 for TinySPAN 720p30 board acceptance. Got $MeasuredFps."
@@ -76,6 +80,7 @@ try {
     "-Bitstream", $Bitstream,
     "-BoardLog", $BoardLog,
     "-MeasuredFps", $MeasuredFps,
+    "-Scale", $Scale,
     "-InputWidth", $InputWidth,
     "-InputHeight", $InputHeight,
     "-OutputWidth", $OutputWidth,
@@ -146,6 +151,7 @@ try {
   $summaryWriterExitCode = $LASTEXITCODE
 
   $summary = Get-Content -Raw -Path $summaryJson | ConvertFrom-Json
+  $summary | Add-Member -NotePropertyName scale -NotePropertyValue $Scale -Force
   $summary | Add-Member -NotePropertyName input_width -NotePropertyValue $InputWidth -Force
   $summary | Add-Member -NotePropertyName input_height -NotePropertyValue $InputHeight -Force
   $summary | Add-Member -NotePropertyName output_width -NotePropertyValue $OutputWidth -Force
@@ -169,6 +175,7 @@ try {
     "",
     "## 720p30 Tile Contract",
     "",
+    ("- scale: ``X{0}``" -f $Scale),
     ("- LR input frame: ``{0}x{1}``" -f $InputWidth, $InputHeight),
     ("- SR output frame: ``{0}x{1}``" -f $OutputWidth, $OutputHeight),
     ("- board tile: ``{0}x{1}``" -f $TileWidth, $TileHeight),

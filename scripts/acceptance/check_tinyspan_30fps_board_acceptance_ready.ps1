@@ -3,11 +3,11 @@ param(
   [string]$RtlManifest = "rtl\generated\tinyspan_c32b4_30fps_frozen_w8a8\tinyspan_w8a8_rtl_manifest.json",
   [string]$HeadFrontendDcp = "build\vivado_tinyspan_w8a8_head_frontend_synth\tinyspan_w8a8_head_frontend_synth.dcp",
   [string]$FinalRgb888Top = "rtl\span\span_tinyspan_w8a8_full_streamed_rgb888_base_equiv.v",
-  [string]$BaseEquivCompareScript = "scripts\compare_tinyspan_base_equiv_reference.ps1",
-  [string]$JtagBuildScript = "scripts\run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1",
-  [string]$JtagSmokeScript = "scripts\run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1",
-  [string]$Board720pAcceptanceScript = "scripts\run_tinyspan_720p30_board_acceptance.ps1",
-  [string]$Board720pPreflightScript = "scripts\check_tinyspan_720p30_acceptance_inputs.ps1",
+  [string]$BaseEquivCompareScript = "tools\image_validation\compare_tinyspan_base_equiv_reference.py",
+  [string]$JtagBuildScript = "scripts\vivado\run_vivado_bitstream_jtag_tinyspan_w8a8_base_equiv.ps1",
+  [string]$JtagSmokeScript = "scripts\board\run_jtag_tinyspan_w8a8_base_equiv_smoke.ps1",
+  [string]$Board720pAcceptanceScript = "scripts\acceptance\run_tinyspan_720p30_board_acceptance.ps1",
+  [string]$Board720pPreflightScript = "scripts\acceptance\check_tinyspan_720p30_acceptance_inputs.ps1",
   [string]$AcceptanceSummaryWriter = "tools\write_tinyspan_board_acceptance_summary.py",
   [string]$BoardResourceLogWriter = "tools\write_board_resource_log.py",
   [string]$VivadoIdleScript = "scripts\check_vivado_idle.ps1",
@@ -98,12 +98,12 @@ try {
   }
   if (Test-Path $Board720pAcceptanceScript) {
     $accept720pText = Get-Content -Raw -Path $Board720pAcceptanceScript
-    Add-Check "tinyspan_720p30_acceptance_locks_720p" (($accept720pText -match "320x180") -and ($accept720pText -match "1280x720")) $Board720pAcceptanceScript
-    Add-Check "tinyspan_720p30_acceptance_locks_tile32" ($accept720pText -match "32x32") $Board720pAcceptanceScript
+    Add-Check "tinyspan_720p30_acceptance_locks_720p" ($accept720pText -match "1280x720") $Board720pAcceptanceScript
+    Add-Check "tinyspan_720p30_acceptance_supports_scale" (($accept720pText -match "Scale") -and ($accept720pText -match "expectedInputWidth")) $Board720pAcceptanceScript
     Add-Check "tinyspan_720p30_acceptance_requires_resource_json" ($accept720pText -match "require-board-resources") $Board720pAcceptanceScript
   } else {
     Add-Check "tinyspan_720p30_acceptance_locks_720p" $false $Board720pAcceptanceScript
-    Add-Check "tinyspan_720p30_acceptance_locks_tile32" $false $Board720pAcceptanceScript
+    Add-Check "tinyspan_720p30_acceptance_supports_scale" $false $Board720pAcceptanceScript
     Add-Check "tinyspan_720p30_acceptance_requires_resource_json" $false $Board720pAcceptanceScript
   }
   if (Test-Path $JtagBuildScript) {

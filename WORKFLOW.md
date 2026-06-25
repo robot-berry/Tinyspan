@@ -802,6 +802,11 @@ X4 路线使用同一个入口，只把 `-Scale` 改为 `4`，并使用对应的
 绝对训练目录，例如 `G:\UESTC\feitengspan1\runs\tinyspan_distill\video_x2_c32_b4_reds_temporal`；
 不能写成 `runs\...`，否则会误找 `G:\UESTC\feitengspan1\Tinyspan\runs\...`。
 
+720p30 图像验收入口 `scripts\acceptance\run_tinyspan_720p30_board_acceptance.ps1` 与
+`scripts\acceptance\check_tinyspan_720p30_acceptance_inputs.ps1` 已改为 scale-aware：
+`-Scale 2` 要求 `640x360 -> 1280x720`，`-Scale 4` 要求 `320x180 -> 1280x720`；
+tile 尺寸不再锁死为 `32x32`，只要求是 LR 帧内的正尺寸，因此兼容 X4 tile64 和后续 X2 tile 方案。
+
 训练完成后仍不能直接宣告通过；post-training prep 只补齐冻结、量化和 RTL 导出入口。后续仍需完成对应倍率的
 RTL 仿真、bitstream、真实板上输出、board-vs-fixed 逐字节一致性、可视化预览和 `>=30fps` 实测吞吐。
 

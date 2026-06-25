@@ -6,6 +6,8 @@ param(
   [string]$BoardPng = "",
   [string]$BoardLog = "",
   [double]$MeasuredFps = -1.0,
+  [ValidateSet(2, 4)]
+  [int]$Scale = 4,
   [int]$InputWidth = 320,
   [int]$InputHeight = 180,
   [int]$OutputWidth = 1280,
@@ -61,9 +63,13 @@ try {
   New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
   $checks = New-Object System.Collections.Generic.List[object]
 
-  Add-Check $checks "lr_input_contract" ($InputWidth -eq 320 -and $InputHeight -eq 180) "${InputWidth}x${InputHeight}, expected 320x180"
+  $expectedInputWidth = [int]($OutputWidth / $Scale)
+  $expectedInputHeight = [int]($OutputHeight / $Scale)
+  $scaleDividesOutput = (($OutputWidth % $Scale) -eq 0) -and (($OutputHeight % $Scale) -eq 0)
+  Add-Check $checks "scale_contract" $scaleDividesOutput "scale=X$Scale, output=${OutputWidth}x${OutputHeight}"
+  Add-Check $checks "lr_input_contract" ($scaleDividesOutput -and $InputWidth -eq $expectedInputWidth -and $InputHeight -eq $expectedInputHeight) "${InputWidth}x${InputHeight}, expected ${expectedInputWidth}x${expectedInputHeight} for X${Scale}"
   Add-Check $checks "sr_output_contract" ($OutputWidth -eq 1280 -and $OutputHeight -eq 720) "${OutputWidth}x${OutputHeight}, expected 1280x720"
-  Add-Check $checks "tile_contract" ($TileWidth -eq 32 -and $TileHeight -eq 32) "${TileWidth}x${TileHeight}, expected 32x32"
+  Add-Check $checks "tile_contract" ($TileWidth -gt 0 -and $TileHeight -gt 0 -and $TileWidth -le $InputWidth -and $TileHeight -le $InputHeight) "${TileWidth}x${TileHeight}, expected positive tile within ${InputWidth}x${InputHeight}"
   Add-Check $checks "measured_fps_ge_30" ($MeasuredFps -ge 30.0) "measured_fps=$MeasuredFps"
 
   foreach ($item in @(
@@ -169,6 +175,7 @@ try {
     board_log_full_path = Get-ExistingFullPath $BoardLog
     board_log_sha256 = Get-OptionalSha256 $BoardLog
     measured_fps = $MeasuredFps
+    scale = $Scale
     input_width = $InputWidth
     input_height = $InputHeight
     output_width = $OutputWidth

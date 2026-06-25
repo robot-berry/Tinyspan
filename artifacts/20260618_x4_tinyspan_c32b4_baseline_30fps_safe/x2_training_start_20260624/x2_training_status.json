@@ -60,19 +60,19 @@
     },
     "latest_observed": {
       "epoch": 29,
-      "step": 113438,
+      "step": 114373,
       "total_steps": 198000,
-      "progress_percent": 57.2919,
-      "loss": 0.01886737,
-      "distill_loss": 0.01095933,
-      "hr_loss": 0.01591635,
-      "edge_loss": 0.0658204,
-      "temporal_loss": 0.01704181,
-      "teacher_psnr": 33.964387,
-      "student_psnr": 30.564857,
-      "seconds": 66883.509,
-      "steps_per_second": 1.6961,
-      "eta": "00.13:50:56",
+      "progress_percent": 57.7641,
+      "loss": 0.02238199,
+      "distill_loss": 0.01297865,
+      "hr_loss": 0.01865257,
+      "edge_loss": 0.07917526,
+      "temporal_loss": 0.0204466,
+      "teacher_psnr": 33.378867,
+      "student_psnr": 29.952904,
+      "seconds": 67518.063,
+      "steps_per_second": 1.694,
+      "eta": "00.13:42:46",
       "stderr_error_hints": "none"
     },
     "latest_artifacts": {
@@ -80,29 +80,29 @@
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\student_latest.pt",
         "exists": true,
         "bytes": 2156839,
-        "mtime": "2026-06-25T10:24:00",
-        "sha256": "fc9f50e8a15b81e6ba9f70bef546752deecba6d7119ebbd255ce20ce02426545"
+        "mtime": "2026-06-25T10:35:20",
+        "sha256": "d5fae313b2f212352c33ded53089ad3e38bf599d55cee8cb8f9808bdf1354b06"
       },
       "preview": {
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\video_distill_latest_preview.png",
         "exists": true,
-        "bytes": 281918,
-        "mtime": "2026-06-25T10:24:00",
-        "sha256": "f776517bb41a06f8625d76d12032b84ca4ed227bc3424a10f5dbc2926de61b51"
+        "bytes": 291088,
+        "mtime": "2026-06-25T10:35:21",
+        "sha256": "c0433e143c8b70f15e70a20324748e1429b323122af3045542c23d73a6c95d36"
       },
       "metrics": {
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\metrics.csv",
         "exists": true,
-        "bytes": 11520044,
-        "mtime": "2026-06-25T10:28:52",
-        "sha256": "687e979f8d9ae4b9ad0c02700566f31075176ed2b167fac92f36320d763b1c60"
+        "bytes": 11616349,
+        "mtime": "2026-06-25T10:39:27",
+        "sha256": "2ea20d9e2bd8a6f5fde903cdc7a46c286a2c64b664949360d1e89173789c9d1b"
       },
       "stderr": {
         "path": "G:\\UESTC\\feitengspan1\\runs\\tinyspan_distill\\video_x2_c32_b4_reds_temporal\\train_stderr.log",
         "exists": true,
-        "bytes": 33070724,
-        "mtime": "2026-06-25T10:28:52",
-        "sha256": "0d1a0a5786e54d207056e3f9d367aedbaadf6801327357c5384470d70633ac0a"
+        "bytes": 33349382,
+        "mtime": "2026-06-25T10:39:27",
+        "sha256": "bc3a1a40569f71f565a9ebd2cf8f93375393e56f4fdbd5f1f2eb760a50f8ca5e"
       }
     }
   },
@@ -119,5 +119,5 @@
       "measured >=30fps throughput"
     ]
   },
-  "updated_at": "2026-06-25T10:28:52"
+  "updated_at": "2026-06-25T10:39:27"
 }
