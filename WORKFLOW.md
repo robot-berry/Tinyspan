@@ -1067,7 +1067,7 @@ X2/X4 Gate H manifest、图像验证材料和文档/源码索引，不启动 Viv
 | 节点 | 状态 | 目标 | 当前证据/路径 | 通过条件 |
 | --- | --- | --- | --- | --- |
 | `QUALITY_X4_HRHEAVY_P256_20260626` | `SOFTWARE_REJECTED` | 在保持 TinySPAN `c32/b4` 硬件拓扑不变的前提下，将 X4 full REDS val PSNR 从上一轮 `26.384690521945394dB` 提升到 `>=28dB`，并记录相对 bicubic 的 gain | 云端 run：`/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x4_c32_b4_quality_hrheavy_p256_20260626`；训练已完成并生成 `student_last.pt`；主 watcher 在 X4 训练结束后触发 `unexpected EOF while looking for matching '"'`，由恢复脚本 `logs/cloud/recover_x4_x2_after_watcher_error_20260626.sh` 补跑 X4 full-val 与打包；本地候选包：`artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/manifest.json`；REDS `val_sharp` 3000 张：student PSNR `26.384690521945394dB`、bicubic `26.274462962942643dB`、gain `0.11022755900275172dB`、SSIM `0.7369068402250608`；manifest 状态 `INCOMPLETE_OR_REJECTED`、`software_quality_gate_pass=false` | 未通过：`student_psnr_mean_db < 28.0`；不进入 `QUALITY_PROMOTE_TO_BOARD_GATE`，不替换当前 X4 submission baseline。 |
-| `QUALITY_X2_HRHEAVY_AFTER_X4_20260626` | `RUNNING` | 在当前 X2 已交付模型 `31.121459919373763dB` 基础上继续提升，至少保持 `>=30dB`，争取超过当前 X2 full-val PSNR | 云端 run：`/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x2_c32_b4_quality_hrheavy_after_x4_20260626`；resume：`video_x2_c32_b4_quality_after_x4_20260625/student_last.pt`；由恢复脚本 `logs/cloud/recover_x4_x2_after_watcher_error_20260626.sh` 在 `2026-06-26 09:54:55` 启动；截至远端 `2026-06-26 11:27:37 CST`，metrics 已更新到 `epoch=15`、`step=55858`、`speed=10.0515 step/s`，接近计划 `60000` step 收尾；尚无 `student_last.pt`、full-val JSON 或 manifest | 生成 `student_last.pt`，完成 `3000` 张 REDS `val_sharp` 全量评估；`student_psnr_mean_db >= 30.0`，并与当前 X2 基线 `31.121459919373763dB` 比较是否真实提升；候选包写入 `artifacts/.../x2_quality_candidates/x2_quality_hrheavy_after_x4_20260626/manifest.json` |
+| `QUALITY_X2_HRHEAVY_AFTER_X4_20260626` | `TERMINATED_FOR_SUBMISSION_BASELINE` | 原目标是在当前 X2 已交付模型 `31.121459919373763dB` 基础上继续提升，至少保持 `>=30dB`，争取超过当前 X2 full-val PSNR | 云端 run：`/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x2_c32_b4_quality_hrheavy_after_x4_20260626`；resume：`video_x2_c32_b4_quality_after_x4_20260625/student_last.pt`；训练已生成 `student_last.pt`，但根据 `2026-06-26` 提交决策，不再等待该提升支线替换当前提交模型；已停止当前 X2 full-val 提升评估进程，提交采用已有 X2 Gate H 基线 `x2_quality_after_x4_20260625` | 不作为当前提交替换候选；赛题提交报告见 `docs/submission_report_20260626.md`。若后续恢复提质，必须重新完成 full-val、freeze/quant、RTL/export、bitstream、真实板上 `0 mismatch` 和 `>=30fps`。 |
 | `QUALITY_PROMOTE_TO_BOARD_GATE` | `WAITING_FOR_SOFTWARE_PASS` | 把达标软件候选升级为可替换硬件提交节点 | 仅当上面某个候选 full-val PASS 后触发 | 重新冻结 checkpoint、导出 quant plan、生成硬件同构 fixed reference 和 RTL/export manifest；重新生成 bitstream；真实板上 `board-vs-fixed mismatch=0`、`max diff=0`、吞吐 `>=30fps`；资源/WNS/PPA 和可查看图像材料全部归档 |
 
 远端 watcher：
@@ -1086,6 +1086,8 @@ X2/X4 Gate H manifest、图像验证材料和文档/源码索引，不启动 Viv
 - `QUALITY_X2_HRHEAVY_AFTER_X4_20260626` 若只是保持 `>=30dB` 但没有超过当前 X2 `31.121459919373763dB`
   基线，只记录为回归候选，不作为“X2 提质成功”声明。
 - 提质训练期间不启动 Vivado/JTAG/XSCT/板卡流程；只读状态、训练日志、质量 JSON 和候选 manifest。
+- 2026-06-26 提交决策：停止继续等待 X4/X2 提质支线，采用已有 X2/X4 Gate H 硬件闭合方案提交；提交报告为
+  `docs/submission_report_20260626.md`。
 
 ## 12. 完成定义
 
