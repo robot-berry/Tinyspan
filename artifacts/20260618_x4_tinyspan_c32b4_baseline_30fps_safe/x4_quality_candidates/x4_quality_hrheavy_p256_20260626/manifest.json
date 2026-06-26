@@ -1,0 +1,101 @@
+{
+  "candidate_id": "x4_quality_hrheavy_p256_20260626",
+  "scale": 4,
+  "generated_at": "2026-06-26T09:54:55",
+  "status": "INCOMPLETE_OR_REJECTED",
+  "software_quality_gate_pass": false,
+  "repo_root": "/root/autodl-tmp/Tinyspan",
+  "train_dir": "runs/tinyspan_distill/video_x4_c32_b4_quality_hrheavy_p256_20260626",
+  "quality_dir": "runs/tinyspan_quality/x4_quality_hrheavy_p256_reds_val",
+  "artifact_dir": "artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626",
+  "checkpoint": "runs/tinyspan_distill/video_x4_c32_b4_quality_hrheavy_p256_20260626/student_last.pt",
+  "checkpoint_sha256": "5B9D0E8D4B1A5CEB3AEDEE9AF80B23AE0D76ACE67037F6A400E7CBA4970F25F3",
+  "quality_summary": {
+    "image_count": 3000,
+    "student_psnr_mean_db": 26.384690521945394,
+    "student_ssim_mean": 0.7369068402250608,
+    "student_mae_normalized_mean": 0.02989516806664566,
+    "bicubic_psnr_mean_db": 26.274462962942643,
+    "bicubic_ssim_mean": 0.7327208199501037,
+    "bicubic_mae_normalized_mean": 0.030108285250142218
+  },
+  "decision": {
+    "software_quality_gate_pass": false,
+    "min_psnr_db": 28.0,
+    "min_psnr_gain_db": 0.0,
+    "target_psnr_db": 30.0,
+    "student_psnr_gain_over_bicubic_db": 0.11022755900275172,
+    "student_psnr_mean_ge_28db": false,
+    "student_psnr_mean_ge_30db": false,
+    "continue_to_quant_rtl_board": false
+  },
+  "copied": [
+    {
+      "source": "/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x4_c32_b4_quality_hrheavy_p256_20260626/student_last.pt",
+      "artifact": "/root/autodl-tmp/Tinyspan/artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/student_last.pt",
+      "bytes": 2322424,
+      "sha256": "5B9D0E8D4B1A5CEB3AEDEE9AF80B23AE0D76ACE67037F6A400E7CBA4970F25F3"
+    },
+    {
+      "source": "/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x4_c32_b4_quality_hrheavy_p256_20260626/metrics.csv",
+      "artifact": "/root/autodl-tmp/Tinyspan/artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/metrics.csv",
+      "bytes": 16111431,
+      "sha256": "F817365DBE0019EBBEC39A615AF2234687B67CA0A34CE7FD207D29F39AEB5550"
+    },
+    {
+      "source": "/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x4_c32_b4_quality_hrheavy_p256_20260626/args.json",
+      "artifact": "/root/autodl-tmp/Tinyspan/artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/args.json",
+      "bytes": 666,
+      "sha256": "D3B12C5594975379023A032A6E18F5716AB5BF1E3019F089D1D9034DE8861901"
+    },
+    {
+      "source": "/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x4_c32_b4_quality_hrheavy_p256_20260626/train_command_linux.txt",
+      "artifact": "/root/autodl-tmp/Tinyspan/artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/train_command_linux.txt",
+      "bytes": 556,
+      "sha256": "68A9816FAC8F0D91D6EC9E4D135FD242FD50F927BB2DF1E9925233BCD827DB85"
+    },
+    {
+      "source": "/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x4_c32_b4_quality_hrheavy_p256_20260626/video_distill_preview.png",
+      "artifact": "/root/autodl-tmp/Tinyspan/artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/video_distill_preview.png",
+      "bytes": 210191,
+      "sha256": "4685E67CC3E31E98688A3CF423FB53333A3807BD89348A7EC050ED0E1681B47D"
+    },
+    {
+      "source": "/root/autodl-tmp/Tinyspan/runs/tinyspan_distill/video_x4_c32_b4_quality_hrheavy_p256_20260626/video_distill_latest_preview.png",
+      "artifact": "/root/autodl-tmp/Tinyspan/artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/video_distill_latest_preview.png",
+      "bytes": 210191,
+      "sha256": "4685E67CC3E31E98688A3CF423FB53333A3807BD89348A7EC050ED0E1681B47D"
+    },
+    {
+      "source": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hrheavy_p256_reds_val/tinyspan_checkpoint_reds_hr_quality.json",
+      "artifact": "/root/autodl-tmp/Tinyspan/artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/tinyspan_checkpoint_reds_hr_quality.json",
+      "bytes": 2706736,
+      "sha256": "4C1D3FB1C0A344BE5E88A483DF45C45CAEA9C46648656A26FC8F999FF39FEC49"
+    },
+    {
+      "source": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hrheavy_p256_reds_val/tinyspan_checkpoint_reds_hr_quality.md",
+      "artifact": "/root/autodl-tmp/Tinyspan/artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/tinyspan_checkpoint_reds_hr_quality.md",
+      "bytes": 932,
+      "sha256": "4C1A6584083560549916FEC51729715833F836A9876D5DD9A711BBE696679846"
+    },
+    {
+      "source": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hrheavy_p256_reds_val/tinyspan_checkpoint_reds_hr_quality.csv",
+      "artifact": "/root/autodl-tmp/Tinyspan/artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/tinyspan_checkpoint_reds_hr_quality.csv",
+      "bytes": 359011,
+      "sha256": "A6D957C983FA24F6EC073D2C8FD9DBE9A78645D134F2B7CFA31CF71CCE368B35"
+    },
+    {
+      "source": "/root/autodl-tmp/Tinyspan/runs/tinyspan_quality/x4_quality_hrheavy_p256_reds_val/tinyspan_checkpoint_reds_hr_quality_preview.png",
+      "artifact": "/root/autodl-tmp/Tinyspan/artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/x4_quality_candidates/x4_quality_hrheavy_p256_20260626/tinyspan_checkpoint_reds_hr_quality_preview.png",
+      "bytes": 487123,
+      "sha256": "E2A5783D2DE63FC31EFB6094F9500471EEFD740781EC671C6E2E1587ED72BC43"
+    }
+  ],
+  "missing_required": [],
+  "boundary": [
+    "This package is only an X4 software quality candidate gate.",
+    "It does not replace an accepted hardware submission baseline by itself.",
+    "Replacing or accepting the X4 baseline still requires matching quantization, RTL/export checks, bitstream, real board-vs-fixed equality, and >=30fps evidence.",
+    "This script is file-only and does not start training, Vivado, JTAG, XSCT, board access, quantization, or RTL export."
+  ]
+}
