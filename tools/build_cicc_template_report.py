@@ -18,6 +18,11 @@ OUTPUT = ROOT / "docs" / "TinySPAN_CICC_template_technical_report_20260630.docx"
 BLACK = RGBColor(0, 0, 0)
 FONT_CN = "宋体"
 FONT_HEAD = "黑体"
+FONT_EN = "Times New Roman"
+BODY_SIZE = 10.5
+TABLE_SIZE = 9
+CAPTION_SIZE = 9
+FIRST_LINE_INDENT = Pt(21)
 
 
 def find_template() -> Path:
@@ -36,8 +41,8 @@ def clear_body(doc: Document) -> None:
 
 def set_run_font(run, name: str = FONT_CN, size: float | None = None, bold: bool | None = None) -> None:
     run.font.name = name
-    run._element.rPr.rFonts.set(qn("w:ascii"), "Times New Roman")
-    run._element.rPr.rFonts.set(qn("w:hAnsi"), "Times New Roman")
+    run._element.rPr.rFonts.set(qn("w:ascii"), FONT_EN)
+    run._element.rPr.rFonts.set(qn("w:hAnsi"), FONT_EN)
     run._element.rPr.rFonts.set(qn("w:eastAsia"), name)
     run.font.color.rgb = BLACK
     if size is not None:
@@ -53,17 +58,23 @@ def set_style_font(style, name: str, size: float, bold: bool = False) -> None:
     font.bold = bold
     font.color.rgb = BLACK
     style._element.rPr.rFonts.set(qn("w:eastAsia"), name)
-    style._element.rPr.rFonts.set(qn("w:ascii"), "Times New Roman")
-    style._element.rPr.rFonts.set(qn("w:hAnsi"), "Times New Roman")
+    style._element.rPr.rFonts.set(qn("w:ascii"), FONT_EN)
+    style._element.rPr.rFonts.set(qn("w:hAnsi"), FONT_EN)
 
 
 def setup_styles(doc: Document) -> None:
     styles = doc.styles
-    set_style_font(styles["Normal"], FONT_CN, 10.5)
+    set_style_font(styles["Normal"], FONT_CN, BODY_SIZE)
+    styles["Normal"].paragraph_format.first_line_indent = FIRST_LINE_INDENT
+    styles["Normal"].paragraph_format.line_spacing = 1.5
+    styles["Normal"].paragraph_format.space_before = Pt(0)
+    styles["Normal"].paragraph_format.space_after = Pt(0)
     for name, size in [("Heading 1", 16), ("Heading 2", 14), ("Heading 3", 12)]:
         set_style_font(styles[name], FONT_HEAD, size, True)
         styles[name].paragraph_format.space_before = Pt(12)
         styles[name].paragraph_format.space_after = Pt(6)
+        styles[name].paragraph_format.first_line_indent = Pt(0)
+        styles[name].paragraph_format.line_spacing = 1.5
     set_style_font(styles["Title"], FONT_HEAD, 22, True)
     if "Subtitle" in styles:
         set_style_font(styles["Subtitle"], FONT_CN, 12, False)
@@ -88,8 +99,12 @@ def set_cell_text(cell, text: str, bold: bool = False, align=WD_ALIGN_PARAGRAPH.
     cell.text = ""
     para = cell.paragraphs[0]
     para.alignment = align
+    para.paragraph_format.first_line_indent = Pt(0)
+    para.paragraph_format.line_spacing = 1.0
+    para.paragraph_format.space_before = Pt(0)
+    para.paragraph_format.space_after = Pt(0)
     run = para.add_run(text)
-    set_run_font(run, FONT_CN, 9.5, bold)
+    set_run_font(run, FONT_CN, TABLE_SIZE, bold)
     cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
 
 
@@ -116,6 +131,98 @@ def add_heading(doc: Document, text: str, level: int = 1) -> None:
     para = doc.add_heading(level=level)
     run = para.add_run(text)
     set_run_font(run, FONT_HEAD, {1: 16, 2: 14, 3: 12}.get(level, 12), True)
+
+
+def standardize_paragraph(para, in_table: bool = False) -> None:
+    text = para.text.strip()
+    style_name = para.style.name if para.style is not None else ""
+    fmt = para.paragraph_format
+    fmt.space_before = Pt(0 if in_table else 0)
+    fmt.space_after = Pt(0 if in_table else 0)
+    fmt.line_spacing = 1.0 if in_table else 1.5
+    fmt.left_indent = Pt(0)
+    fmt.right_indent = Pt(0)
+
+    if in_table:
+        fmt.first_line_indent = Pt(0)
+        size = TABLE_SIZE
+        font = FONT_CN
+        bold = None
+    elif style_name == "Title":
+        fmt.first_line_indent = Pt(0)
+        fmt.line_spacing = 1.2
+        size = 22
+        font = FONT_HEAD
+        bold = True
+    elif style_name.startswith("Heading 1"):
+        fmt.first_line_indent = Pt(0)
+        fmt.space_before = Pt(12)
+        fmt.space_after = Pt(6)
+        size = 16
+        font = FONT_HEAD
+        bold = True
+    elif style_name.startswith("Heading 2"):
+        fmt.first_line_indent = Pt(0)
+        fmt.space_before = Pt(8)
+        fmt.space_after = Pt(4)
+        size = 14
+        font = FONT_HEAD
+        bold = True
+    elif style_name.startswith("Heading 3"):
+        fmt.first_line_indent = Pt(0)
+        fmt.space_before = Pt(6)
+        fmt.space_after = Pt(3)
+        size = 12
+        font = FONT_HEAD
+        bold = True
+    elif style_name.lower().startswith("toc"):
+        fmt.first_line_indent = Pt(0)
+        fmt.left_indent = Pt(0)
+        fmt.right_indent = Pt(0)
+        fmt.line_spacing = 1.15
+        size = BODY_SIZE
+        font = FONT_CN
+        bold = None
+    elif para.alignment == WD_ALIGN_PARAGRAPH.CENTER or text.startswith(("表", "图")):
+        fmt.first_line_indent = Pt(0)
+        fmt.left_indent = Pt(0)
+        fmt.right_indent = Pt(0)
+        existing_sizes = [run.font.size.pt for run in para.runs if run.font.size is not None]
+        existing_bold = any(run.bold for run in para.runs)
+        if para.alignment == WD_ALIGN_PARAGRAPH.CENTER and existing_sizes and max(existing_sizes) > BODY_SIZE:
+            size = max(existing_sizes)
+            font = FONT_HEAD if existing_bold else FONT_CN
+            bold = existing_bold
+        else:
+            size = CAPTION_SIZE if text.startswith(("表", "图")) else BODY_SIZE
+            font = FONT_CN
+            bold = None
+    elif not text:
+        fmt.first_line_indent = Pt(0)
+        size = BODY_SIZE
+        font = FONT_CN
+        bold = None
+    else:
+        fmt.first_line_indent = FIRST_LINE_INDENT
+        para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        size = BODY_SIZE
+        font = FONT_CN
+        bold = None
+
+    for run in para.runs:
+        set_run_font(run, font, size, bold)
+
+
+def standardize_document_format(doc: Document) -> None:
+    for para in doc.paragraphs:
+        standardize_paragraph(para)
+    for table in doc.tables:
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        for row in table.rows:
+            for cell in row.cells:
+                cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+                for para in cell.paragraphs:
+                    standardize_paragraph(para, in_table=True)
 
 
 def add_table(doc: Document, title: str, headers: list[str], rows: list[list[str]], widths: list[float] | None = None) -> None:
@@ -592,16 +699,7 @@ def build_doc() -> Path:
         widths=[1.8, 5.4],
     )
 
-    for para in doc.paragraphs:
-        for run in para.runs:
-            if run.text:
-                run.font.color.rgb = BLACK
-    for table in doc.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                for para in cell.paragraphs:
-                    for run in para.runs:
-                        run.font.color.rgb = BLACK
+    standardize_document_format(doc)
 
     doc.save(OUTPUT)
     return OUTPUT
