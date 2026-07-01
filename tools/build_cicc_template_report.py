@@ -13,7 +13,7 @@ from docx.shared import Inches, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = Path("G:/UESTC/uav/01/PLin+SingleNet+HDMI/competition01")
-OUTPUT = ROOT / "docs" / "TinySPAN_CICC_template_technical_report_20260630.docx"
+OUTPUT = ROOT / "docs" / "TinySPAN_CICC_template_technical_report_20260701_full.docx"
 
 BLACK = RGBColor(0, 0, 0)
 FONT_CN = "宋体"
@@ -250,6 +250,134 @@ def add_table(doc: Document, title: str, headers: list[str], rows: list[list[str
 def add_numbered_items(doc: Document, items: list[str]) -> None:
     for i, text in enumerate(items, 1):
         add_p(doc, f"（{i}）{text}")
+
+
+def add_delivery_content_details(doc: Document) -> None:
+    add_heading(doc, "5.2 表8交付内容展开说明", 2)
+    add_p(
+        doc,
+        "表8不再只作为文件路径索引使用。本节将表8中每一类交付文件对应的工程内容直接写入报告正文，使评审人员在不打开额外文件的情况下，也能理解本工程的工作流、模型、训练量化、硬件实现、验证证据和 PPA 结果。相关源文件仍保留在仓库中，用于复核脚本、RTL 和上板 artifact 的真实性。",
+    )
+
+    add_heading(doc, "5.2.1 工作流：WORKFLOW.md", 3)
+    add_p(
+        doc,
+        "工程根目录为 G:\\UESTC\\feitengspan1\\Tinyspan，工作流路线确定为 TinySPAN C32/B4 W8A8，而不是 W8A12 路线。整体目标是在 xczu19eg 板卡上按 ZC706 等效资源门线完成 X2 与 X4 两个倍率的 720p30 实时超分交付。当前提交节点采用已有 Gate H 硬件闭合基线：X4 使用 320x180 LR 输入切块输出 1280x720，X2 使用 640x360 LR 输入切块输出 1280x720。后续提升画质节点作为支线保留，但不替换本次提交基线，除非重新完成 checkpoint 冻结、量化、RTL 导出、bitstream 生成、真实板上 0 mismatch 和 >=30fps 验收。",
+    )
+    add_p(
+        doc,
+        "工作流明确采用整帧切块上板路线：输入帧先进入 PS DDR，PL 端按 64x64 LR tile 进行读取、超分、边界裁剪和写回。DDR 控制部分不自研，直接调用板卡 PS DDR controller、AXI HP/HPC 端口和 Xilinx 标准 AXI IP。该路线避免一次性展开大尺寸帧带来的资源和时序压力，也避免 JTAG 全帧读回成为实时性瓶颈。",
+    )
+
+    add_heading(doc, "5.2.2 模型结构：docs/model_design.md", 3)
+    add_p(
+        doc,
+        "提交模型为 TinySPAN student，硬件安全基线使用 C32/B4 结构，即 32 个特征通道和 4 个 TinySPAN block。模型输入为 RGB888 LR frame 或 LR tile，输出为 RGB888 SR frame。为了适配 FPGA 实现，模型结构避免使用过重的注意力和大规模残差堆叠，重点保留可定点化、可流水化的卷积和重排结构。",
+    )
+    add_p(
+        doc,
+        "TinySPAN 的设计重点是低资源和可闭合性：模型规模控制在 ZC706 等效资源门线内，量化后使用 INT8 权重和 INT8 激活，bias 与 requant 参数固化到量化计划中。模型最终不是以 PyTorch 浮点结果作为提交依据，而是以同一 frozen checkpoint、同一 quant plan 生成的软件定点参考作为硬件黄金输出。",
+    )
+
+    add_heading(doc, "5.2.3 训练与量化：docs/training_quantization.md", 3)
+    add_p(
+        doc,
+        "训练数据使用 REDS 数据集，仓库不包含 REDS 原始图片，训练脚本通过命令行参数指定本地或云端数据路径。训练流程包括数据读取、teacher/student 蒸馏、TinySPAN student checkpoint 保存、候选模型评估和最终 frozen checkpoint 固化。当前提交不继续等待画质提升训练支线，而是选择已经完成真实上板闭合的 X2/X4 Gate H 方案作为比赛交付基线。",
+    )
+    add_p(
+        doc,
+        "量化流程采用 W8A8 定点方案。工具先对激活范围进行 calibration，再导出 quant plan、整数参考输出和 RTL 可读取的权重/scale/requant 参数。X2 full REDS val 的软件质量评估为 TinySPAN PSNR mean 31.121459919 dB、SSIM mean 0.905514798，均高于 bicubic 基线。X4 已尝试画质提升训练，但当前提升候选未达到 28dB 目标，因此没有替换已经通过板上实时与一致性验收的 X4 硬件基线。",
+    )
+
+    add_heading(doc, "5.2.4 硬件设计：docs/hardware_design.md", 3)
+    add_p(
+        doc,
+        "硬件加速器由 PS/DDR 入口、TinySPAN tile pipeline、动态裁剪与写回、控制与计数模块组成。PS/DDR 入口负责通过板卡标准 DDR controller 和 AXI 端口访问输入输出帧；TinySPAN tile pipeline 负责读取 64x64 LR tile 并执行 W8A8 定点超分；动态裁剪模块负责处理右边界、下边界不足 64 的 tile，输入侧进行 zero padding，输出侧只写回有效 SR 区域。",
+    )
+    add_p(
+        doc,
+        "X4 场景中 320x180 LR 输入被切为 5x3 共 15 个 tile，输出拼接为 1280x720；X2 场景中 640x360 LR 输入被切为 10x6 共 60 个 tile，输出同样拼接为 1280x720。该结构不依赖一次性处理整帧大图，而是通过 tile 级流水实现整帧实时吞吐。",
+    )
+
+    add_heading(doc, "5.2.5 验证方案：docs/verification_plan.md", 3)
+    add_p(
+        doc,
+        "验证方案分为五级：第一，软件训练质量验证，统计 REDS val_sharp 上的 PSNR、SSIM 和 MAE；第二，量化一致性验证，对比 PyTorch student、软件定点 reference 和 integer reference；第三，RTL/仿真验证，覆盖 tile wrapper、cropper、writer shell 和 PS/DDR wrapper；第四，Vivado 实现验证，检查 bitstream、timing、utilization 和 power；第五，真实上板验证，使用 A53 在 DDR 内执行 full-frame byte compare，并记录 frame cycles、fps、mismatch 和 max diff。",
+    )
+    add_p(
+        doc,
+        "本提交的正确性结论只基于真实板上输出与同一 frozen checkpoint、同一 quant plan、同一 tile contract 生成的软件定点参考逐字节一致。X4 与 X2 的 Gate H manifest 均显示 board-vs-fixed mismatch 为 0，max diff 为 0，且吞吐达到 30fps 以上。",
+    )
+
+    add_heading(doc, "5.2.6 PPA 分析：docs/ppa_analysis.md", 3)
+    add_p(
+        doc,
+        "PPA 统计按 ZC706 / XC7Z045 等效资源门线进行归一化，参考门线为 LUT 218600、Register 437200、DSP 900、BRAM Tile 545。X4 Gate H 使用 6353 LUT、4647 Register、81 DSP、27 BRAM Tile，WNS 为 +0.020ns，总片上功耗 3.969W；X2 Gate H 使用 6647 LUT、5031 Register、100 DSP、27 BRAM Tile，WNS 为 +0.002ns，总片上功耗 4.053W。",
+    )
+    add_p(
+        doc,
+        "从资源比例看，X4 LUT 占 2.91%、DSP 占 9.00%、BRAM 占 4.95%；X2 LUT 占 3.04%、DSP 占 11.11%、BRAM 占 4.95%。两者均未使用 URAM，且 timing pass。该结果说明 TinySPAN C32/B4 W8A8 路线的优势主要体现在低 DSP、低 LUT、低 BRAM 和容易实现 board-vs-fixed 闭合。",
+    )
+
+    add_heading(doc, "5.2.7 模型源码：train/", 3)
+    add_p(
+        doc,
+        "train/ 目录提供训练和模型相关源代码，主要包括 span_model.py、reds_dataset.py、distill_tinyspan_video.py、distill_tinyspan_from_official.py、train_reds_span.py、export_tinyspan_to_rtl.py、export_official_span_to_rtl.py、visualize_training.py 和 visualize_official_span.py。这些脚本覆盖数据集读取、TinySPAN/SPAN 模型定义、teacher/student 蒸馏、训练日志可视化、checkpoint 导出和 RTL 参数准备。",
+    )
+    add_p(
+        doc,
+        "训练源码与量化工具分离：train/ 侧负责得到可冻结的模型参数，tools/model_to_hardware/ 侧负责把模型转换为硬件可使用的定点参数和验证参考。这样可以避免训练代码与硬件导出逻辑耦合过深，也便于后续在云端服务器继续训练画质提升模型。",
+    )
+
+    add_heading(doc, "5.2.8 转换工具：tools/model_to_hardware/", 3)
+    add_p(
+        doc,
+        "tools/model_to_hardware/ 目录提供模型到硬件的转换与检查工具，主要包括 export_tinyspan_w8a8_quant_plan.py、calibrate_tinyspan_activation_scales.py、check_tinyspan_w8a8_quant_plan.py、run_tinyspan_w8a8_integer_reference.py、export_tinyspan_w8a8_to_rtl.py、fuse_tinyspan_conv3xc.py、generate_tinyspan_w8a8_conv_vector_tb.py、generate_tinyspan_w8a8_postprocess_tb.py 和 evaluate_tinyspan_video_quality.py。",
+    )
+    add_p(
+        doc,
+        "该目录的核心作用是把训练得到的 checkpoint 转换为硬件可复现的量化计划、整数参考、RTL 权重存储和测试向量。硬件验收时使用这些工具生成的软件 fixed-point reference 作为黄金输出，确保板上结果不是只做主观图片比较，而是严格完成逐字节一致性验证。",
+    )
+
+    add_heading(doc, "5.2.9 RTL 源码：rtl/tinyspan_core/ 与 rtl/board_wrapper/", 3)
+    add_p(
+        doc,
+        "rtl/tinyspan_core/ 目录包含 TinySPAN W8A8 核心计算模块，例如 span_tinyspan_w8a8_full_streamed_rgb888_base_equiv.v、span_tinyspan_w8a8_bicubic_base_x2_streamed.v、span_tinyspan_w8a8_bicubic_base_x4_streamed.v、span_tinyspan_w8a8_scale_q31_symmetric.v 和 span_tinyspan_w8a8_qrgb_to_rgb888.v。这些模块负责定点卷积、scale/requant、RGB 数据格式处理和 X2/X4 相关输出。",
+    )
+    add_p(
+        doc,
+        "rtl/board_wrapper/ 目录包含面向板卡和整帧切块的封装模块，例如 sr_tile_scheduler.v、sr_tile_fetch_stream_shell.v、sr_stream_dynamic_cropper.v、sr_ddr_pixel_axi_master.v、sr_tile_output_writer.v、sr_tile_rgb_buffer_streamer.v、sr_tile_tinyspan_x4_writer_shell.v 和 sr_ddr_tinyspan_x4_tile_writer_endpoint.v。该部分负责 tile 调度、DDR 访问、边界裁剪、输出写回和板上端到端数据路径连接。",
+    )
+
+    add_heading(doc, "5.2.10 Vivado 脚本：scripts/vivado/", 3)
+    add_p(
+        doc,
+        "scripts/vivado/ 目录用于生成和复现实验工程，包括综合、实现、bitstream、timing、utilization 和 power 报告生成流程。Vivado 脚本与 scripts/board/、scripts/acceptance/ 配合使用：前者负责硬件工程构建，后者负责 bitstream 下载、PS/DDR 初始化、板上运行和验收结果打包。",
+    )
+    add_p(
+        doc,
+        "本提交中 Vivado 结果已经反映在 Gate H artifact 和 PPA 表中。后续如果替换更高 PSNR 模型，必须重新运行对应 Vivado 流程并重新生成 timing、utilization、power 和 bitstream 哈希，不能直接沿用旧 bitstream 的验收结论。",
+    )
+
+    add_heading(doc, "5.2.11 X4 上板证据", 3)
+    add_p(
+        doc,
+        "X4 上板证据目录为 artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x4_320x180_f150_tiledref_tile64_fifo_f155_20260625/。该目录记录 320x180 LR 输入到 1280x720 SR 输出的整帧切块上板结果，实测吞吐为 30.409639424fps @155MHz，board-vs-fixed 为 0 / 2764800 mismatch，max diff 为 0。",
+    )
+    add_p(
+        doc,
+        "X4 证据同时保留 manifest、comparison_preview、diff_heatmap 和 board/软件等价视图，用于评审查看图像效果。需要强调的是，最终正确性依据是 A53 DDR 内逐字节比较，而不是单纯依赖图片肉眼观察。",
+    )
+
+    add_heading(doc, "5.2.12 X2 上板证据", 3)
+    add_p(
+        doc,
+        "X2 上板证据目录为 artifacts/20260618_x4_tinyspan_c32b4_baseline_30fps_safe/gate_h_board_x2_640x360_f188_div8_tile64_rgbpipe_20260626/。该目录记录 640x360 LR 输入到 1280x720 SR 输出的整帧切块上板结果，实测吞吐为 32.860482270fps @187.512MHz，board-vs-fixed 为 0 / 2764800 mismatch，max diff 为 0。",
+    )
+    add_p(
+        doc,
+        "X2 证据补齐了本赛题对 X2、X4 双倍率的闭合要求。X2 软件质量在 full REDS val 上达到 PSNR mean 31.121459919 dB、SSIM mean 0.905514798，同时真实板上输出与定点参考完全一致，因此可作为本次提交中 X2 部分的正式交付证据。",
+    )
 
 
 def add_picture_if_exists(doc: Document, rel_path: str, caption: str) -> None:
@@ -534,7 +662,8 @@ def build_doc() -> Path:
         ],
         widths=[1.7, 5.5],
     )
-    add_heading(doc, "5.2 上板执行流程", 2)
+    add_delivery_content_details(doc)
+    add_heading(doc, "5.3 上板执行流程", 2)
     add_numbered_items(
         doc,
         [
