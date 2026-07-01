@@ -13,7 +13,7 @@ from docx.shared import Inches, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = Path("G:/UESTC/uav/01/PLin+SingleNet+HDMI/competition01")
-OUTPUT = ROOT / "docs" / "TinySPAN_CICC_template_technical_report_20260701_full.docx"
+OUTPUT = ROOT / "docs" / "TinySPAN_CICC_template_technical_report_20260701_full_explained.docx"
 
 BLACK = RGBColor(0, 0, 0)
 FONT_CN = "宋体"
@@ -250,6 +250,38 @@ def add_table(doc: Document, title: str, headers: list[str], rows: list[list[str
 def add_numbered_items(doc: Document, items: list[str]) -> None:
     for i, text in enumerate(items, 1):
         add_p(doc, f"（{i}）{text}")
+
+
+def add_requirement_correspondence_explanations(doc: Document) -> None:
+    add_heading(doc, "1.4 赛题要求对应说明", 2)
+    add_p(
+        doc,
+        "表3对赛题交付要求与本工程材料进行了概括对应。为了避免评审只能看到文件路径，本节进一步用段落说明每一项材料在工程中的实际作用、覆盖范围和验收意义。",
+    )
+    add_p(
+        doc,
+        "在 AI 模型、训练和量化说明方面，本工程通过 docs/model_design.md、docs/training_quantization.md、train/ 和 configs/ 共同给出完整支撑。模型设计文档说明 TinySPAN C32/B4 student 的网络结构、输入输出格式和低资源设计思路；训练与量化文档说明 REDS 数据集使用方式、teacher/student 蒸馏流程、checkpoint 冻结策略以及 W8A8 定点量化方法；train/ 目录提供模型定义、数据集读取、训练、蒸馏和可视化脚本；configs/ 用于保存训练和评估参数。该部分对应赛题要求中的“提供 AI 模型结构、训练、量化说明文档及源代码”。",
+    )
+    add_p(
+        doc,
+        "在模型到硬件转换工具方面，tools/model_to_hardware/ 目录承担 PyTorch checkpoint 到 FPGA 可实现参数的转换工作。该目录中的 calibration、quant plan、integer reference 和 RTL export 工具用于生成激活 scale、INT8 权重、bias/requant 参数、软件定点参考输出和 RTL 可加载的存储文件。硬件验收时，板上输出必须与这些工具生成的 fixed-point reference 逐字节一致，因此该工具链不仅是参数转换工具，也是硬件正确性验收的黄金参考生成链路。",
+    )
+    add_p(
+        doc,
+        "在硬件设计文档方面，docs/hardware_design.md、docs/full_frame_tiling_route.md 和 docs/verification_plan.md 分别覆盖硬件加速器结构、整帧切块路线和验证方法。硬件设计文档说明 PS/DDR 入口、TinySPAN tile pipeline、动态裁剪写回、控制计数等模块划分；整帧切块文档说明 X4 的 320x180 LR 到 1280x720 SR、X2 的 640x360 LR 到 1280x720 SR 如何按 64x64 LR tile 进行调度；验证方案文档说明从软件质量、量化一致性、RTL 仿真、Vivado 实现到真实上板的五级验证闭环。",
+    )
+    add_p(
+        doc,
+        "在硬件源代码方面，rtl/tinyspan_core/ 保存 TinySPAN W8A8 核心计算逻辑，rtl/board_wrapper/ 保存板级封装、tile 调度、DDR 访问、边界裁剪和输出写回逻辑，scripts/vivado/ 保存 Vivado 工程构建和实现脚本。这些源代码可以在 Vivado 中用于仿真、综合、实现和 bitstream 生成，对应赛题要求中的“提供硬件加速器源代码，可在 Xilinx Vivado 工具中进行仿真验证以及综合用于评估资源开销”。",
+    )
+    add_p(
+        doc,
+        "在 X2/X4 实时验证方面，本工程已经保留 Gate H 上板 manifest 与 DDR 内 compare 结果。X4 证据记录 320x180 LR 输入经 15 个 64x64 tile 输出 1280x720 SR，实测 30.409639424fps，board-vs-fixed 为 0 / 2764800 mismatch，max diff 为 0；X2 证据记录 640x360 LR 输入经 60 个 64x64 tile 输出 1280x720 SR，实测 32.860482270fps，board-vs-fixed 同样为 0 / 2764800 mismatch，max diff 为 0。该部分证明方案不是停留在仿真或软件预览，而是完成了真实板上正确性和实时吞吐闭合。",
+    )
+    add_p(
+        doc,
+        "在 PPA 分析方面，docs/ppa_analysis.md 与 Vivado utilization、timing、power 报告共同给出面积、时序和功耗指标。资源统计按 ZC706 / XC7Z045 等效门线归一化：X4 Gate H 使用 6353 LUT、4647 Register、81 DSP、27 BRAM Tile，Total On-Chip Power 为 3.969W；X2 Gate H 使用 6647 LUT、5031 Register、100 DSP、27 BRAM Tile，Total On-Chip Power 为 4.053W。两条路线均 timing pass、未使用 URAM，说明当前提交在满足 720p30 输出和 0 mismatch 的同时，仍保持较低面积和功耗。",
+    )
 
 
 def add_delivery_content_details(doc: Document) -> None:
@@ -527,6 +559,7 @@ def build_doc() -> Path:
             ["PPA 分析", "docs/ppa_analysis.md 与 Vivado utilization/timing/power 报告", "已提供"],
         ],
     )
+    add_requirement_correspondence_explanations(doc)
 
     add_heading(doc, "二、系统总体设计", 1)
     add_heading(doc, "2.1 总体架构", 2)
